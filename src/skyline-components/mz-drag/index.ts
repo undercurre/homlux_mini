@@ -37,7 +37,10 @@ Component({
       type: Array,
       value: [] as CardItem[],
     },
-    // 是否处于编辑模式 // ! 目前是否能拖动与编辑模式无内在关联，只是业务逻辑需要
+    // 列表数据更新的时间戳
+    listTimestamp: Number,
+
+    // 是否处于编辑模式
     editMode: Boolean,
 
     // 单个元素的占位宽度（含边距）
@@ -46,7 +49,7 @@ Component({
     itemHeight: Number,
     // 单个元素的非拖动态占位高度（含边距）
     itemHeightLarge: Number,
-    // 滚动高度
+    // 滚动区域高度
     scrollHeight: {
       type: String,
       value: '80vh',
@@ -68,7 +71,7 @@ Component({
         useAccumulatedY,
       })
     },
-    'movableList,itemHeight'() {
+    'movableList,itemHeight,listTimestamp'() {
       console.log('[drag observer]', this.data.movableList)
 
       // 列表变更触发
@@ -86,13 +89,12 @@ Component({
     moveareaHeight: 0,
     hasSizeChange: false, // 元素是否有动态尺寸变化
     useAccumulatedY: false, // 纵向坐标是否使用累加值计算法
-    scrollTop: 0,
+    scrollTop: 0, // 滚动条位置
     _moving: false, // 是否正在拖动
     _scrollHeightRes: 0,
     _touchY: 0,
     _originOrder: -1, // 被拖动元素，拖动开始前的排序号，从1开始
-    _inited: false,
-    _itemHeight: 0,
+    _lastTimestamp: 0, // 记录上次的时间戳
   },
 
   lifetimes: {
@@ -109,7 +111,7 @@ Component({
   methods: {
     initListThrottle: throttle(function (this: IAnyObject) {
       this.initList()
-    }, 500),
+    }, 800),
     /**
      * 初始化列表
      * 索引号可能与排序号不对应，要注意避免变更oldList物理索引，而引起界面跳动；故优先旧列表排序号
@@ -118,8 +120,9 @@ Component({
       const { itemWidth, cols, movableList, itemHeight, itemHeightLarge } = this.data
       const oldList = JSON.parse(JSON.stringify(this.data.list)) as CardItem[]
       const newList = JSON.parse(JSON.stringify(movableList)) as CardItem[]
+      const isUpdateList = this.data.listTimestamp > this.data._lastTimestamp
 
-      console.log('[initList]', oldList, '->', newList)
+      console.log('[initList]', this.data._lastTimestamp, '->', this.data.listTimestamp, oldList, '->', newList)
 
       const diffData = {} as IAnyObject
       const list = []
@@ -137,7 +140,8 @@ Component({
           continue
         }
 
-        orderNum = item.orderNum - deleted
+        // 如果更新列表，则使用新列表序号（物理索引不变）；否则直接基于旧序号计算
+        orderNum = isUpdateList ? newItem.orderNum : item.orderNum - deleted
 
         const mergedItem = {
           ...item,
@@ -201,6 +205,9 @@ Component({
       diffData.moveareaHeight = this.data.useAccumulatedY ? accumulatedY : itemHeight * Math.ceil(list.length / cols)
 
       this.setData(diffData)
+
+      this.data._lastTimestamp = this.data.listTimestamp
+
       Logger.trace('[initList]', diffData.list)
     },
     /**

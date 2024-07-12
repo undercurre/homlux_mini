@@ -163,6 +163,7 @@
         config="{{cardListConfig}}"
         edit-mode="{{editMode}}"
         movable-list="{{deviceCardList}}"
+        list-timestamp="{{deviceTimestamp}}"
         bind:dragBegin="handleEditMode"
         bind:dragEnd="handleSortSaving"
       >

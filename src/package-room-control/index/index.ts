@@ -55,7 +55,7 @@ ComponentWithStore({
   storeBindings: [
     {
       store: deviceStore,
-      fields: ['deviceFlattenList'],
+      fields: ['deviceFlattenList', 'deviceTimestamp'],
       actions: {},
     },
     {
@@ -113,7 +113,7 @@ ComponentWithStore({
     // 设备卡片列表
     deviceCardList: [] as DeviceCard[],
     cardListConfig: {
-      draggable: false,
+      draggable: true,
       showShadow: true,
       showGradientBg: true,
       showControl: true,
