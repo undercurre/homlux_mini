@@ -67,29 +67,12 @@ Component({
         hasSizeChange,
         useAccumulatedY,
       })
-      if (!editMode) {
-        this.initListThrottle()
-      }
     },
-    'movableList,itemHeight'(_, itemHeight) {
+    'movableList,itemHeight'() {
       console.log('[drag observer]', this.data.movableList)
 
-      // 只初始化，忽略后续逻辑
-      if (!this.data._inited) {
-        this.data._inited = true
-        this.data._itemHeight = itemHeight
-        this.initListThrottle()
-        return
-      }
-
-      // 如项目高度变化触发，则不进行列表初始化，由用户操作后进行列表初始化
-      if (itemHeight !== this.data._itemHeight) {
-        this.data._itemHeight = itemHeight
-        return
-      }
-
       // 列表变更触发
-      this.initListThrottle(true)
+      this.initListThrottle()
     },
   },
 
@@ -124,29 +107,19 @@ Component({
   },
 
   methods: {
-    initListThrottle: throttle(function (this: IAnyObject, positive: boolean) {
-      this.initList(positive)
-    }, 300),
+    initListThrottle: throttle(function (this: IAnyObject) {
+      this.initList()
+    }, 500),
     /**
      * 初始化列表
-     * 索引号可能与排序号不对应，外部触发更新（positive）时要注意避免变更oldList物理索引，而引起界面跳动
-     * @param positive 如果被动触发更新，即外部列表数据变更，则按外部列表排序；如果初始化，或主动操作触发更新，则保持原列表排序
+     * 索引号可能与排序号不对应，要注意避免变更oldList物理索引，而引起界面跳动；故优先旧列表排序号
      */
-    async initList(positive = false) {
+    async initList() {
       const { itemWidth, cols, movableList, itemHeight, itemHeightLarge } = this.data
       const oldList = JSON.parse(JSON.stringify(this.data.list)) as CardItem[]
       const newList = JSON.parse(JSON.stringify(movableList)) as CardItem[]
 
-      // useAccumulatedY 模式下，提前计算位置映射，id -> posY
-      const posMap = {} as IAnyObject
-      let accumulatedY = 0
-      if (this.data.useAccumulatedY) {
-        const sortedList = (positive ? newList : oldList)?.sort((a, b) => a.orderNum - b.orderNum) ?? []
-        for (const item of sortedList) {
-          posMap[item.id] = accumulatedY
-          accumulatedY += item.slimSize ? itemHeight : itemHeightLarge
-        }
-      }
+      console.log('[initList]', oldList, '->', newList)
 
       const diffData = {} as IAnyObject
       const list = []
@@ -164,19 +137,51 @@ Component({
           continue
         }
 
-        orderNum = positive ? newItem.orderNum : item.orderNum - deleted
+        orderNum = item.orderNum - deleted
 
-        const i = orderNum - 1
         const mergedItem = {
-          ...(positive ? newItem : item),
+          ...item,
+          ...newItem,
           orderNum,
         } as IAnyObject
 
-        // 纵坐标计算
+        list.push(mergedItem)
+
+        // 标记新列表中已添加
+        newItem.added = true
+      } // for
+
+      // 遍历新列表，添加剩余的新增项
+      for (const newItem of newList) {
+        // 过滤已删除、已添加的内容
+        if (newItem.deleted || newItem.added) continue
+
+        orderNum = orderNum + 1
+
+        list.push({
+          ...newItem,
+          orderNum,
+        })
+      }
+
+      // useAccumulatedY 模式下，提前计算位置映射，id -> posY
+      const posMap = {} as IAnyObject
+      let accumulatedY = 0
+      if (this.data.useAccumulatedY) {
+        const sortedList = [...list]?.sort((a, b) => a.orderNum - b.orderNum) ?? []
+        for (const item of sortedList) {
+          posMap[item.id] = accumulatedY
+          accumulatedY += item.slimSize ? itemHeight : itemHeightLarge
+        }
+      }
+
+      // 再次遍历，补充位置信息
+      list.forEach((item, index) => {
+        const i = item.orderNum - 1
         const itemY = this.data.useAccumulatedY ? posMap[item.id] : Math.floor(i / cols) * itemHeight
 
         // 当前拖拽中的元素，按拖拽位置及滚动偏移量计算位置
-        if (parseInt(index) === this.data.currentIndex && this.data.hasSizeChange) {
+        if (index === this.data.currentIndex && this.data.hasSizeChange) {
           const marginBottom = 120 // 按钮占位及边距
           // ! 新的滚动位置：0 ~ i个卡片高度-滚动区域高度+触摸位置 ~ 列表高度-可滚动区域高度
           const maxScrollTop = i * itemHeight - this.data._scrollHeightRes + this.data._touchY + marginBottom
@@ -184,43 +189,19 @@ Component({
             0,
             Math.min(maxScrollTop, newList.length * itemHeight - this.data._scrollHeightRes),
           )
-          mergedItem.pos = [item.pos[0], item.pos[1] - this.data.scrollTop + newScrollTop]
+          item.pos = [item.pos[0], item.pos[1] - this.data.scrollTop + newScrollTop]
           diffData.scrollTop = newScrollTop
           console.log('[reset scrollTop]max:', newList.length * itemHeight, '-', this.data._scrollHeightRes)
+        } else {
+          item.pos = [(i % cols) * itemWidth, itemY]
         }
-        // 非拖拽中的元素，按排序计算位置
-        else {
-          mergedItem.pos = [(i % cols) * itemWidth, itemY]
-        }
-        list.push(mergedItem)
-
-        // 标记新列表中已添加
-        newItem.added = true
-      } // for
-
-      // 添加剩余的新增项
-      for (const newItem of newList) {
-        // 过滤已删除、已添加的内容
-        if (newItem.deleted || newItem.added) continue
-
-        orderNum = positive ? newItem.orderNum : orderNum + 1
-        const i = orderNum - 1
-        // 纵坐标计算
-        const itemY = this.data.useAccumulatedY ? posMap[newItem.id] : Math.floor(i / cols) * itemHeight
-
-        list.push({
-          ...newItem,
-          // 补充位置数据
-          orderNum,
-          pos: [(i % cols) * itemWidth, itemY],
-        })
-      }
+      })
 
       diffData.list = list
       diffData.moveareaHeight = this.data.useAccumulatedY ? accumulatedY : itemHeight * Math.ceil(list.length / cols)
 
       this.setData(diffData)
-      Logger.trace('[initList]', positive ? '[positive]' : '[active]', diffData.list)
+      Logger.trace('[initList]', diffData.list)
     },
     /**
      * 根据坐标位置计算索引
@@ -312,7 +293,7 @@ Component({
       this.data._originOrder = orderNum
       this.data._touchY = e.detail.y - this.data.scrollTop
 
-      if (this.data.hasSizeChange) this.initList(true)
+      if (this.data.hasSizeChange) this.initList()
     },
     dragMove(e: WechatMiniprogram.CustomEvent<number[], IAnyObject, { index: number }>) {
       this.dragMoveThrottle(e.target.dataset.index, [e.detail[2], e.detail[3]])
@@ -351,7 +332,7 @@ Component({
       this.setData(diffData, async () => {
         if (this.data.hasSizeChange) {
           await delay(160) // 确保上次150ms动画完成
-          this.initList(true)
+          this.initList()
         }
       })
 
