@@ -1,5 +1,4 @@
 import { ossDomain, productImgDir, ZHONGHONG_PID } from '../../config/index'
-import { strUtil } from '../../utils/index'
 
 export default {
   '0x13': {
@@ -9,12 +8,13 @@ export default {
         icon: `${productImgDir}/0x13.png`,
         name: '吸顶灯',
         source: 'meiju',
-        tag: 'wifi',
-        path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
+        meijuProductInfo: {
           proType: '13',
           sn8: '7909AC81',
           mode: 0,
-        } as Meiju.IProductItem),
+        },
+        tag: 'wifi',
+        path: '',
       },
       {
         icon: `${productImgDir}/downlight.png`,
@@ -49,29 +49,27 @@ export default {
         icon: `${productImgDir}/0xAC-hang.png`,
         name: '挂机空调',
         source: 'meiju',
+        meijuProductInfo: {
+          proType: 'AC',
+          sn8: '22011809,22011901',
+          deviceImg: `${productImgDir}/0xAC-hang.png`,
+          mode: 0,
+        },
         tag: 'wifi',
-        path: `/package-distribution/pages/scan/index?scanType=meijuDevice&meijuPath=${encodeURIComponent(
-          strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
-            proType: 'AC',
-            sn8: '22011809,22011901',
-            deviceImg: `${productImgDir}/0xAC-hang.png`,
-            mode: 0,
-          } as Meiju.IProductItem),
-        )}`,
+        path: '',
       },
       {
         icon: `${productImgDir}/0xAC-cabinet.png`,
         name: '柜机空调',
         source: 'meiju',
+        meijuProductInfo: {
+          proType: 'AC',
+          sn8: '222G0077,22050675',
+          deviceImg: `${productImgDir}/0xAC-cabinet.png`,
+          mode: 0,
+        },
         tag: 'wifi',
-        path: `/package-distribution/pages/scan/index?scanType=meijuDevice&meijuPath=${encodeURIComponent(
-          strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
-            proType: 'AC',
-            sn8: '222G0077,22050675',
-            deviceImg: `${productImgDir}/0xAC-cabinet.png`,
-            mode: 0,
-          } as Meiju.IProductItem),
-        )}`,
+        path: '',
       },
       {
         icon: `${productImgDir}/VRF.png`,
@@ -118,7 +116,8 @@ export default {
 export interface IModel {
   icon: string // 产品图标
   name: string // 产品名称
-  source?: 'meiju' // 产品来源，meiju：美居wifi设备
+  source?: 'meiju' // 默认为homlux产品，产品来源，meiju：美居wifi设备
+  meijuProductInfo?: Meiju.IProductItem // 美居产品信息，仅source=meiju存在该字段
   productId?: string // 产品型号标识modelId，暂时只有网关子设备使用
   guideImg?: string // 配网指引图
   guideDesc?: string // 配网指引

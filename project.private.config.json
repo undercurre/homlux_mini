@@ -12,6 +12,17 @@
     "miniprogram": {
       "list": [
         {
+          "name": "选择设备界面",
+          "pathName": "package-distribution/pages/choose-device/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
+        {
           "name": "成员管理",
           "pathName": "package-mine/pages/member-manage/index",
           "query": "",
@@ -289,13 +300,6 @@
         {
           "name": "配网指引页面",
           "pathName": "package-distribution-meiju/pages/addGuide/addGuide",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "选择设备界面",
-          "pathName": "package-distribution/choose-device/index",
           "query": "",
           "launchMode": "default",
           "scene": null
