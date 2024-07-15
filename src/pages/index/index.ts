@@ -112,7 +112,7 @@ ComponentWithStore({
     },
     _isFirstShow: true, // 是否首次加载
     isRefreshing: false, // 非首次加载，后台数据刷新中的标志
-    refreshCallback: () => {},
+    refreshCallback: null as null | (() => void),
     _from: '', // 页面进入来源
     _timeId: null as null | number,
     _timer: 0, // 记录加载时间点
@@ -178,7 +178,7 @@ ComponentWithStore({
     },
     isRefreshing(v) {
       console.log('isRefreshing', v)
-      if (!v) {
+      if (!v && this.data.refreshCallback) {
         hideLoading()
         this.data.refreshCallback()
       }
@@ -341,6 +341,7 @@ ComponentWithStore({
         wx.navigateTo({
           url: '/package-room-control/index/index',
         })
+        this.data.refreshCallback = null
       }
 
       // 如果在首页的房间或设备数据未加载完成，则先等待完成，并通过observers执行回调
