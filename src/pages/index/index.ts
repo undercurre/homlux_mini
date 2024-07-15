@@ -111,6 +111,8 @@ ComponentWithStore({
       draggable: true,
     },
     _isFirstShow: true, // 是否首次加载
+    isRefreshing: false, // 非首次加载，后台数据刷新中的标志
+    refreshCallback: () => {},
     _from: '', // 页面进入来源
     _timeId: null as null | number,
     _timer: 0, // 记录加载时间点
@@ -174,6 +176,13 @@ ComponentWithStore({
       }))
       this.setData({ roomCardList })
     },
+    isRefreshing(v) {
+      console.log('isRefreshing', v)
+      if (!v) {
+        hideLoading()
+        this.data.refreshCallback()
+      }
+    },
   },
 
   pageLifetimes: {
@@ -225,10 +234,12 @@ ComponentWithStore({
 
       // 首次onShow，有App.onLaunch初始化加载
       if (!this.data._isFirstShow || this.data._from === 'addDevice') {
+        this.setData({ isRefreshing: true })
         // updateHomeInfo 先加载后面的接口依赖获取当前家庭Id
         await homeStore.updateHomeInfo({ isInit: false }, { isDefaultErrorTips: false })
         await homeStore.updateRoomCardList()
         this.updateLightCount()
+        this.setData({ isRefreshing: false })
       }
 
       this.data._isFirstShow = false
@@ -319,6 +330,27 @@ ComponentWithStore({
       this.setData({
         'addMenu.isShow': !this.data.addMenu.isShow,
       })
+    },
+    /**
+     * 房间卡片点击的响应
+     * @param e 房间id
+     */
+    handleRoomCardTap(e: { detail: string }) {
+      this.data.refreshCallback = () => {
+        roomStore.setCurrentRoom(e.detail)
+        wx.navigateTo({
+          url: '/package-room-control/index/index',
+        })
+      }
+
+      // 如果在首页的房间或设备数据未加载完成，则先等待完成，并通过observers执行回调
+      if (this.data.isRefreshing) {
+        showLoading('数据刷新中...')
+      }
+      // 无刷新中标志，则直接执行
+      else {
+        this.data.refreshCallback()
+      }
     },
     async handleHomeTap(e: { detail: string }) {
       this.setData({

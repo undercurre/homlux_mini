@@ -89,6 +89,7 @@
         edit-mode="{{editMode}}"
         direction="vertical"
         movable-list="{{roomCardList}}"
+        bind:cardTap="handleRoomCardTap"
         bind:dragBegin="handleDragBegin"
         bind:dragEnd="handleSortSaving"
       >

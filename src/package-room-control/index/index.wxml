@@ -155,7 +155,6 @@
     >
       <mz-drag
         generic:item="device-card"
-        bind:cardTap="cardTap"
         cols="{{4}}"
         scroll-height="{{scrollViewHeight}}"
         item-height="{{itemHeight}}"
@@ -164,6 +163,7 @@
         edit-mode="{{editMode}}"
         movable-list="{{deviceCardList}}"
         list-timestamp="{{deviceTimestamp}}"
+        bind:cardTap="cardTap"
         bind:dragBegin="handleEditMode"
         bind:dragEnd="handleSortSaving"
       >
