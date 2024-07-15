@@ -120,7 +120,7 @@ Component({
       const { itemWidth, cols, movableList, itemHeight, itemHeightLarge } = this.data
       const oldList = JSON.parse(JSON.stringify(this.data.list)) as CardItem[]
       const newList = JSON.parse(JSON.stringify(movableList)) as CardItem[]
-      const isUpdateList = this.data.listTimestamp > this.data._lastTimestamp
+      const isUpdateList = this.data.listTimestamp > this.data._lastTimestamp || this.data.listTimestamp === 0
 
       console.log('[initList]', this.data._lastTimestamp, '->', this.data.listTimestamp, oldList, '->', newList)
 

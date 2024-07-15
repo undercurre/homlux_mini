@@ -66,16 +66,17 @@ ComponentWithComputed({
         })
       }, 1050)
     },
-    // handleCardTap() {
-    //   roomStore.setCurrentRoom(this.data.cardInfo.roomId)
-    //   wx.navigateTo({
-    //     url: '/package-room-control/index/index',
-    //   })
-    // },
+    handleCardTap() {
+      this.triggerEvent('cardTap', this.data.cardInfo.roomId)
+      // roomStore.setCurrentRoom(this.data.cardInfo.roomId)
+      // wx.navigateTo({
+      //   url: '/package-room-control/index/index',
+      // })
+    },
     handleTapWorklet() {
       'worklet'
-      runOnJS(this.triggerEvent.bind(this))('cardTap', this.data.cardInfo.roomId)
-      // runOnJS(this.handleCardTap.bind(this))()
+      // runOnJS(this.triggerEvent.bind(this))('cardTap', this.data.cardInfo.roomId)
+      runOnJS(this.handleCardTap.bind(this))()
     },
     handleSceneTapWorklet(e: WechatMiniprogram.CustomEvent) {
       'worklet'
