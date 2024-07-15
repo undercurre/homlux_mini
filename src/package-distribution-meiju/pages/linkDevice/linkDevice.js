@@ -74,7 +74,7 @@ Component({
     moduleType: '',
     addDeviceInfo: {},
     combinedDeviceInfo: [{ sn: '', a0: '' }],
-    time: 80,
+    time: 110,
     curStep: 0,
     currentRoomId: 0,
     isOnbleResp: true,
@@ -1188,7 +1188,7 @@ Component({
             if (this.apUtils.decode2body(hexMsg).type === '807a') {
               this.data.udpMsgBody = this.apUtils.decode2body(hexMsg).body
               let adData = this.apUtils.parseUdpBody(this.data.udpMsgBody)
-              console.log('获取udp返回', adData)
+              Logger.log('获取udp返回', adData)
               this.setIfSupportAds(adData)
               if (hexCharCodeToStr(adData.ssid).toLocaleLowerCase() === app.addDeviceInfo.ssid.toLocaleLowerCase()) {
                 //校验响应包
@@ -1651,7 +1651,7 @@ Component({
      * 构造AP配网指令
      */
     constrLinknetorder() {
-      Logger.debug('constrLinknetorder', 'app.addDeviceInfo', app.addDeviceInfo)
+      Logger.debug('linkDevice----constrLinknetorder', 'app.addDeviceInfo', app.addDeviceInfo)
       if (!this.data.bindWifiInfo) return
       let bindWifiInfo = this.data.bindWifiInfo
 
