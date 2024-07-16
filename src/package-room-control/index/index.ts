@@ -732,11 +732,13 @@ ComponentWithStore({
           })
 
         if (!this.data.deviceListInited) {
-          Logger.debug('▤ [updateDeviceList] 列表初始化')
+          Logger.setFilter('updateDeviceList')
+          Logger.debug('▤ 列表初始化')
         }
         // !! 整个列表刷新
         else {
-          Logger.debug('▤ [updateDeviceList] 列表重新加载')
+          Logger.setFilter('updateDeviceList')
+          Logger.debug('▤ 列表重新加载')
         }
 
         const oldListLength = this.data.deviceCardList.length
@@ -767,7 +769,11 @@ ComponentWithStore({
           })
         }
 
-        Logger.debug('▤ [updateDeviceList] 列表更新完成', this.data.deviceCardList)
+        Logger.setFilter('updateDeviceList')
+        Logger.debug(
+          '▤ 列表更新完成',
+          this.data.deviceCardList.map((d) => [d.orderNum, d.deviceName, d.deviceId.slice(-4)]),
+        )
       }
 
       // 模拟堵塞任务执行
@@ -1301,7 +1307,13 @@ ComponentWithStore({
     },
     // 定时更新设备列表，符合条件则递归执行
     autoRefreshDevice() {
-      Logger.log('[autoRefreshDevice]devices amount:', deviceStore.allRoomDeviceList.length)
+      Logger.setFilter('autoRefreshDevice')
+      Logger.log(
+        '[devices amount]',
+        deviceStore.allRoomDeviceList.length,
+        '[MAX_DEVICES_USING_WS]',
+        MAX_DEVICES_USING_WS,
+      )
 
       if (deviceStore.allRoomDeviceList.length < MAX_DEVICES_USING_WS) {
         if (this.data._timeId) {

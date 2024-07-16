@@ -15,7 +15,7 @@ export async function verifyNetwork() {
   // HACK 安卓和IOS返回不一致
   const newStatus =
     res.msg.indexOf('timeout') === -1 && res.msg.indexOf('time out') === -1 && res.msg.indexOf('UNREACHABLE') === -1
-  Logger.log('API联网状态验证:', res, isConnectStatus, '->', newStatus)
+  Logger.log('[API联网] 与云端连接状态：', isConnectStatus, '->', newStatus)
 
   if (newStatus !== isConnectStatus) {
     Logger.debug('[联网状态变化]', res)

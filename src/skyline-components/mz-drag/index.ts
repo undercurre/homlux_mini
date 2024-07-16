@@ -72,7 +72,7 @@ Component({
       })
     },
     'movableList,itemHeight,listTimestamp'() {
-      console.log('[drag observer]', this.data.movableList)
+      // console.log('[movableList observer]', this.data.movableList)
 
       // 列表变更触发
       this.initListThrottle()
