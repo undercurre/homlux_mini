@@ -421,9 +421,8 @@ const createBleProtocolV2 = (params: {
       dataArr.push(parseInt(payload.slice(i, i + 2), 16))
     }
   } else {
-    const channel = parseInt(payload.slice(0, 2))
-    const encrytpedData = cryptoUtils.enCodeData(payload.slice(2), addr, encryptIndex)
-    dataArr.push(channel, ...encrytpedData)
+    const encrytpedData = cryptoUtils.enCodeData(payload, addr, encryptIndex)
+    dataArr.push(...encrytpedData)
   }
   console.log('加密后数据序列', dataArr.map((item) => item.toString(16).padStart(2, '0')).join(','))
   return dataArr
@@ -571,7 +570,7 @@ const _handleBleResponse = (response: string) => {
  * 根据电控协议生成控制指令
  * cmdType 命令号。灯协议，固定为0x00，实际上未使用；浴霸协议，控制键值为0x00，参数设置0x01；故统一按浴霸规则发送
  */
-const _generalCmdString = (values: number[]) => {
+const _generalCmdString = (values: number[], isV2 = false) => {
   // console.log('[指令码]', ...values.map((item) => item.toString().padStart(2, '0')))
   const channel = 0x01 // 通道，固定值
   const version = 0x01 // 协议版本
@@ -582,7 +581,8 @@ const _generalCmdString = (values: number[]) => {
     sum += v
   }
   // 其余字节预留，默认0x00
-  for (let i = 3 + values.length; i <= 14; ++i) {
+  const maxLen = isV2 ? 12 : 14
+  for (let i = 3 + values.length; i <= maxLen; ++i) {
     data[i] = 0x00
   }
   data.push(sum % 256) // 校验码

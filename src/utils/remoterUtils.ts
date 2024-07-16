@@ -85,6 +85,7 @@ export async function bleAdvertising(
     ]
   } else {
     const serviceUuids = remoterProtocol.createIOSBleRequest({ payload, addr, comId, isFactory, isV2 })
+    console.log('lmn>>>ios uuids=', serviceUuids)
 
     advertiseRequest.serviceUuids = serviceUuids
   }
@@ -114,7 +115,7 @@ export async function bleAdvertisingEnd(
 ) {
   const { addr, INTERVAL = 600, isFactory, debug = false, isV2 = false } = params
   const comId = isV2 ? '0x06A8' : '0x4D11'
-  const payload = remoterProtocol.generalCmdString([CMD.END]) // 固定发这个指令
+  const payload = remoterProtocol.generalCmdString([CMD.END], isV2) // 固定发这个指令
   const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj & { payload: string }
 
   if (isAndroid()) {
