@@ -889,7 +889,7 @@ ComponentWithStore({
         deviceInfoByDeviceVoList: [],
       } as Device.OrderSaveData
 
-      const diffData = {} as IAnyObject
+      // const diffData = {} as IAnyObject
 
       for (const index in list) {
         const device = list[index]
@@ -915,7 +915,7 @@ ComponentWithStore({
             type: '1',
           })
         }
-        diffData[`deviceCardList[${index}].orderNum`] = device.orderNum
+        // diffData[`deviceCardList[${index}].orderNum`] = device.orderNum
       }
       if (deviceOrderData.deviceInfoByDeviceVoList.length) {
         await saveDeviceOrder(deviceOrderData)
@@ -923,8 +923,8 @@ ComponentWithStore({
       if (switchOrderData.deviceInfoByDeviceVoList.length) {
         await saveDeviceOrder(switchOrderData)
       }
-      // 统一视图列表变量
-      this.setData(diffData)
+      // DESERTED drag组件内部更新，不必外部触发视图列表变量变动
+      // this.setData(diffData)
       // console.log('[handleSortSaving]', diffData)
     },
 
