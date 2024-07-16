@@ -23,7 +23,7 @@ const _searchDeviceCallBack = (device: WechatMiniprogram.BlueToothDevice) => {
   if (!device.advertisData) return
   const advertisData = cryptoUtils.ab2hex(device.advertisData)
   const manufacturerId = advertisData.slice(0, 4)
-  const isV2 = manufacturerId === '06a8'
+  const isV2 = manufacturerId === 'a806'
   let deviceType
   if (isV2) {
     const advertisDataArr = Array.from(new Uint8Array(device.advertisData))
@@ -256,6 +256,7 @@ const _parsePayloadV2 = (payload: string, deviceType: string) => {
   // }
   if (deviceType === '26') {
     return {
+      isV2: true,
       BATH_LAMP: !!rxU16[0],
       BATH_BRIGHT: rxU16[1],
       BATH_NIGHT_LAMP: !!rxU16[2],
@@ -272,9 +273,10 @@ const _parsePayloadV2 = (payload: string, deviceType: string) => {
       BATH_TEMPERATURE_ENV: rxU16[5],
       BATH_SWING: !!(rxU16[6] & BIT_4),
       BATH_ANION: !!(rxU16[6] & BIT_6),
-      BATH_TVOC: !!(rxU16[6] & BIT_7),
+      BATH_SMELL: !!(rxU16[6] & BIT_7),
       BLOW_GEAR: rxU16[7] & 0x07,
       VENT_GEAR: rxU16[8] & 0x07,
+      SMELL_LEVEL: (rxU16[8] & 0xe0) >> 5,
       BATH_DELAY_CLOSE: rxU16[9]
     }
   }
@@ -390,13 +392,55 @@ const createBleProtocol = (params: {
   return dataArr
 }
 
+const createBleProtocolV2 = (params: {
+  payload: string
+  addr: string
+  isEncrypt?: boolean
+  encryptIndex?: number
+}) => {
+  const {
+    payload,
+    addr,
+    isEncrypt = DEFAULT_ENCRYPT,
+    encryptIndex = Math.round(Math.random() * 15),
+  } = params
+
+  const dataArr = [0x81, 0x0f]
+
+  const byte4 = 0x09 | (encryptIndex << 4)
+  dataArr.push(byte4)
+
+  // addr
+  for (let i = 0; i < addr.length; i += 2) {
+    dataArr.push(parseInt(addr.slice(i, i + 2), 16))
+  }
+
+  // 不加密则直接返回
+  if (!isEncrypt) {
+    for (let i = 0; i < payload.length; i += 2) {
+      dataArr.push(parseInt(payload.slice(i, i + 2), 16))
+    }
+  } else {
+    const channel = parseInt(payload.slice(0, 2))
+    const encrytpedData = cryptoUtils.enCodeData(payload.slice(2), addr, encryptIndex)
+    dataArr.push(channel, ...encrytpedData)
+  }
+  console.log('加密后数据序列', dataArr.map((item) => item.toString(16).padStart(2, '0')).join(','))
+  return dataArr
+}
+
 /**
  * 创建安卓广播数据
  * @returns
  */
-const _createAndroidBleRequest = (params: { payload: string; addr: string; isFactory?: boolean }): Uint8Array => {
-  const { payload, addr, isFactory } = params
-  const manufacturerData = createBleProtocol({ payload, addr, isFactory })
+const _createAndroidBleRequest = (params: { payload: string; addr: string; isFactory?: boolean; isV2?: boolean }): Uint8Array => {
+  const { payload, addr, isFactory, isV2 = false } = params
+  let manufacturerData: number[]
+  if (isV2) {
+    manufacturerData = createBleProtocolV2({ payload, addr })
+  } else {
+    manufacturerData = createBleProtocol({ payload, addr, isFactory })
+  }
   // console.log('[Android]manufacturerData', manufacturerData)
   const commandData = new Uint8Array(manufacturerData.length)
   commandData.set(manufacturerData)
@@ -415,10 +459,17 @@ const _createIOSBleRequest = (params: {
   addr: string
   comId: string
   isFactory?: boolean
+  isV2?: boolean
 }): string[] => {
-  const { payload, addr, comId, isFactory } = params
+  const { payload, addr, comId, isFactory, isV2 = false } = params
   const manufacturerId = comId.slice(2)
-  const manufacturerData = createBleProtocol({ payload, addr, isFactory })
+
+  let manufacturerData: number[]
+  if (isV2) {
+    manufacturerData = createBleProtocolV2({ payload, addr })
+  } else {
+    manufacturerData = createBleProtocol({ payload, addr, isFactory })
+  }
 
   const getArrayData = (_data: number[]) => {
     const arr: string[] = []
@@ -434,17 +485,20 @@ const _createIOSBleRequest = (params: {
   // 先使用随机索引，如无重复项则直接发送
   let arrayData = getArrayData(manufacturerData)
   let isRepeat = hasRepeat(arrayData)
-  console.log('[iOS]arrayData', arrayData, 'isRepeat', isRepeat)
   if (!isRepeat) {
     return arrayData
   }
 
   // 如果存在重复项，则重新依次生成，直到无重复项为止
   for (let i = 0; i < 16; ++i) {
-    const mData = createBleProtocol({ payload, addr, isFactory, encryptIndex: i })
+    let mData: number[]
+    if (isV2) {
+      mData = createBleProtocolV2({ payload, addr, encryptIndex: i })
+    } else {
+      mData = createBleProtocol({ payload, addr, isFactory, encryptIndex: i })
+    }
     arrayData = getArrayData(mData)
     isRepeat = hasRepeat(arrayData)
-    console.log('[iOS]arrayData', arrayData, 'isRepeat', isRepeat, i)
     if (!isRepeat) {
       return arrayData
     }
@@ -531,7 +585,6 @@ const _generalCmdString = (values: number[]) => {
   for (let i = 3 + values.length; i <= 14; ++i) {
     data[i] = 0x00
   }
-
   data.push(sum % 256) // 校验码
 
   return data.map((byte) => byte.toString(16).padStart(2, '0')).join('')

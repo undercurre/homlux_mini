@@ -120,12 +120,6 @@
     <text class="text-hex-b6b7bb text-28rpx">暂无设备</text>
   </view>
 
-  <!-- <movable-area style="height: {{accumulatedY}}px; width: 702rpx;">
-    <movable-view out-of-bounds wx:for="{{remoterViewList}}" wx:key="deviceId" data-index="{{index}}" data-rid="{{item.roomId}}" class="w-702rpx h-216rpx" y="{{roomPos[item.roomId].y}}" direction="vertical" friction="{{999}}" damping="{{100}}" bind:longpress="movableLongpress" bind:touchend="movableTouchEnd" bind:touchmove="movableTouchMove" class="{{ roomPos[item.roomId].index === placeholder.index ? 'z-100' : (isMoving ? 'opacity-50' : 'opacity-100 z-1') }}" disabled="{{!isMoving}}">
-      <card room-info="{{item}}" data-room="{{item.roomId}}" isMoving="{{isMoving}}" bind:sceneSelect="handleSceneSelect"></card>
-    </movable-view>
-  </movable-area> -->
-
   <view
     class="drag-wrap"
     style="height: {{remoterViewList.length * 216 + 120}}rpx;"

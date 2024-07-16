@@ -269,7 +269,7 @@ ComponentWithComputed({
       })
     },
     getFunSupport() {
-      if (this.data.devFunDes) {
+      if (this.data.devFunDes.length > 0) {
         const funArr = []
         const funStr = this.data.devFunDes
         for (let i = 0; i < funStr.length; i += 2) {
@@ -337,6 +337,7 @@ ComponentWithComputed({
         payload,
         isFactory: this.data.isFactoryMode,
         debug: false,
+        isV2: this.data.devFunDes.length > 0
       })
     },
     async startConnectBLE() {
@@ -380,8 +381,8 @@ ComponentWithComputed({
     },
     receiveBluetoothData(data: string) {
       let status = {}
-      if (this.data.devFunDes) {
-        status = remoterProtocol.parsePayloadV2(data, this.data.devType)
+      if (this.data.devFunDes.length > 0) {
+        status = remoterProtocol.parsePayloadV2(data.slice(this.data.devFunDes.length), this.data.devType)
       } else {
         status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
       }
@@ -467,8 +468,9 @@ ComponentWithComputed({
             btns[i].isOn = status.BATH_ANION
           }
         } else if (btns[i].key === 'SMELL') {
-          if (status.BATH_TVOC != undefined) {
-            btns[i].level = status.BATH_ANION ? 1 : 0
+          if (status.BATH_SMELL != undefined) {
+            const lvl = status.SMELL_LEVEL || 0
+            btns[i].level = status.BATH_SMELL ? lvl : 0
           }
           const levelPopup = this.data.levelPopupOption
           levelPopup.forEach(item => {
@@ -689,7 +691,7 @@ ComponentWithComputed({
       this.setData({
         levelPopupOption: option
       })
-      this.sendBluetoothCMD([CMD['BATH_TVOC'], val])
+      this.sendBluetoothCMD([CMD['BATH_SMELL'], val])
     },
     closePopup() {
       this.setData({

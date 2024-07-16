@@ -246,15 +246,14 @@ ComponentWithComputed({
       }
 
       const now = new Date().getTime()
-      console.log('now - this.data._timer', now - this.data._timer)
       if (now - this.data._timer < FREQUENCY_TIME) {
         console.log('丢弃频繁操作')
         return
       }
       this.data._timer = now
 
-      const { addr, actions, defaultAction } = e.detail
-      // const addr = '18392c0c5566' // 模拟遥控器mac
+      const { addr, actions, defaultAction, deviceModel, isV2 } = e.detail
+      let isV2Dev = isV2 !== undefined ? isV2 : deviceModel.length === 1
 
       // HACK 特殊的照明按钮反转处理
       const { key } = actions[defaultAction]
@@ -273,6 +272,7 @@ ComponentWithComputed({
       await bleAdvertising(this.data._bleServer, {
         addr,
         payload,
+        isV2: isV2Dev
       })
     },
 

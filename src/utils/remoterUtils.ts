@@ -60,20 +60,22 @@ export async function bleAdvertising(
     autoEnd?: boolean
     INTERVAL?: number
     isFactory?: boolean
-    debug?: boolean
+    debug?: boolean,
+    isV2?: boolean
   },
 ) {
-  const { addr, payload, comId = '0x4D11', INTERVAL = 600, autoEnd = true, isFactory, debug = false } = params
+  const { addr, payload, INTERVAL = 600, autoEnd = true, isFactory, debug = false, isV2 = false } = params
+  const comId = isV2 ? '0x06A8' : '0x4D11'
   if (!server) {
     Logger.log('[server is Not existed]')
     return
   }
+  console.log('lmn>>>广播厂商id=' + comId)
 
   const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj & { payload: string }
 
   if (isAndroid()) {
-    const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr, isFactory })
-    Logger.log('广播数据准备', comId, '时长', isAndroid() ? INTERVAL * 2 : INTERVAL) // , cryptoUtils.ab2hex(manufacturerSpecificData).slice(0)
+    const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr, isFactory, isV2 })
 
     advertiseRequest.manufacturerData = [
       {
@@ -82,8 +84,7 @@ export async function bleAdvertising(
       },
     ]
   } else {
-    const serviceUuids = remoterProtocol.createIOSBleRequest({ payload, addr, comId, isFactory })
-    Logger.log('开始广播')
+    const serviceUuids = remoterProtocol.createIOSBleRequest({ payload, addr, comId, isFactory, isV2 })
 
     advertiseRequest.serviceUuids = serviceUuids
   }
@@ -97,7 +98,7 @@ export async function bleAdvertising(
   // 自动终止控制指令广播，并发终止指令广播
   if (autoEnd) {
     await stopAdvertising(server, '指令广播自动终止')
-    await bleAdvertisingEnd(server, { addr, isFactory, debug })
+    await bleAdvertisingEnd(server, { addr, isFactory, debug, isV2 })
   }
 }
 
@@ -109,16 +110,15 @@ export async function bleAdvertising(
  */
 export async function bleAdvertisingEnd(
   server: WechatMiniprogram.BLEPeripheralServer,
-  params: { addr: string; comId?: string; INTERVAL?: number; isFactory?: boolean; debug?: boolean },
+  params: { addr: string; comId?: string; INTERVAL?: number; isFactory?: boolean; debug?: boolean, isV2?: boolean },
 ) {
-  const { addr, comId = '0x4D11', INTERVAL = 600, isFactory, debug = false } = params
+  const { addr, INTERVAL = 600, isFactory, debug = false, isV2 = false } = params
+  const comId = isV2 ? '0x06A8' : '0x4D11'
   const payload = remoterProtocol.generalCmdString([CMD.END]) // 固定发这个指令
   const advertiseRequest = {} as WechatMiniprogram.AdvertiseReqObj & { payload: string }
 
-  Logger.log('广播数据准备[0x00]')
-
   if (isAndroid()) {
-    const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr, isFactory })
+    const manufacturerSpecificData = remoterProtocol.createAndroidBleRequest({ payload, addr, isFactory, isV2 })
 
     advertiseRequest.manufacturerData = [
       {
@@ -127,7 +127,7 @@ export async function bleAdvertisingEnd(
       },
     ]
   } else {
-    const serviceUuids = remoterProtocol.createIOSBleRequest({ payload, addr, comId, isFactory })
+    const serviceUuids = remoterProtocol.createIOSBleRequest({ payload, addr, comId, isFactory, isV2 })
 
     advertiseRequest.serviceUuids = serviceUuids
   }
@@ -163,12 +163,12 @@ export async function startAdvertising(
   option: { vibrate?: boolean; debug?: boolean } = { vibrate: true, debug: false },
 ) {
   if (isAdvertising) {
-    Logger.log('[Advertisng aborted by last one]')
+    console.log('[Advertisng aborted by last one]')
     return
   } else if (isAbortableAdvertising) {
     await stopAdvertising(server, '（终止进行中的广播）')
     await delay(0)
-    Logger.log('[Advertisng aborted by A new one]')
+    console.log('[Advertisng aborted by A new one]')
   }
 
   return new Promise((resolve, reject) => {
@@ -181,14 +181,14 @@ export async function startAdvertising(
       powerLevel: 'high',
       advertiseRequest,
       success(res) {
-        Logger.log('广播中...', advertiseRequest.payload)
+        console.log('广播中payload=', advertiseRequest.payload)
         if (option.debug && advertiseRequest.payload) {
           Toast(advertiseRequest.payload)
         }
         resolve(res)
       },
       fail(err) {
-        Logger.error(err)
+        console.error(err)
         reject(err)
       },
     })
@@ -204,11 +204,11 @@ export function stopAdvertising(server: WechatMiniprogram.BLEPeripheralServer, l
   return new Promise((resolve, reject) => {
     server.stopAdvertising({
       success(res) {
-        Logger.log('停止广播成功', logs ?? '')
+        console.log('停止广播成功', logs ?? '')
         resolve(res)
       },
       fail(err) {
-        Logger.error(err)
+        console.error(err)
         reject(err)
       },
       complete() {

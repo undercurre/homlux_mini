@@ -154,7 +154,8 @@ export const remoterStore = observable({
     const list = [...this.remoterList]
     return list
       .map((device) => {
-        const { deviceModel, deviceType, addr, isV2 } = device
+        const { deviceModel, deviceType, addr } = device
+        const isV2 = deviceModel.length === 1
         let config
         if (isV2) {
           config = deviceConfigV2[deviceType]
@@ -184,10 +185,11 @@ export const remoterStore = observable({
       return {} as Remoter.DeviceRx
     }
     const device = this.remoterMap[this.curAddr] || {}
-    const { deviceModel, deviceType, isV2 } = device
+    const { deviceModel, deviceType } = device
     if (!deviceModel || !deviceType) {
       return {} as Remoter.DeviceRx
     }
+    const isV2 = deviceModel.length === 1
     let config
     if (isV2) {
       config = deviceConfigV2[deviceType] || {}
@@ -265,8 +267,9 @@ export const remoterStore = observable({
 
     const result = [] as Remoter.DeviceRx[]
     for (let i = 0; i < this.remoterList.length; i++) {
-      const { deviceModel, deviceType, addr, defaultAction, isV2 } = this.remoterList[i]
+      const { deviceModel, deviceType, addr, defaultAction } = this.remoterList[i]
       let config
+      const isV2 = deviceModel.length === 1
       if (isV2) {
         config = deviceConfigV2[deviceType] || null
       } else {
