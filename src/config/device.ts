@@ -94,7 +94,13 @@ export const PRODUCT_ID = {
   zhonghong_air: 'zhonghong.air.001', // 485新风
   zhonghong_cac: 'zhonghong.cac.002', // 485空调
   knob: 'midea.knob.001.003', // 一路旋钮面板
+  fan_basic: 'M0200005',
+  fan_smart: '79010863',
+  fan_smart_2: 'M0200008',
 }
+
+// 风扇灯pid集合
+export const FAN_PID: readonly string[] = [PRODUCT_ID.fan_basic, PRODUCT_ID.fan_smart, PRODUCT_ID.fan_smart_2]
 
 // 旋钮开关pid
 export const KNOB_PID: readonly string[] = [PRODUCT_ID.knob]

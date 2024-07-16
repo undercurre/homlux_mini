@@ -33,6 +33,7 @@ import {
   NO_UPDATE_INTERVAL,
   SCREEN_PID,
   ZHONGHONG_PID,
+  FAN_PID,
 } from '../../config/index'
 import homOs from 'js-homos'
 
@@ -145,6 +146,7 @@ ComponentWithStore({
     toolboxContentHeight: 60, // 工具栏内容区域高度
     scrollViewHeight: '0px', // 可滚动区域高度
     isShowCommonControl: false, // 是否打开控制面板
+    isFan: false, // 当前选中项是否风扇灯
   },
   observers: {
     currentRoom(currentRoom) {
@@ -199,14 +201,30 @@ ComponentWithStore({
       })
     },
     controlType(controlType) {
+      const { checkedList } = this.data
+
+      if (!controlType || !checkedList?.length) {
+        this.setData({
+          isShowCommonControl: false,
+          isFan: false,
+        })
+        return
+      }
+
+      const { deviceMap } = deviceStore
+      const device = deviceMap[checkedList[0]]
+      console.log('controlType', controlType, device, checkedList)
+      const isFan = FAN_PID.includes(device.productId)
+
+      const isShowCommonControl =
+        (controlType === PRO_TYPE.light && !isFan) ||
+        controlType === PRO_TYPE.switch ||
+        controlType === PRO_TYPE.gateway ||
+        controlType === PRO_TYPE.curtain ||
+        controlType === PRO_TYPE.sensor
       this.setData({
-        isShowCommonControl:
-          controlType &&
-          (controlType === PRO_TYPE.light ||
-            controlType === PRO_TYPE.switch ||
-            controlType === PRO_TYPE.gateway ||
-            controlType === PRO_TYPE.curtain ||
-            controlType === PRO_TYPE.sensor),
+        isShowCommonControl,
+        isFan,
       })
     },
     sceneList(sceneList) {

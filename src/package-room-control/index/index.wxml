@@ -235,6 +235,15 @@
   bind:close="cancelCheckAndPops"
 ></heat-control-popup>
 
+<fan-light-popup
+  show="{{isFan && controlType === '0x13'}}"
+  deviceInfo="{{checkedDeviceInfo}}"
+  checkedList="{{checkedList}}"
+  bind:close="cancelCheckAndPops"
+  bind:updateDevice="updateQueue"
+  bind:lightStatusChange="refreshLightStatus"
+></fan-light-popup>
+
 <device-control-popup
   show="{{isShowCommonControl}}"
   deviceInfo="{{checkedDeviceInfo}}"
