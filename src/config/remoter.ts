@@ -1587,24 +1587,24 @@ export const deviceConfigV2: Record<string, Remoter.ConfigItem> = {
       },
     ],
   },
-  // '40': {
-  //   deviceName: '凉霸',
-  //   devicePic: '/assets/img/remoter/bathHeater.png',
-  //   actions: [
-  //     {
-  //       key: 'BATH_LAMP',
-  //       name: '照明',
-  //     },
-  //     {
-  //       key: 'BATH_ALL_OFF',
-  //       name: '待机',
-  //     },
-  //     {
-  //       key: 'BATH_VENTILATE',
-  //       name: '换气',
-  //     },
-  //   ],
-  // },
+  '40': {
+    deviceName: '凉霸',
+    devicePic: '/assets/img/remoter/bathHeater.png',
+    actions: [
+      {
+        key: 'BATH_LAMP',
+        name: '照明',
+      },
+      {
+        key: 'BATH_ALL_OFF',
+        name: '待机',
+      },
+      {
+        key: 'BATH_VENTILATE',
+        name: '换气',
+      },
+    ],
+  },
   // '17': {
   //   deviceName: '晾衣机',
   //   devicePic: '/assets/img/remoter/clothes.png',

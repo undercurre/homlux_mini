@@ -254,7 +254,7 @@ const _parsePayloadV2 = (payload: string, deviceType: string) => {
   //     SPEED: rxU16[10] // 风扇档位
   //   }
   // }
-  if (deviceType === '26') {
+  if (deviceType === '26' || deviceType === '40') {
     return {
       isV2: true,
       BATH_LAMP: !!rxU16[0],
