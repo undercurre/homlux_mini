@@ -132,9 +132,15 @@ Component({
     },
 
     refocus() {
-      this.setData({
-        focus: true,
-      })
+      // IOS必须先置为false再变true才生效
+      // @ts-ignore
+      this.data.focus = false
+
+      setTimeout(() => {
+        this.setData({
+          focus: true,
+        })
+      }, 600)
     },
 
     onClear() {
