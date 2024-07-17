@@ -2,6 +2,8 @@ import { runOnJS, shared, timing, GestureState } from '../../skyline-components/
 import { throttle } from '../../utils/index'
 import { storage } from '../../utils/storage'
 
+const CURTAIN_WIDTH = 252 // 窗帘有效拖动宽度（rpx）
+
 Component({
   options: {
     pureDataPattern: /^_/,
@@ -30,18 +32,16 @@ Component({
    * 组件的初始数据
    */
   data: {
-    _windowWidth: wx.getSystemInfoSync().windowWidth,
+    _WINDOW_WIDTH: wx.getSystemInfoSync().windowWidth,
     _isHandling: { value: false },
     _translateX: { value: 0 },
-    _divideRpxByPx: storage.get('divideRpxByPx'),
-    _isTouchRight: { value: false },
-    _maxTranslateX: 280,
+    _maxTranslateX: CURTAIN_WIDTH / 2,
   },
   lifetimes: {
     attached() {
-      this.data._isTouchRight = shared(false)
+      const divideRpxByPx = storage.get('divideRpxByPx') as number
+      this.data._maxTranslateX = CURTAIN_WIDTH * divideRpxByPx
       this.data._isHandling = shared(false)
-      this.data._maxTranslateX = 252 * this.data._divideRpxByPx
       this.data._translateX = shared((this.data.value / 100) * this.data._maxTranslateX)
 
       this.applyAnimatedStyle('#right-curtain', () => {
@@ -64,13 +64,12 @@ Component({
   methods: {
     drag(evt: { state: number; absoluteX: number; deltaX: number }) {
       'worklet'
-      const { state, absoluteX, deltaX } = evt
+      const { state, absoluteX } = evt
       // console.log('[drag]', state, absoluteX, deltaX)
 
       switch (state) {
         case GestureState.BEGIN:
           this.data._isHandling.value = true
-          this.data._isTouchRight.value = absoluteX > this.data._windowWidth / 2
           break
 
         case GestureState.END:
@@ -78,11 +77,10 @@ Component({
           runOnJS(this.dragEnd.bind(this))()
           break
 
+        case GestureState.POSSIBLE: // HACK 代替点击事件
         case GestureState.ACTIVE: {
-          const nextTranslateX = this.data._isTouchRight.value
-            ? this.data._translateX.value + deltaX
-            : this.data._translateX.value - deltaX
-          const posX = Math.min(this.data._maxTranslateX, Math.max(0, nextTranslateX))
+          const distance = Math.abs(absoluteX - this.data._WINDOW_WIDTH / 2)
+          const posX = Math.min(this.data._maxTranslateX, Math.max(0, distance))
 
           this.data._translateX.value = posX
 
