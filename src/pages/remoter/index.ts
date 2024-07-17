@@ -212,6 +212,8 @@ ComponentWithComputed({
           let page = null
           if (deviceType === '26') {
             page = 'bath'
+          } else if (deviceType === '40') {
+            page = 'cool-bath'
           }
           if (!page) return
           wx.navigateTo({

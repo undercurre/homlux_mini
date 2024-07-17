@@ -338,7 +338,7 @@ ComponentWithComputed({
         payload,
         isFactory: this.data.isFactoryMode,
         debug: false,
-        isV2: this.data.devFunDes.length > 0
+        isV2,
       })
     },
     async startConnectBLE() {
