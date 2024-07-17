@@ -331,7 +331,8 @@ ComponentWithComputed({
         this.data._bleServer = await createBleServer()
       }
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
-      const payload = remoterProtocol.generalCmdString(paramsArr)
+      const isV2 = this.data.devFunDes.length > 0
+      const payload = remoterProtocol.generalCmdString(paramsArr, isV2)
       bleAdvertising(this.data._bleServer, {
         addr,
         payload,

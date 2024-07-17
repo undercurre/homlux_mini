@@ -261,7 +261,7 @@ ComponentWithComputed({
         this.data._lastPowerKey = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
         // this.data._lastPowerKey = key
       }
-      const payload = remoterProtocol.generalCmdString([CMD[key]])
+      const payload = remoterProtocol.generalCmdString([CMD[key]], isV2Dev)
 
       // 建立BLE外围设备服务端
       if (!this.data._bleServer) {
