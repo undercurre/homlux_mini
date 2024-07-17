@@ -581,7 +581,7 @@ const _generalCmdString = (values: number[], isV2 = false) => {
     sum += v
   }
   // 其余字节预留，默认0x00
-  const maxLen = isV2 ? 12 : 14
+  const maxLen = isV2 ? 13 : 14
   for (let i = 3 + values.length; i <= maxLen; ++i) {
     data[i] = 0x00
   }
