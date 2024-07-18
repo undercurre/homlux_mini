@@ -461,7 +461,7 @@ ComponentWithComputed({
             functionDes: item!.functionDes
           })
         } else {
-          console.warn(`lmn>>>设备(品类=${deviceType}/mac=${item!.addr}/信号=${item!.RSSI})信号小于${cusRSSI}被排除`)
+          if (!isSavedDevice) console.warn(`lmn>>>设备(品类=${deviceType}/mac=${item!.addr}/信号=${item!.RSSI})信号小于${cusRSSI}被排除`)
         }
       }
 
