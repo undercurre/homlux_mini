@@ -62,18 +62,52 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    drag(evt: { state: number; absoluteX: number; deltaX: number }) {
+    // DESERTED 直接使用拖动手势即可，效果比缩放手势更流畅
+    // handleScale(e: { state: number; horizontalScale: number }) {
+    //   'worklet'
+    //   const { state, horizontalScale } = e
+    //   // console.log('[handleScale]', state, horizontalScale)
+
+    //   switch (state) {
+    //     case GestureState.BEGIN:
+    //       this.data._isHandling.value = true
+    //       console.log('[handleScale BEGIN]')
+
+    //       break
+
+    //     case GestureState.CANCELLED:
+    //     case GestureState.END:
+    //       console.log('[handleScale End]')
+    //       break
+
+    //     case GestureState.POSSIBLE:
+    //     case GestureState.ACTIVE: {
+    //       runOnJS(this.scaleThrottle.bind(this))(horizontalScale)
+    //     }
+    //   }
+    // },
+    // scaleThrottle: throttle(function (this: IAnyObject, scale: number) {
+    //   console.log('[handleScale Throttle]', scale)
+
+    //   const ratio = 0.5 // 降速倍率，用于减缓缩放速度
+    //   const fixedScale = (scale - 1) * ratio + 1
+    //   const distance = Math.abs(this.data._translateX.value * fixedScale)
+    //   const posX = Math.min(this.data._maxTranslateX, distance)
+    //   this.data._translateX.value = posX
+    // }, 150),
+
+    handleDrag(e: { state: number; absoluteX: number; deltaX: number }) {
       'worklet'
-      const { state, absoluteX } = evt
-      // console.log('[drag]', state, absoluteX, deltaX)
+      const { state, absoluteX } = e
+      // console.log('[handleDrag]', state, absoluteX, deltaX)
 
       switch (state) {
         case GestureState.BEGIN:
           this.data._isHandling.value = true
           break
 
+        case GestureState.CANCELLED: // HACK 代替点击离开事件
         case GestureState.END:
-        case GestureState.CANCELLED:
           runOnJS(this.dragEnd.bind(this))()
           break
 
@@ -88,21 +122,15 @@ Component({
         }
       }
     },
-    valueChange(posX: number) {
+    valueChangeThrottle: throttle(function (this: IAnyObject, posX: number) {
       const value = this.xToV(posX)
       this.triggerEvent('change', value)
       this.setData({
         value,
       })
-    },
-    valueChangeThrottle: throttle(function (this: IAnyObject, posX: number) {
-      this.valueChange(posX)
     }, 300),
     dragEnd() {
       const value = this.xToV(this.data._translateX.value)
-      this.setData({
-        value,
-      })
       this.triggerEvent('slideEnd', value)
       //释放标志，允许通过外部value重新计算slider-bar宽度
       setTimeout(() => {
