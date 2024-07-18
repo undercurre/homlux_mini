@@ -582,8 +582,6 @@ ComponentWithComputed({
         )
 
         this.data._zigbeeTaskQueue.add(zigbeeTaskList)
-
-        Logger.log('初始化zigbee任务队列:end')
       } catch (err) {
         Logger.error('beginAddBleDevice-err', err)
       }
