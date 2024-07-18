@@ -15,6 +15,8 @@ import {
   verifyNetwork,
   Logger,
   strUtil,
+  showLoading,
+  hideLoading,
 } from '../../utils/index'
 import {
   maxColorTemp,
@@ -255,7 +257,9 @@ ComponentWithStore({
       }
       // 如果从配网页面返回
       else {
-        this.reloadDeviceList()
+        showLoading()
+        await this.reloadDeviceList()
+        hideLoading()
       }
 
       this.data._firstShow = false

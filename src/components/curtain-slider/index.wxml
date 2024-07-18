@@ -1,7 +1,7 @@
 <!-- 窗帘控制 -->
 <view class="w-full h-full relative flex flex-1 justify-center items-center bg-white">
   <text class="text-36rpx text-hex-1e2c46 font-medium absolute z-100 top-46rpx">{{value}}%</text>
-  <horizontal-drag-gesture-handler worklet:ongesture="drag">
+  <horizontal-drag-gesture-handler worklet:ongesture="handleDrag">
     <view
       id="curtain"
       class="w-560rpx h-332rpx flex flex-row curtain-container overflow-hidden rounded-24rpx"

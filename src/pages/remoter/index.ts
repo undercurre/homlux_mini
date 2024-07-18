@@ -208,10 +208,13 @@ ComponentWithComputed({
       // 跳转到控制页
       else {
         this.data._holdBleScan = true
-        if (isV2) {
+        const isV2Dev = isV2 !== undefined ? isV2 : deviceModel.length === 1
+        if (isV2Dev) {
           let page = null
           if (deviceType === '26') {
             page = 'bath'
+          } else if (deviceType === '40') {
+            page = 'cool-bath'
           }
           if (!page) return
           wx.navigateTo({
@@ -253,7 +256,7 @@ ComponentWithComputed({
       this.data._timer = now
 
       const { addr, actions, defaultAction, deviceModel, isV2 } = e.detail
-      let isV2Dev = isV2 !== undefined ? isV2 : deviceModel.length === 1
+      const isV2Dev = isV2 !== undefined ? isV2 : deviceModel.length === 1
 
       // HACK 特殊的照明按钮反转处理
       const { key } = actions[defaultAction]
@@ -457,6 +460,8 @@ ComponentWithComputed({
             isV2: item!.isV2,
             functionDes: item!.functionDes
           })
+        } else {
+          if (!isSavedDevice) console.warn(`lmn>>>设备(品类=${deviceType}/mac=${item!.addr}/信号=${item!.RSSI})信号小于${cusRSSI}被排除`)
         }
       }
 

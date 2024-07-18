@@ -163,7 +163,6 @@
         <curtain-slider
           class="mt-56rpx"
           value="{{curtainInfo.position}}"
-          catch:change="changeCurtain"
           catch:slideEnd="changeCurtain"
         ></curtain-slider>
         <view class="flex flex-row justify-evenly rounded-24rpx bg-hex-eef2f7 w-686rpx h-80rpx items-center mt-56rpx">
