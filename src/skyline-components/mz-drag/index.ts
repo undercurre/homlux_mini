@@ -71,8 +71,8 @@ Component({
         useAccumulatedY,
       })
     },
-    'movableList,itemHeight,listTimestamp'() {
-      // console.log('[movableList observer]', this.data.movableList)
+    'movableList,itemHeight'() {
+      // Logger.trace('[movableList observer]', this.data.movableList)
 
       // 列表变更触发
       this.initListThrottle()
@@ -122,7 +122,7 @@ Component({
       const newList = JSON.parse(JSON.stringify(movableList)) as CardItem[]
       const isUpdateList = this.data.listTimestamp > this.data._lastTimestamp || this.data.listTimestamp === 0
 
-      console.log('[initList]', this.data._lastTimestamp, '->', this.data.listTimestamp, oldList, '->', newList)
+      Logger.trace('[initList]', this.data._lastTimestamp, '->', this.data.listTimestamp, oldList, '->', newList)
 
       const diffData = {} as IAnyObject
       const list = []
@@ -160,7 +160,7 @@ Component({
         // 过滤已删除、已添加的内容
         if (newItem.deleted || newItem.added) continue
 
-        orderNum = orderNum + 1
+        orderNum = isUpdateList ? newItem.orderNum : orderNum + 1
 
         list.push({
           ...newItem,
@@ -208,7 +208,7 @@ Component({
 
       this.data._lastTimestamp = this.data.listTimestamp
 
-      Logger.trace('[initList]', diffData.list)
+      // Logger.trace('[initList result]', diffData.list)
     },
     /**
      * 根据坐标位置计算索引
