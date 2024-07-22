@@ -40,7 +40,7 @@
         wx:if="{{deviceInfo.proType==='0x13'}}"
         class="flex flex-col w-750rpx mb-22rpx"
       >
-        <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{lightInfoInner.brightness}}%</text>
+        <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{lightInfoInner.brightness ? lightInfoInner.brightness + '%' : '--'}}</text>
         <view class="px-48rpx pt-28rpx">
           <mz-slider
             catch:tap="sliderTap"
