@@ -27,9 +27,10 @@ ComponentWithComputed({
         }
 
         // 响应外部设值，改变滑动柄位置
-        const { isBtnInset, barWidth, min } = this.data
+        const { isBtnInset, barWidth, min, max } = this.data
         const availableBarWidth = isBtnInset ? barWidth - this.data.btnWidthPx : barWidth
-        const v2w = Math.round((availableBarWidth / this.data.valueSpan) * (v - min))
+        const delta = Math.min(max, Math.max(0, v - min))
+        const v2w = Math.round((availableBarWidth / this.data.valueSpan) * delta)
         const activedWidth = isBtnInset ? v2w + this.data.btnWidthPx : v2w
         const innerVal = this.widthToValue(activedWidth)
         console.log('[observer] value', this.data.innerVal, '->', v, {
