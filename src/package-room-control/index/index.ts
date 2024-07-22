@@ -35,6 +35,7 @@ import {
   NO_UPDATE_INTERVAL,
   SCREEN_PID,
   ZHONGHONG_PID,
+  NO_SYNC_DEVICE_STATUS_IN_ROOM,
 } from '../../config/index'
 import homOs from 'js-homos'
 
@@ -147,6 +148,8 @@ ComponentWithStore({
     toolboxContentHeight: 60, // 工具栏内容区域高度
     scrollViewHeight: '0px', // 可滚动区域高度
     isShowCommonControl: false, // 是否打开控制面板
+    _canSyncCloudData: true, // 是否响应云端变更
+    _controlTimer: 0,
   },
   observers: {
     currentRoom(currentRoom) {
@@ -329,7 +332,9 @@ ComponentWithStore({
 
           this.updateQueue(device)
 
-          this.refreshLightStatusThrottle()
+          if (this.data._canSyncCloudData) {
+            this.refreshLightStatusThrottle()
+          }
 
           return
         }
@@ -1267,17 +1272,30 @@ ComponentWithStore({
         url: `/package-distribution/pages/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
     },
+    // 设置后N秒内屏蔽上报
+    disableCloudSync() {
+      if (this.data._controlTimer) {
+        clearTimeout(this.data._controlTimer)
+        this.data._controlTimer = 0
+      }
+      this.data._canSyncCloudData = false
+      this.data._controlTimer = setTimeout(() => {
+        this.data._canSyncCloudData = true
+      }, NO_SYNC_DEVICE_STATUS_IN_ROOM)
+    },
     handleLevelEnd(e: { detail: number }) {
       this.setData({
         'roomLight.brightness': e.detail,
       })
       this.lightSendDeviceControl('brightness')
+      this.disableCloudSync()
     },
     handleColorTempEnd(e: { detail: number }) {
       this.setData({
         'roomLight.colorTemperature': e.detail,
       })
       this.lightSendDeviceControl('colorTemperature')
+      this.disableCloudSync()
     },
     handleRoomLightTouch() {
       if (!this.data.hasRoomLightOn) {
