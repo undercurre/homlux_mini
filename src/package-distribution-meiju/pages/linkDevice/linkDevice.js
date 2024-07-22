@@ -280,6 +280,7 @@ Component({
                 })
                 this.data.autoCloseBleConnection = true
                 let bindRes = await this.bindDeviceToHome()
+
                 console.log('绑定设备至默认家庭房间', resp)
 
                 let plainSn = addDeviceSDK.getDeviceSn(bindRes.data.data.sn)
@@ -768,7 +769,7 @@ Component({
         //配网指令上行
         let code = parseInt(decodeMsg.body, 16)
         if (code == 0) {
-          Logger.log('模组响应收到wifi信息')
+          Logger.debug('模组响应收到wifi信息')
           this.data.deviceRecWifiInfo = true
           this.finishTcp()
         } else {
@@ -1382,6 +1383,7 @@ Component({
               //发送完wifi信息就开始查询云
               if (!this.data.checkExists) {
                 this.data.checkExists = true
+                console.log('发送完wifi信息就开始查询云')
                 this.sendApWifiAfter()
               }
             }
@@ -1711,6 +1713,7 @@ Component({
      * @param {Boolean} forceValidRandomCode 是否强制校验随机数
      */
     async sendApWifiAfter(forceValidRandomCode = true) {
+      Logger.debug('sendApWifiAfter')
       let self = this
       let randomCode = this.data.randomCode
       let wifiInfo = this.data.bindWifiInfo
@@ -2074,6 +2077,8 @@ Component({
       // }
 
       const res = await bindMideaDevice({
+        applianceType: '0x' + app.addDeviceInfo.type,
+        sn8: app.addDeviceInfo.sn8,
         deviceId: this.data.deviceId,
         houseId: homeStore.currentHomeId,
         roomId: roomStore.currentRoomId,

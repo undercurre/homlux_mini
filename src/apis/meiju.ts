@@ -167,7 +167,8 @@ export async function checkApExists(params: {
  * @param params.applianceType 【品类码】 对应Android/iOS AP配网返回的参数deviceTpye【设备品类】
  */
 export async function bindMideaDevice(params: {
-  applianceType?: string // 【品类码】 对应Android/iOS AP配网返回的参数deviceTpye【设备品类】
+  applianceType: string // 【品类码】 对应Android/iOS AP配网返回的参数deviceTpye【设备品类】
+  sn8: string // 设备sn8
   bindType?: string // 绑定类型，默认AP配网可不传，例如大屏扫码的类型为qrcode
   deviceId: string // 美居设备id
   houseId: string // homLux家庭id

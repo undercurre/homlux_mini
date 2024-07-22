@@ -4,7 +4,7 @@ import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { getCurrentPageParams, checkInputNameIllegal, Logger, strUtil } from '../../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../../apis/index'
-import { homeBinding, homeStore, roomBinding, deviceStore } from '../../../store/index'
+import { homeBinding, homeStore, roomBinding } from '../../../store/index'
 import { PRO_TYPE, defaultImgDir } from '../../../config/index'
 import cacheData from '../../common/cacheData'
 
@@ -104,13 +104,16 @@ ComponentWithComputed({
         return
       }
 
-      const res = await editDeviceInfo({
-        deviceId,
-        deviceName,
-        roomId,
-        houseId: homeBinding.store.currentHomeId,
-        type: '2',
-      })
+      const res = await editDeviceInfo(
+        {
+          deviceId,
+          deviceName,
+          roomId,
+          houseId: homeBinding.store.currentHomeId,
+          type: '2',
+        },
+        { loading: true },
+      )
 
       if (this.data.deviceInfo.switchList.length > 1) {
         const deviceInfoUpdateVoList = this.data.deviceInfo.switchList.map((item) => {
@@ -123,12 +126,10 @@ ComponentWithComputed({
           }
         })
 
-        await batchUpdate({ deviceInfoUpdateVoList })
+        await batchUpdate({ deviceInfoUpdateVoList }, { loading: true })
       }
 
       if (res.success) {
-        await deviceStore.updateAllRoomDeviceList()
-
         // 关闭扫描页面可能开启的蓝牙资源
         wx.closeBluetoothAdapter()
 
