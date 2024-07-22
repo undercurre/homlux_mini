@@ -166,11 +166,14 @@ Page({
   getErrorGuideDesc(errorCode) {
     let system = wx.getSystemInfoSync().system
     let failUiData
+
+    console.log('getErrorGuideDesc', errorCode)
     if (errorCode && this.data.failTextData[errorCode]) {
       failUiData = this.data.failTextData[errorCode]
     } else {
       failUiData = this.data.failTextData['common']
     }
+
     if (system.includes('Android')) {
       failUiData.guideDesc = failUiData.guideDesc.filter((item) => {
         return !item.includes('仅iOS展示')
