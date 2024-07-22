@@ -1,6 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
-import { strUtil } from '../../../utils/index'
 import cacheData from '../../common/cacheData'
 import { productImgDir } from '../../../config/index'
 
@@ -41,36 +40,63 @@ ComponentWithComputed({
         icon: `${productImgDir}/0x14.png`,
         name: '窗帘',
         source: 'meiju',
-        path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
+        meijuProductInfo: {
           proType: '14',
           sn8: '79700Z76',
           mode: 0,
-        } as Meiju.IProductItem),
+        },
+        path: '',
       },
       {
         icon: `${productImgDir}/0x26.png`,
         name: '浴霸',
         source: 'meiju',
-        path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
+        meijuProductInfo: {
           proType: '26',
           sn8: 'M0100032,57066708',
           mode: 0,
-        } as Meiju.IProductItem),
+        },
+        path: '',
       },
       {
         icon: `${productImgDir}/0x17.png`,
         name: '晾衣机',
         source: 'meiju',
-        path: strUtil.getUrlWithParams('/package-distribution-meiju/pages/check-auth/index', {
+        meijuProductInfo: {
           proType: '17',
           sn8: 'M0100035',
           mode: 0,
-        } as Meiju.IProductItem),
+        },
+        path: '',
       },
       {
         icon: `${productImgDir}/0xAC.png`,
         name: '空调',
         path: '/package-distribution/pages/choose-model/index?proType=0xAC',
+      },
+      {
+        icon: `${productImgDir}/0x13-fan.png`,
+        name: '风扇灯',
+        source: 'meiju',
+        meijuProductInfo: {
+          proType: '13',
+          sn8: '79010863',
+          mode: 0,
+          deviceImg: `${productImgDir}/0x13-fan.png`,
+        },
+        path: '',
+      },
+      {
+        icon: `${productImgDir}/0x09.png`,
+        name: '门锁',
+        source: 'meiju',
+        meijuProductInfo: {
+          proType: '09',
+          sn8: '798777C9',
+          mode: 0,
+          deviceImg: `${productImgDir}/0x09.png`,
+        },
+        path: '',
       },
     ],
   },
@@ -82,7 +108,6 @@ ComponentWithComputed({
       // 保存进入配网流程的页面入口
       cacheData.pageEntry = '/' + (routes.length > 2 ? routes[routes.length - 2].route : 'pages/index/index')
     },
-    detached() {},
   },
 
   /**
