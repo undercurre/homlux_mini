@@ -505,10 +505,20 @@ ComponentWithComputed({
       const bottom = this.data.bottomList
       const btns = this.data.btnList
       const tempConfig = this.data.tempBtnConfig
-      const isDisable = !bottom[0].isOn && this.data.isBLEConnected
-      tempConfig.isEnable = !isDisable
-      for (let i = 0; i < btns.length; i++) {
-        btns[i].isEnable = !isDisable
+      if (this.data.isBLEConnected) {
+        const isPowerOn = bottom[0].isOn
+        let isCanTemp = false
+        for (let i = 0; i < btns.length; i++) {
+          btns[i].isEnable = isPowerOn
+          if ((btns[i].key === 'HEAT' || btns[i].key === 'BATH') && btns[i].isOn && isPowerOn) isCanTemp = true
+        }
+        const curT = this.data.curTemp === '--' ? -1 : parseInt(`${this.data.curTemp}`)
+        tempConfig.isEnable = isPowerOn && isCanTemp && curT >= 32 && curT <= 42
+      } else {
+        for (let i = 0; i < btns.length; i++) {
+          btns[i].isEnable = true
+        }
+        tempConfig.isEnable = true
       }
       this.setData({
         tempBtnConfig: tempConfig,
