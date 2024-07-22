@@ -117,6 +117,7 @@ export const storeRmList = (list: Remoter.DeviceRx[], key = RM_KEY) => {
     deviceModel: r.deviceModel,
     actionStatus: r.actionStatus,
     defaultAction: r.defaultAction,
+    functionDes: r.functionDes,
   }))
   storage.set(key, filterList)
 }

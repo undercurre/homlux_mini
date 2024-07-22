@@ -35,24 +35,24 @@
         <view
           class="step-btn flex-center"
           hover-class="high-select-2"
-          style="background-color: {{tempBtnConfig.isLeftOn ? '#488FFF' : '#fffff'}};"
-          bind:tap="onTempLeftClick"
-        >
-          <image
-            style="width: 64rpx; height: 64rpx"
-            src="{{tempBtnConfig.isLeftOn ? '/package-remoter/assets/newUI/addOn.png' : '/package-remoter/assets/newUI/addOff.png'}}"
-          ></image>
-        </view>
-        <text class="step-text">温度</text>
-        <view
-          class="step-btn flex-center"
-          hover-class="high-select-2"
           style="background-color: {{tempBtnConfig.isRightOn ? '#488FFF' : '#fffff'}};"
           bind:tap="onTempRightClick"
         >
           <image
             style="width: 64rpx; height: 64rpx"
             src="{{tempBtnConfig.isRightOn ? '/package-remoter/assets/newUI/subOn.png' : '/package-remoter/assets/newUI/subOff.png'}}"
+          ></image>
+        </view>
+        <text class="step-text">温度</text>
+        <view
+          class="step-btn flex-center"
+          hover-class="high-select-2"
+          style="background-color: {{tempBtnConfig.isLeftOn ? '#488FFF' : '#fffff'}};"
+          bind:tap="onTempLeftClick"
+        >
+          <image
+            style="width: 64rpx; height: 64rpx"
+            src="{{tempBtnConfig.isLeftOn ? '/package-remoter/assets/newUI/addOn.png' : '/package-remoter/assets/newUI/addOff.png'}}"
           ></image>
         </view>
       </view>

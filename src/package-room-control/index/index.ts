@@ -35,6 +35,7 @@ import {
   NO_UPDATE_INTERVAL,
   SCREEN_PID,
   ZHONGHONG_PID,
+  NO_SYNC_DEVICE_STATUS_IN_ROOM,
 } from '../../config/index'
 import homOs from 'js-homos'
 
@@ -147,6 +148,8 @@ ComponentWithStore({
     toolboxContentHeight: 60, // 工具栏内容区域高度
     scrollViewHeight: '0px', // 可滚动区域高度
     isShowCommonControl: false, // 是否打开控制面板
+    _canSyncCloudData: true, // 是否响应云端变更
+    _controlTimer: 0,
   },
   observers: {
     currentRoom(currentRoom) {
@@ -163,7 +166,8 @@ ComponentWithStore({
     },
     'deviceCardList.**, editMode'(deviceCardList: DeviceCard[], editMode) {
       const deviceList = deviceCardList.filter((d) => !d.deleted)
-      Logger.trace('[observers] deviceList', deviceList)
+      // Logger.trace('[observers] deviceCardList', deviceList)
+
       const hasRoomLightOn = deviceList.some(
         (d) => !!(d.proType === PRO_TYPE.light && d.onLineStatus === 1 && d.mzgdPropertyDTOList['light'].power),
       )
@@ -255,7 +259,7 @@ ComponentWithStore({
         this.queryGroupInfo()
         this.autoRefreshDevice()
       }
-      // 如果从配网页面返回
+      // 非首次进入，或从配网页面返回
       else {
         showLoading()
         await this.reloadDeviceList()
@@ -328,7 +332,9 @@ ComponentWithStore({
 
           this.updateQueue(device)
 
-          this.refreshLightStatusThrottle()
+          if (this.data._canSyncCloudData) {
+            this.refreshLightStatusThrottle()
+          }
 
           return
         }
@@ -776,7 +782,7 @@ ComponentWithStore({
         Logger.setFilter('updateDeviceList')
         Logger.debug(
           '▤ 列表更新完成',
-          this.data.deviceCardList.map((d) => [d.orderNum, d.deviceName, d.deviceId.slice(-4)]),
+          this.data.deviceCardList.map((d) => [d.orderNum, d.deviceName, d.deviceId?.slice(-4)]),
         )
       }
 
@@ -860,11 +866,11 @@ ComponentWithStore({
       }
     },
 
-    // 基于云端更新数据
-    async updateRoomListOnCloud() {
-      await deviceStore.updateRoomDeviceList()
-      this.updateQueue({ isRefresh: true })
-    },
+    // DESERTED 基于云端更新数据
+    // async updateRoomListOnCloud() {
+    //   await deviceStore.updateRoomDeviceList()
+    //   this.updateQueue({ isRefresh: true })
+    // },
 
     /**
      * @description 更新选中状态并渲染
@@ -876,7 +882,6 @@ ComponentWithStore({
       if (index !== -1) {
         const diffData = {} as IAnyObject
         diffData[`deviceCardList[${index}].select`] = toCheck ?? !this.data.deviceCardList[index].select
-        console.log(diffData)
         this.setData(diffData)
       }
     },
@@ -1072,15 +1077,6 @@ ComponentWithStore({
       const isChecked = this.data.checkedList.includes(uniId) // 点击卡片前，卡片是否选中
       const toCheck = !isChecked // 本次点击需执行的选中状态
 
-      // 取消旧选择
-      // if (toCheck && this.data.checkedList.length) {
-      // const oldCheckedId = this.data.checkedList[0]
-      // this.toSelect(oldCheckedId)
-      // }
-
-      // 选择样式渲染
-      // this.toSelect(uniId)
-
       const diffData = {} as IAnyObject
 
       // 选择项，只能单选，但仍沿用数组的形式
@@ -1240,7 +1236,7 @@ ComponentWithStore({
       //   scrollTop: this.data.scrollTop + e.detail.clientRect.top - this.data.scrollViewHeight / 2,
       // })
 
-      console.log('handleEditMode', e.detail, diffData)
+      // Logger.trace('[handleEditMode]', e.detail, diffData)
     },
 
     exitEditMode() {
@@ -1276,17 +1272,30 @@ ComponentWithStore({
         url: `/package-distribution/pages/wifi-connect/index?type=changeWifi&sn=${gateway.sn}`,
       })
     },
+    // 设置后N秒内屏蔽上报
+    disableCloudSync() {
+      if (this.data._controlTimer) {
+        clearTimeout(this.data._controlTimer)
+        this.data._controlTimer = 0
+      }
+      this.data._canSyncCloudData = false
+      this.data._controlTimer = setTimeout(() => {
+        this.data._canSyncCloudData = true
+      }, NO_SYNC_DEVICE_STATUS_IN_ROOM)
+    },
     handleLevelEnd(e: { detail: number }) {
       this.setData({
         'roomLight.brightness': e.detail,
       })
       this.lightSendDeviceControl('brightness')
+      this.disableCloudSync()
     },
     handleColorTempEnd(e: { detail: number }) {
       this.setData({
         'roomLight.colorTemperature': e.detail,
       })
       this.lightSendDeviceControl('colorTemperature')
+      this.disableCloudSync()
     },
     handleRoomLightTouch() {
       if (!this.data.hasRoomLightOn) {

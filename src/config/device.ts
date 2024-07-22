@@ -18,6 +18,9 @@ export const MAX_MOVE_CARDS = 20
 // 设备弹窗中，控制指令发送后屏蔽设备状态上报的时长（ms）
 export const NO_SYNC_DEVICE_STATUS = 2000
 
+// 房间设备列表中，房间灯组控制指令发送后屏蔽设备状态上报的时长（ms）
+export const NO_SYNC_DEVICE_STATUS_IN_ROOM = 10000
+
 /**
  * @name 设备卡片更新时间阈值
  * @description 等待时间小于这个值的，均不即时更新，与后面的更新合并，或到到队列清空时一起更新
