@@ -24,9 +24,10 @@ ComponentWithComputed({
     tempType: 1,
     curTemp: '--' as string | number,
     tempBtnConfig: {
-      isEnable: true,
-      isLeftOn: false,
-      isRightOn: false,
+      isSubOn: false,
+      isSubEnable: true,
+      isAddOn: false,
+      isAddEnable: true,
     },
     gearBtnConfig: {
       isEnable: true,
@@ -513,46 +514,48 @@ ComponentWithComputed({
           if ((btns[i].key === 'HEAT' || btns[i].key === 'BATH') && btns[i].isOn && isPowerOn) isCanTemp = true
         }
         const curT = this.data.curTemp === '--' ? -1 : parseInt(`${this.data.curTemp}`)
-        tempConfig.isEnable = isPowerOn && isCanTemp && curT >= 32 && curT <= 42
+        tempConfig.isAddEnable = isPowerOn && isCanTemp && curT < 42
+        tempConfig.isSubEnable = isPowerOn && isCanTemp && curT > 30
       } else {
         for (let i = 0; i < btns.length; i++) {
           btns[i].isEnable = true
         }
-        tempConfig.isEnable = true
+        tempConfig.isAddEnable = true
+        tempConfig.isSubEnable = true
       }
       this.setData({
         tempBtnConfig: tempConfig,
         btnList: btns,
       })
     },
-    onTempLeftClick() {
+    onTempAddClick() {
       const config = this.data.tempBtnConfig
-      if (!config.isEnable) return
-      config.isLeftOn = true
-      config.isRightOn = false
+      if (!config.isAddEnable) return
+      config.isAddOn = true
+      config.isSubOn = false
       this.setData({
         tempBtnConfig: config,
       })
       setTimeout(() => {
-        config.isLeftOn = false
-        config.isRightOn = false
+        config.isAddOn = false
+        config.isSubOn = false
         this.setData({
           tempBtnConfig: config,
         })
       }, 300)
       this.sendBluetoothCMD([CMD['BATH_TEMPERATURE_ADD']])
     },
-    onTempRightClick() {
+    onTempSubClick() {
       const config = this.data.tempBtnConfig
-      if (!config.isEnable) return
-      config.isLeftOn = false
-      config.isRightOn = true
+      if (!config.isSubEnable) return
+      config.isAddOn = false
+      config.isSubOn = true
       this.setData({
         tempBtnConfig: config,
       })
       setTimeout(() => {
-        config.isLeftOn = false
-        config.isRightOn = false
+        config.isAddOn = false
+        config.isSubOn = false
         this.setData({
           tempBtnConfig: config,
         })
