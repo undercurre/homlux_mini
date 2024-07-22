@@ -14,6 +14,16 @@ const errorCodes = {
 
 //失败页对应文案
 const failTextData = {
+  9844: {
+    // sn8设备不在homlux支持范围内
+    errorCode: '9844',
+    mainTitle: 'XX联网失败',
+    nextTitle: 'XX无法接连路由器',
+    guideDesc: ['该设备系统不支持'],
+    isTest: true, //是否有测试一下
+    isNeedInputPsw: false, //是否需要WiFi密码确认框
+  },
+
   common: {
     errorCode: '901001',
     mainTitle: 'XX联网失败',

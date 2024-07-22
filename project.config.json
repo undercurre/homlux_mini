@@ -53,7 +53,6 @@
     "tabIndent": "insertSpaces",
     "tabSize": 2
   },
-  "appid": "wxd534524a35f2b601",
   "condition": {},
   "packOptions": {
     "ignore": [
@@ -64,10 +63,9 @@
     ],
     "include": []
   },
+  "appid": "wxd534524a35f2b601",
   "scripts": {
     "beforeCompile": "node ./build/releaseTime.js",
     "beforePreview": "node ./build/releaseTime.js"
-  },
-  "projectname": "HomLux",
-  "libVersion": "3.4.0"
+  }
 }

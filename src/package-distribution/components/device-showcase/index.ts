@@ -1,8 +1,9 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { homeStore } from '../../store/index'
+import { homeStore } from '../../../store/index'
 import Dialog from '@vant/weapp/dialog/dialog'
-import { queryUserThirdPartyInfo } from '../../apis/index'
-import { Logger, storage } from '../../utils/index'
+import { queryUserThirdPartyInfo } from '../../../apis/index'
+import { Logger, storage, strUtil } from '../../../utils/index'
+import { IModel } from '../../common/deviceCategory'
 
 ComponentWithComputed({
   options: {},
@@ -35,8 +36,11 @@ ComponentWithComputed({
         ripple: true,
       })
 
+      let { path } = this.data.deviceInfo as IModel
+      const { source, meijuProductInfo } = this.data.deviceInfo as IModel
+
       // 绑定美居设备时，检查美居授权。
-      if (this.data.deviceInfo.source === 'meiju') {
+      if (source === 'meiju') {
         const res = await queryUserThirdPartyInfo(homeStore.currentHomeId, { loading: true })
 
         const isAuth = res.success ? res.result[0].authStatus === 1 : false
@@ -51,10 +55,17 @@ ComponentWithComputed({
 
           return
         }
+
+        path = `/package-distribution/pages/scan/index?scanType=meijuDevice&meijuPath=${encodeURIComponent(
+          strUtil.getUrlWithParams(
+            '/package-distribution-meiju/pages/check-auth/index',
+            meijuProductInfo as Meiju.IProductItem,
+          ),
+        )}`
       }
 
       wx.navigateTo({
-        url: this.data.deviceInfo.path,
+        url: path,
       })
     },
 
