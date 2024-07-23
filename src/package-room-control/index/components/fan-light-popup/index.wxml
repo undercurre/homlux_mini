@@ -5,7 +5,7 @@
   closeable
   bind:close="handleClose"
 >
-  <view class="w-750rpx bg-white flex-col flex items-center py-20rpx">
+  <view class="w-750rpx h-700 bg-white flex-col flex items-center py-20rpx">
     <!-- tab -->
     <view class="flex justify-evenly w-686rpx mt-10rpx relative">
       <view class="flex-col-center">
@@ -33,59 +33,130 @@
       ></image>
       <text class="text-hex-555659 text-24 ml-32rpx">当前设备仅支持局域网控制，请检查您的网络！</text>
     </view>
-    <!-- tab内容 -->
-    <view class="flex flex-col items-center flex-1 pt-10rpx">
-      <!-- 灯光控制 -->
-      <view
-        wx:if="{{deviceInfo.proType==='0x13'}}"
-        class="flex flex-col w-750rpx mb-22rpx"
+
+    <view class="w-full flex-center pt-20rpx">
+      <marvels-switch
+        checkedIndex="{{tabIndex}}"
+        bind:switchchange="handleType"
+      ></marvels-switch>
+    </view>
+    <swiper
+      class="swiper-list"
+      current="{{tabIndex}}"
+      bind:change="onTabChanged"
+      duration="{{100}}"
+      cache-extent="1"
+    >
+      <swiper-item
+        class="flex flex-col items-center"
+        catchtouchmove="true"
       >
-        <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{lightInfoInner.brightness}}%</text>
-        <view class="px-48rpx pt-28rpx">
-          <mz-slider
-            catch:tap="sliderTap"
-            catch:slideEnd="handleLevelChange"
-            catch:slideChange="handleLevelDrag"
-            disabled="{{!deviceProp.power}}"
-            value="{{lightInfoInner.brightness}}"
-            btn-width="{{40}}"
-            btn-height="{{40}}"
-            min="{{1}}"
-            active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"
-            key="brightness"
-          >
-          </mz-slider>
+        <view class="flex flex-col w-750rpx mb-22rpx">
+          <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">风速 | {{lightInfoInner.fan_level}}档</text>
+          <view class="px-48rpx pt-28rpx h-90rpx">
+            <mz-slider
+              disabled="{{!deviceProp.power}}"
+              catch:tap="sliderTap"
+              catch:slideEnd="handleSpeedChange"
+              catch:slideChange="handleSpeedDrag"
+              value="{{lightInfoInner.fan_level}}"
+              bar-height="40"
+              btn-width="{{40}}"
+              btn-height="{{40}}"
+              min="{{1}}"
+              max="{{6}}"
+              active-color="#488FFF"
+              key="fan_level"
+              use-button-slot
+            >
+              <view
+                slot="button"
+                class="slider-button-wrapper"
+              >
+                <view class="slider-button-speed"></view>
+              </view>
+            </mz-slider>
+          </view>
+          <view class="flex justify-between px-48rpx">
+            <view class="slider-indicator">1</view>
+            <view class="slider-indicator">2</view>
+            <view class="slider-indicator">3</view>
+            <view class="slider-indicator">4</view>
+            <view class="slider-indicator">5</view>
+            <view class="slider-indicator">6</view>
+          </view>
         </view>
 
-        <text class="text-32rpx mt-66rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">色温 | {{colorTempK}}K</text>
-        <view class="px-48rpx pt-28rpx">
-          <mz-slider
-            catch:tap="sliderTap"
-            catch:slideEnd="handleColorTempChange"
-            catch:slideChange="handleColorTempDrag"
-            disabled="{{!deviceProp.power}}"
-            value="{{lightInfoInner.colorTemperature}}"
-            use-button-slot
-            btn-height="{{80}}"
-            btn-width="{{80}}"
-            custom-class="slider-color-temp-bar"
-            active-color="rgba(0,0,0,0)"
-            key="colorTemp"
-          >
-            <view
-              slot="button"
-              class="slider-button"
-            />
-          </mz-slider>
+        <view class="flex flex-row justify-evenly rounded-32rpx bg-hex-f7f8f9 w-686rpx mt-30rpx py-24rpx">
+          <mz-icon-button
+            wx:for="{{btnList}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            icon="{{item.icon}}"
+            iconActive="{{item.iconActive}}"
+            text="{{item.text}}"
+            rebound="{{item.rebound}}"
+            isOn="{{item.on}}"
+            imageSize="{{64}}"
+            wrapperWidth="{{80}}"
+            wrapperHeight="{{80}}"
+            bgColorActive="#488fff"
+            round="{{20}}"
+            textColor="#a2a2a2"
+            textColorActive="#488fff"
+            bind:btnTouchStart="handleModeTap"
+          ></mz-icon-button>
         </view>
-      </view>
-    </view>
+      </swiper-item>
+
+      <swiper-item
+        class="flex flex-col"
+        catchtouchmove="true"
+      >
+        <!-- 灯光控制 -->
+        <view class="flex flex-col w-750rpx mb-22rpx">
+          <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{lightInfoInner.brightness}}%</text>
+          <view class="px-48rpx pt-28rpx">
+            <mz-slider
+              catch:tap="sliderTap"
+              catch:slideEnd="handleLevelChange"
+              catch:slideChange="handleLevelDrag"
+              disabled="{{!deviceProp.power}}"
+              value="{{lightInfoInner.brightness}}"
+              btn-width="{{40}}"
+              btn-height="{{40}}"
+              min="{{1}}"
+              active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"
+              key="fan-brightness"
+            >
+            </mz-slider>
+          </view>
+
+          <text class="text-32rpx mt-66rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">色温 | {{colorTempK}}K</text>
+          <view class="px-48rpx pt-28rpx">
+            <mz-slider
+              catch:tap="sliderTap"
+              catch:slideEnd="handleColorTempChange"
+              catch:slideChange="handleColorTempDrag"
+              disabled="{{!deviceProp.power}}"
+              value="{{lightInfoInner.colorTemperature}}"
+              use-button-slot
+              btn-height="{{80}}"
+              btn-width="{{80}}"
+              custom-class="slider-color-temp-bar"
+              active-color="rgba(0,0,0,0)"
+              key="fan-colorTemp"
+            >
+              <view
+                slot="button"
+                class="slider-button"
+              />
+            </mz-slider>
+          </view>
+        </view>
+      </swiper-item>
+    </swiper>
   </view>
 </mz-popup>
 
 <mz-toast id="mz-toast" />
-<mz-dialog
-  id="mz-dialog"
-  confirm-button-color="#27282A"
-  cancel-button-color="#27282A"
-/>
