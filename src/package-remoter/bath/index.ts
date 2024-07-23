@@ -241,7 +241,7 @@ ComponentWithComputed({
       const popBtns = []
       for (let i = 0; i < btns.length; i++) {
         if (btns[i].key === 'HEAT') {
-          if (support.temperatrue) showBtns.push(btns[i])
+          if (support.temperature) showBtns.push(btns[i])
         } else if (btns[i].key === 'SWING') {
           if (support.swing) showBtns.push(btns[i])
         } else if (btns[i].key === 'ANION') {
@@ -263,7 +263,7 @@ ComponentWithComputed({
         }
       }
       this.setData({
-        tempType: support.temperatrue ? 1 : 2,
+        tempType: support.temperature ? 1 : 2,
         btnList: showBtns,
         popSelectMode: popBtns,
         bottomList: showBottom,
@@ -279,7 +279,7 @@ ComponentWithComputed({
         let byte0 = {}
         if (funArr.length > 0) {
           byte0 = {
-            temperatrue: !!(funArr[0] & 0x01),
+            temperature: !!(funArr[0] & 0x01),
             swing: !!(funArr[0] & 0x02),
             radar: !!(funArr[0] & 0x04),
             colorful: !!(funArr[0] & 0x08),
@@ -299,7 +299,7 @@ ComponentWithComputed({
       if (this.data.devModel === '') return {}
       const model = parseInt(this.data.devModel, 16)
       return {
-        temperatrue: !!(model & 0x01),
+        temperature: !!(model & 0x01),
         swing: !!(model & 0x02),
         radar: !!(model & 0x04),
         colorful: !!(model & 0x08),
