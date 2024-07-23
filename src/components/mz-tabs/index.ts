@@ -7,6 +7,13 @@ Component({
       type: Array,
       value: [],
     },
+    activeId: {
+      type: String,
+      value: '',
+      observer(val) {
+        this.onTapTab({ currentTarget: { dataset: { activeid: val } } })
+      },
+    },
   },
   data: {
     selectedTab: 0,
@@ -47,7 +54,7 @@ Component({
         .then(([tabItemsWidths, tabBorderWidth]) => {
           this.data._tabItemWidth = tabItemsWidths as number[]
           this.data._tabBorderWidth = tabBorderWidth as number
-          this.onTapTab()
+          this.onTapTab({ currentTarget: { dataset: { activeid: this.data.activeId } } })
         })
         .catch((error) => {
           console.error('Error in Promise.all:', error)
@@ -56,9 +63,18 @@ Component({
   },
 
   methods: {
-    onTapTab(evt = { currentTarget: { dataset: { tab: 0 } } }) {
-      const { tab = 0 } = evt.currentTarget?.dataset || {}
-
+    onTapTab(evt: { type?: string; currentTarget: { dataset: { tab?: number; activeid?: string } } }) {
+      //初始化未完成或tabs为空数组
+      if (!this.data._tabItemWidth.length) return
+      let { tab = 0 } = evt.currentTarget?.dataset || {}
+      const { activeid = '' } = evt.currentTarget?.dataset || {}
+      // 防止tap事件和activeId变化导致多次相同触发
+      if (this.data.translateX && (tab === this.data.selectedTab || activeid === this.data.activeId)) return
+      // 非点击触发
+      if (!evt.type) {
+        tab = this.data.tabs.findIndex((item) => item.id === activeid)
+        tab = tab < 0 ? 0 : tab
+      }
       const translateX =
         this.data._tabItemWidth.slice(0, tab).reduce((prev, curr) => {
           return prev + curr
