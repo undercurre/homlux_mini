@@ -221,8 +221,8 @@ ComponentWithStore({
         return
       }
 
-      const { deviceMap } = deviceStore
-      const device = deviceMap[checkedList[0]]
+      const uniId = checkedList[0].split(':')[0]
+      const device = deviceStore.deviceMap[uniId]
       console.log('controlType', controlType, device, checkedList)
       const isFan = FAN_PID.includes(device.productId)
 
