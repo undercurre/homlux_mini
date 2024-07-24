@@ -6,6 +6,7 @@ declare namespace Device {
   interface mzgdPropertyDTO {
     colorTemperature?: number // 色温
     brightness?: number // 亮度
+    fan_speed?: number // 风速
     // OnOff?: number // 关 0 | 开 1
     power?: number // 关 0 | 开 1
     colorTempRange?: {

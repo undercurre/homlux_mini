@@ -126,9 +126,9 @@
               src="{{item.isOn ? item.iconOn : item.iconOff}}"
             ></image>
             <image
-              wx:if="{{item.level > 0}}"
+              wx:if="{{item.level >= 1 && item.level <= 3}}"
               style="width: 48rpx; height: 4rpx; position: absolute; left: 34rpx; bottom: 10rpx;"
-              src="{{item.level === 1 ? '/package-remoter/assets/newUI/level1.png' : item.level === 2 ? '/package-remoter/assets/newUI/level2.png' : '/package-remoter/assets/newUI/level3.png'}}"
+              src="{{item.isOn ? iconLevelW[item.level - 1] : iconLevelB[item.level - 1]}}"
             ></image>
           </view>
           <text

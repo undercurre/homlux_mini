@@ -128,3 +128,26 @@
   background-image: linear-gradient(138deg, #d1e3fd 7%, #f7f9ff 93%);
   border-radius: 24rpx;
 }
+
+.swiper-list {
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+}
+
+.slider-button-wrapper {
+  padding: 8rpx;
+}
+
+.slider-button-speed {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 10rpx;
+  margin-right: -2rpx;
+  background-color: #ffffff;
+}
+
+.slider-indicator {
+  color: #8a8a8f;
+  font-size: 20rpx;
+}

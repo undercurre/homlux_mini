@@ -36,3 +36,13 @@ export const CAC_FA_WINDSPEED = {
   windSpeed_2: '2档',
   windSpeed_4: '1档',
 } as Record<string, string>
+
+// 风扇灯 风速->档位
+export const WIND_SPEED_MAP = {
+  1: 1,
+  21: 2,
+  41: 3,
+  61: 4,
+  81: 5,
+  100: 6,
+} as Record<number, number>

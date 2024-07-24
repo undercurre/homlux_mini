@@ -474,6 +474,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-64,
 .h-64rpx{height:64rpx;}
 .h-6rpx{height:6rpx;}
+.h-700{height:700rpx;}
 .h-72,
 .h-72rpx{height:72rpx;}
 .h-796rpx{height:796rpx;}

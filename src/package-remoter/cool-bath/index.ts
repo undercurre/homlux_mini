@@ -176,7 +176,9 @@ ComponentWithComputed({
       const btns = this.data.btnList
       const showBtns = []
       for (let i = 0; i < btns.length; i++) {
-        if (btns[i].key === 'SWING') {
+        if (btns[i].key === 'VENT') {
+          if (support.vent) showBtns.push(btns[i])
+        } else if (btns[i].key === 'SWING') {
           if (support.swing) showBtns.push(btns[i])
         } else if (btns[i].key === 'ANION') {
           if (support.anion) showBtns.push(btns[i])
@@ -208,13 +210,14 @@ ComponentWithComputed({
         let byte0 = {}
         if (funArr.length > 0) {
           byte0 = {
-            temperatrue: !!(funArr[0] & 0x01),
+            vent: !!(funArr[0] & 0x01),
             swing: !!(funArr[0] & 0x02),
             radar: !!(funArr[0] & 0x04),
             colorful: !!(funArr[0] & 0x08),
             DC: !!(funArr[0] & 0x10),
             night: !!(funArr[0] & 0x20),
             anion: !!(funArr[0] & 0x40),
+            temperature: true
           }
         }
         let byte1 = {}
@@ -228,14 +231,15 @@ ComponentWithComputed({
       if (this.data.devModel === '') return {}
       const model = parseInt(this.data.devModel, 16)
       return {
-        temperatrue: !!(model & 0x01),
+        temperature: !!(model & 0x01),
         swing: !!(model & 0x02),
         radar: !!(model & 0x04),
         colorful: !!(model & 0x08),
         DC: !!(model & 0x10),
         night: !!(model & 0x20),
         anion: !!(model & 0x40),
-        smell: !!(model & 0x80)
+        smell: !!(model & 0x80),
+        vent: true
       }
     },
     onUnload() {
