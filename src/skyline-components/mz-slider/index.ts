@@ -198,7 +198,7 @@ ComponentWithComputed({
         .exec((res) => {
           const { isBtnInset, btnWidthPx, value } = this.data
           const barWidth = res[0]?.width ?? 300
-          const barLeft = res[0]?.left ?? 0
+          const barLeft = (res[0]?.left ?? 0) % 375 // !! 兼容在swiper中的位置计算
           const left = isBtnInset ? btnWidthPx : 0
           const right = barWidth
           this.setData({
