@@ -169,6 +169,16 @@ ComponentWithComputed({
       { name: '高档', value: 3, isSelect: true },
       { name: '中档', value: 2, isSelect: false },
       { name: '低档', value: 1, isSelect: false },
+    ],
+    iconLevelB: [
+      '/package-remoter/assets/newUI/level1.png',
+      '/package-remoter/assets/newUI/level2.png',
+      '/package-remoter/assets/newUI/level3.png'
+    ],
+    iconLevelW: [
+      '/package-remoter/assets/newUI/level1_w.png',
+      '/package-remoter/assets/newUI/level2_w.png',
+      '/package-remoter/assets/newUI/level3_w.png'
     ]
   },
   watch: {
@@ -471,8 +481,8 @@ ComponentWithComputed({
           }
         } else if (btns[i].key === 'SMELL') {
           if (status.BATH_SMELL != undefined) {
-            const lvl = status.SMELL_LEVEL || 0
-            btns[i].level = status.BATH_SMELL ? lvl : 0
+            btns[i].isOn = status.BATH_SMELL
+            btns[i].level = status.SMELL_LEVEL || 0
           }
           const levelPopup = this.data.levelPopupOption
           levelPopup.forEach(item => {
