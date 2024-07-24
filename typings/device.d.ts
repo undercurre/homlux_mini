@@ -7,6 +7,7 @@ declare namespace Device {
     colorTemperature?: number // 色温
     brightness?: number // 亮度
     fan_speed?: number // 风速
+    fan_power?: string // 风扇开关 on | off
     // OnOff?: number // 关 0 | 开 1
     power?: number // 关 0 | 开 1
     colorTempRange?: {

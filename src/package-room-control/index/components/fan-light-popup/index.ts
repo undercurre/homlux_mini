@@ -1,7 +1,7 @@
 import { isNullOrUnDef } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { homeBinding, deviceStore } from '../../../../store/index'
+import { homeBinding } from '../../../../store/index'
 import {
   maxColorTemp,
   minColorTemp,
@@ -9,11 +9,11 @@ import {
   PRO_TYPE,
   defaultImgDir,
   WIND_SPEED_MAP,
+  NO_SYNC_DEVICE_STATUS,
 } from '../../../../config/index'
 import { sendDevice } from '../../../../apis/index'
 import Toast from '../../../../skyline-components/mz-toast/toast'
 import pageBehavior from '../../../../behaviors/pageBehaviors'
-import { runInAction } from 'mobx-miniprogram'
 
 type BtnItem = {
   text: string
@@ -94,17 +94,28 @@ ComponentWithComputed({
    */
   data: {
     defaultImgDir,
-    show: false,
     // 灯信息，用于组件传值同步
     lightInfoInner: {
       brightness: 10,
       colorTemperature: 20,
       fan_speed: 1,
       fan_level: 1,
-      delay_fan_off: 0,
-      arround_dir: 1,
+      delay_fan_off: '0',
+      arround_dir: '1',
       fan_scene: 'fanmanual',
     },
+    isShowPicker: false,
+    pickerTitle: '延时关风扇',
+    pickerColumns: [
+      {
+        values: Array.from({ length: 13 }, (_, i) => String(i).padStart(2, '0')),
+        defaultIndex: 0,
+      },
+      {
+        values: Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0')),
+        defaultIndex: 0,
+      },
+    ],
     deviceProp: {} as Device.mzgdPropertyDTO,
     maxColorTemp,
     minColorTemp,
@@ -127,6 +138,8 @@ ComponentWithComputed({
         iconActive: '../../assets/img/function/fd1.png',
       },
     } as Record<string, BtnItem>,
+    _canSyncCloudData: true, // 是否响应云端变更
+    _controlTimer: null as null | number, // 控制后计时器
   },
 
   computed: {
@@ -138,16 +151,28 @@ ComponentWithComputed({
         (data.lightInfoInner.colorTemperature / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp,
       )
     },
+    selectedTime(data) {
+      const { delay_fan_off = '0' } = data.lightInfoInner ?? {}
+      if (delay_fan_off === '0') return ''
+
+      const hour = Math.floor(Number(delay_fan_off) / 60)
+      const minute = Number(delay_fan_off) % 60
+      return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+    },
     btnList(data) {
-      const { btnMap, lightInfoInner } = data
+      const { btnMap, lightInfoInner, selectedTime } = data
       const res = Object.keys(btnMap).map((key: string) => {
+        const item = btnMap[key]
         let on = false
+        let { text } = item
         switch (key) {
-          case 'delay_fan_off':
-            on = !!lightInfoInner.delay_fan_off
+          case 'delay_fan_off': {
+            on = Number(lightInfoInner.delay_fan_off) > 0
+            if (selectedTime) text = `剩余${selectedTime}`
             break
+          }
           case 'arround_dir':
-            on = lightInfoInner.arround_dir === 0
+            on = lightInfoInner.arround_dir === '0'
             break
           case 'breathing_wind':
             on = lightInfoInner.fan_scene === 'breathing_wind'
@@ -156,13 +181,17 @@ ComponentWithComputed({
         }
 
         return {
-          ...btnMap[key],
+          ...item,
+          text,
           on,
           key,
         }
       })
       console.log('computed', res)
       return res
+    },
+    isFanOn(data) {
+      return data.deviceProp.fan_power === 'on'
     },
     // 是否局域网可控
     isLanCtl(data) {
@@ -179,44 +208,16 @@ ComponentWithComputed({
         Toast('请先开灯')
       }
     },
+    sliderTapFan() {
+      if (!this.data.isFanOn) {
+        Toast('请先开风扇')
+      }
+    },
 
     handleClose() {
       this.triggerEvent('close')
     },
 
-    async lightSendDeviceControl(type: 'colorTemperature' | 'brightness' | 'fan_speed') {
-      const deviceId = this.data.checkedList[0]
-      const { proType, deviceType } = this.data.deviceInfo
-      const device = deviceStore.deviceMap[deviceId]
-      if (proType !== PRO_TYPE.light) {
-        return
-      }
-
-      const oldValue = this.data.deviceInfo[type]
-
-      // 即时改变devicePageList，以便场景引用
-      runInAction(() => {
-        deviceStore.deviceMap[deviceId].mzgdPropertyDTOList['light'][type] = this.data.lightInfoInner[type]
-      })
-      device.mzgdPropertyDTOList['light'][type] = this.data.lightInfoInner[type]
-      this.triggerEvent('updateDevice', device)
-
-      const res = await sendDevice({
-        proType,
-        deviceType,
-        deviceId,
-        modelName: 'light',
-        property: {
-          [type]: this.data.lightInfoInner[type],
-        },
-      })
-
-      if (!res.success) {
-        device.mzgdPropertyDTOList['light'][type] = oldValue
-        this.triggerEvent('updateDevice', device)
-        Toast('控制失败')
-      }
-    },
     // 亮度调整
     async handleLevelDrag(e: { detail: number }) {
       this.setData({
@@ -227,16 +228,18 @@ ComponentWithComputed({
       this.setData({
         'lightInfoInner.brightness': e.detail,
       })
-      this.lightSendDeviceControl('brightness')
-      this.triggerEvent('lightStatusChange')
+      this.toSendDevice({ brightness: e.detail })
+
+      this.triggerEvent('lightStatusChange') // 通知更新房间信息，下同
     },
     // 色温调整
     handleColorTempChange(e: { detail: number }) {
-      console.log('handleColorTempChange', e.detail)
+      console.log('handleColorTempChange', e)
       this.setData({
         'lightInfoInner.colorTemperature': e.detail,
       })
-      this.lightSendDeviceControl('colorTemperature')
+      this.toSendDevice({ colorTemperature: e.detail })
+
       this.triggerEvent('lightStatusChange')
     },
     handleColorTempDrag(e: { detail: number }) {
@@ -246,6 +249,8 @@ ComponentWithComputed({
     },
     // 风速调整
     async handleSpeedDrag(e: { detail: number }) {
+      if (!this.data.isFanOn) return
+
       const speeds = Object.keys(WIND_SPEED_MAP)
       this.setData({
         'lightInfoInner.fan_speed': speeds[e.detail - 1],
@@ -253,14 +258,39 @@ ComponentWithComputed({
       })
     },
     async handleSpeedChange(e: { detail: number }) {
+      if (!this.data.isFanOn) return
+
       const speeds = Object.keys(WIND_SPEED_MAP)
       this.setData({
         'lightInfoInner.fan_speed': speeds[e.detail - 1],
         'lightInfoInner.fan_level': e.detail,
       })
-      this.lightSendDeviceControl('fan_speed')
+      this.toSendDevice({ fan_speed: speeds[e.detail - 1] })
     },
+    async toSendDevice(property: IAnyObject) {
+      // 设置后N秒内屏蔽上报
+      if (this.data._controlTimer) {
+        clearTimeout(this.data._controlTimer)
+        this.data._controlTimer = null
+      }
+      this.data._canSyncCloudData = false
+      this.data._controlTimer = setTimeout(() => {
+        this.data._canSyncCloudData = true
+      }, NO_SYNC_DEVICE_STATUS)
 
+      const res = await sendDevice({
+        deviceId: this.data.deviceInfo.deviceId,
+        deviceType: this.data.deviceInfo.deviceType,
+        proType: PRO_TYPE.light,
+        modelName: 'light',
+        property,
+      })
+
+      if (!res.success) {
+        Toast({ message: '控制失败', zIndex: 9999 })
+        return
+      }
+    },
     toDetail() {
       const deviceId = this.data.checkedList[0].split(':')[0]
 
@@ -271,7 +301,7 @@ ComponentWithComputed({
     },
 
     // 默认不允许滑动切换，但切换过程中能中断自动滑动并触发手动滑动，该方法为手动滑动切换时使用的方法
-    onTabChanged(e: { detail: { current: number; source: string } }) {
+    onTabChanged(e: WechatMiniprogram.CustomEvent<{ current: number; source: string }>) {
       const { current, source = '' } = e.detail
       if (source === 'touch') {
         this.setData({
@@ -280,38 +310,71 @@ ComponentWithComputed({
       }
     },
     // 场景类型变更
-    handleType(e: { detail: { checkedIndex: number } }) {
+    handleType(e: WechatMiniprogram.CustomEvent<{ checkedIndex: number }>) {
       this.setData({
         tabIndex: e.detail.checkedIndex,
       })
     },
-    async handleModeTap() {
-      // const key = e.currentTarget.dataset.key as string
-      // const { prop } = this.data
-      // const { mode = '', heating_temperature } = prop
-      // const property = {} as IAnyObject // 本次要发送的指令
-      // switch (key) {
-      //   default: {
-      //     if (mode?.indexOf(key) > -1) {
-      //       delete prop.mode
-      //       property.mode = 'close_all'
-      //     } else {
-      //       property.mode = key
-      //     }
-      //   }
+    async handleFuncTap(e: WechatMiniprogram.CustomEvent<never, never, { key: string }>) {
+      if (!this.data.isFanOn) return
+
+      const key = e.currentTarget.dataset.key as string
+      const { arround_dir, fan_scene } = this.data.lightInfoInner
+      const property = {} as IAnyObject // 本次要发送的指令
+      switch (key) {
+        case 'delay_fan_off':
+          this.setData({
+            isShowPicker: !this.data.isShowPicker,
+          })
+          break
+        case 'arround_dir':
+          property.arround_dir = arround_dir === '0' ? '1' : '0'
+          break
+        case 'breathing_wind':
+          property.fan_scene = fan_scene === 'breathing_wind' ? 'fanmanual' : 'breathing_wind'
+          break
+        default:
+      }
+
+      this.setData({
+        lightInfoInner: {
+          ...this.data.lightInfoInner,
+          ...property,
+        },
+      })
+      this.toSendDevice(property)
+    },
+    timeChange(e: { detail: { value: string[] } }) {
+      const { delay_fan_off = '0' } = this.data.lightInfoInner ?? {}
+      const oldHour = Math.floor(Number(delay_fan_off) / 60)
+      const newHour = e.detail.value[0]
+      const newMinute = e.detail.value[1]
+      const selectedTime = e.detail.value.join(':')
+      const diffData = { selectedTime } as IAnyObject
+      diffData['lightInfoInner.delay_fan_off'] = String(Number(newHour) * 60 + Number(newMinute))
+
+      // if (oldHour !== newHour && (newHour == '12' || oldHour === '12')) {
+      //   diffData['pickerColumns[1].values'] =
+      //     newHour === '12' ? '00' : Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
       // }
-      // 即时使用设置值渲染
-      // console.log('handleModeTap', {
-      //   ...prop,
-      //   ...property,
-      // })
-      // this.setData({
-      //   prop: {
-      //     ...prop,
-      //     ...property,
-      //   },
-      // })
-      // this.toSendDevice(property)
+
+      this.setData(diffData)
+      console.log('selectedTime', selectedTime, oldHour, newHour)
+    },
+    handlePickerClose() {
+      this.setData({
+        isShowPicker: false,
+      })
+    },
+    handlePickerConfirm() {
+      const [hour, minute] = this.data.selectedTime.split(':')
+      const property = {} as IAnyObject // 本次要发送的指令
+      property.delay_fan_off = String(Number(hour) * 60 + Number(minute))
+      this.toSendDevice(property)
+
+      this.setData({
+        isShowPicker: false,
+      })
     },
   },
 })
