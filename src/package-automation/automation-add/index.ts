@@ -9,12 +9,11 @@ import {
   checkInputNameIllegal,
   emitter,
   getCurrentPageParams,
-  isNullOrUnDef,
   storage,
   strUtil,
   toPropertyDesc,
 } from '../../utils/index'
-import { adviceSceneNameList } from '../../config/scene'
+import { adviceSceneNameList } from '../../config/index'
 
 ComponentWithComputed({
   options: {
@@ -826,6 +825,7 @@ ComponentWithComputed({
       const sceneDeviceActionsFlattenIds = this.data.sceneDeviceActionsFlatten.map((item) => item.uniId)
       //从后面插入已选中的设备和场景
       this.data.sceneDevicelinkSelectList.forEach((id) => {
+        // 手动场景，已选择的设备无需再插入
         if (this.data.opearationType === 'yijian' && sceneDeviceActionsFlattenIds.includes(id)) {
           return
         }
@@ -848,7 +848,10 @@ ComponentWithComputed({
             modelName = getModelName(device.proType, device.productId)
             pic = device.pic
             if (this.isNewScenarioSettingSupported(device.proType)) {
-              if (isNullOrUnDef(device.sceneProperty)) device.sceneProperty = { power: 0 }
+              device.sceneProperty = device.sceneProperty || { power: 0 } // 场景控制属性初始化
+              if (device.proType === PRO_TYPE.light) {
+                device.sceneProperty.colorTempRange = device.property?.colorTempRange
+              }
               desc = toPropertyDesc(device.proType, device.sceneProperty)
             } else {
               desc = toPropertyDesc(device.proType, device.property!)
@@ -1090,6 +1093,7 @@ ComponentWithComputed({
      */
     handleAutoSceneActionEdit(dragId: string) {
       const action = this.data.sceneDeviceActionsFlatten.find((item) => item.dragId === dragId)
+
       console.log('handleAutoSceneActionEdit', action)
       if (!action) return
       if (action.type === 6) {
@@ -1121,6 +1125,7 @@ ComponentWithComputed({
             gatewayId: device.gatewayId,
             deviceId: device.deviceId,
             proType: device.proType,
+            productId: device.productId,
             sceneProperty: { ...action.sceneProperty },
           },
           showEditPopup: device.proType,
@@ -1657,7 +1662,8 @@ ComponentWithComputed({
         proType === PRO_TYPE.airConditioner ||
         proType === PRO_TYPE.freshAir ||
         proType === PRO_TYPE.floorHeating ||
-        proType === PRO_TYPE.centralAirConditioning
+        proType === PRO_TYPE.centralAirConditioning ||
+        proType === PRO_TYPE.light
       )
     },
     onItemClick(e: { detail: { type: string; data: unknown } }) {

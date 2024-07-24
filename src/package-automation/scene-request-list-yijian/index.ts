@@ -378,7 +378,8 @@ ComponentWithComputed({
         proType === PRO_TYPE.airConditioner ||
         proType === PRO_TYPE.freshAir ||
         proType === PRO_TYPE.floorHeating ||
-        proType === PRO_TYPE.centralAirConditioning
+        proType === PRO_TYPE.centralAirConditioning ||
+        proType === PRO_TYPE.light
       )
     },
   },

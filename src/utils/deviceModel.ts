@@ -85,6 +85,15 @@ export function toWifiProperty(proType: string, properties: IAnyObject) {
 }
 
 /**
+ * 获取转换后的色温显示值
+ * @param params
+ */
+export function getColorTempText(params: { colorTemp: number; maxColorTemp: number; minColorTemp: number }) {
+  const { colorTemp, maxColorTemp, minColorTemp } = params
+  const color = (colorTemp / 100) * (maxColorTemp - minColorTemp) + minColorTemp
+  return `${color}K`
+}
+/**
  * 转换成属性描述
  * @param proType
  * @param property 设备属性
@@ -102,8 +111,12 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
 
       if (!isNullOrUnDef(property.colorTemperature)) {
         const { maxColorTemp, minColorTemp } = property.colorTempRange || property
-        const color = (property.colorTemperature / 100) * (maxColorTemp - minColorTemp) + minColorTemp
-        descList.push(`色温${color}K`)
+        const color = getColorTempText({
+          colorTemp: property.colorTemperature,
+          maxColorTemp,
+          minColorTemp,
+        })
+        descList.push(`色温${color}`)
       }
     }
   }

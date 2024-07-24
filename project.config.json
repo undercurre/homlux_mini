@@ -44,7 +44,8 @@
     "ignoreUploadUnusedFiles": true,
     "ignoreDevUnusedFiles": false,
     "condition": false,
-    "compileWorklet": true
+    "compileWorklet": true,
+    "swc": true
   },
   "srcMiniprogramRoot": "src/",
   "miniprogramRoot": "src/",
