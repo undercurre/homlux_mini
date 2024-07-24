@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { PRO_TYPE, AC_MODE, CAC_FA_WINDSPEED, CAC_MODE, FAN_PID } from '../../../../config/index'
+import { PRO_TYPE, AC_MODE, CAC_FA_WINDSPEED, CAC_MODE, FAN_PID, PRODUCT_ID } from '../../../../config/index'
 import { transferWindSpeedProperty, getColorTempText } from '../../../../utils/index'
 import { sendDevice } from '../../../../apis/index'
 import Toast from '../../../../skyline-components/mz-toast/toast'
@@ -168,64 +168,74 @@ ComponentWithComputed({
       }
 
       if (data.deviceActionInfo.proType === PRO_TYPE.light) {
-        const { power = 0, brightness = 0, colorTemperature = 0 } = data.deviceActionInfo.sceneProperty
+        const {
+          power = 0,
+          brightness = 0,
+          colorTemperature = 0,
+          fan_power = 0,
+          fan_scene = 'fanmanual',
+          fan_speed = 1,
+        } = data.deviceActionInfo.sceneProperty
 
         if (FAN_PID.includes(data.deviceActionInfo.productId)) {
-          list.push(
-            [
-              {
-                title: '照明',
-                key: 'power',
-                propertyKey: 'power',
-                disabled: false,
-                value: power === 0 ? '关闭' : '开启',
-              },
-              {
-                title: '亮度',
-                key: 'brightness',
-                propertyKey: 'brightness',
-                disabled: power === 0,
-                value: power === 0 ? '- -' : `${brightness}%`,
-              },
-              {
-                title: '色温',
-                key: 'colorTemperature',
-                propertyKey: 'colorTemperature',
-                disabled: power === 0,
-                value:
-                  power === 0
-                    ? '- -'
-                    : getColorTempText({
-                        colorTemp: colorTemperature,
-                        maxColorTemp: data.deviceActionInfo.colorTempRange.maxColorTemp,
-                        minColorTemp: data.deviceActionInfo.colorTempRange.minColorTemp,
-                      }),
-              },
-            ],
-            [
-              {
-                title: '风扇',
-                key: 'power',
-                propertyKey: 'power',
-                disabled: false,
-                value: power === 0 ? '关闭' : '开启',
-              },
-              {
-                title: '档位',
-                key: 'brightness',
-                propertyKey: 'brightness',
-                disabled: power === 0,
-                value: power === 0 ? '- -' : `${brightness}`,
-              },
-              {
-                title: '模式',
-                key: 'windSpeed',
-                propertyKey: 'CacFaWindSpeed',
-                disabled: power === 0,
-                value: power === 0 ? '- -' : '',
-              },
-            ],
-          )
+          const lightFuncList = [
+            {
+              title: '照明',
+              key: 'power',
+              propertyKey: 'power',
+              disabled: false,
+              value: power === 0 ? '关闭' : '开启',
+            },
+            ...(data.deviceActionInfo.productId !== PRODUCT_ID.fan_basic
+              ? [
+                  {
+                    title: '亮度',
+                    key: 'brightness',
+                    propertyKey: 'brightness',
+                    disabled: power === 0,
+                    value: power === 0 ? '- -' : `${brightness}%`,
+                  },
+                  {
+                    title: '色温',
+                    key: 'colorTemperature',
+                    propertyKey: 'colorTemperature',
+                    disabled: power === 0,
+                    value:
+                      power === 0
+                        ? '- -'
+                        : getColorTempText({
+                            colorTemp: colorTemperature,
+                            maxColorTemp: data.deviceActionInfo.colorTempRange.maxColorTemp,
+                            minColorTemp: data.deviceActionInfo.colorTempRange.minColorTemp,
+                          }),
+                  },
+                ]
+              : []),
+          ]
+
+          list.push(lightFuncList, [
+            {
+              title: '风扇',
+              key: 'fan_power',
+              propertyKey: 'fan_power',
+              disabled: false,
+              value: fan_power === 0 ? '关闭' : '开启',
+            },
+            {
+              title: '档位',
+              key: 'fan_scene',
+              propertyKey: 'fan_scene',
+              disabled: fan_power === 0,
+              value: fan_power === 0 ? '- -' : `${fan_scene}`,
+            },
+            {
+              title: '模式',
+              key: 'fan_speed',
+              propertyKey: 'fan_speed',
+              disabled: fan_power === 0,
+              value: fan_power === 0 ? '- -' : `${fan_speed}`,
+            },
+          ])
         } else {
           list.push(
             [

@@ -97,7 +97,7 @@ export const PRODUCT_ID = {
   zhonghong_air: 'zhonghong.air.001', // 485新风
   zhonghong_cac: 'zhonghong.cac.002', // 485空调
   knob: 'midea.knob.001.003', // 一路旋钮面板
-  fan_basic: 'M0200005',
+  fan_basic: 'M0200005', // 基础款（sn8：M0200005）无亮度、色温功能
   fan_smart: '79010863',
   fan_smart_2: 'M0200008',
 }
