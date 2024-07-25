@@ -223,7 +223,6 @@ ComponentWithStore({
 
       const uniId = checkedList[0].split(':')[0]
       const device = deviceStore.deviceMap[uniId]
-      console.log('controlType', controlType, device, checkedList)
       const isFan = FAN_PID.includes(device.productId)
 
       const isShowCommonControl =

@@ -55,14 +55,14 @@
         catchtouchmove="true"
       >
         <view class="flex flex-col w-750rpx mb-22rpx">
-          <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">风速 | {{lightInfoInner.fan_level}}档</text>
+          <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">风速 | {{fanLevel}}档</text>
           <view class="px-48rpx pt-28rpx h-90rpx">
             <mz-slider
               disabled="{{deviceProp.fan_power === 'off'}}"
               catch:tap="sliderTapFan"
               catch:slideEnd="handleSpeedChange"
               catch:slideChange="handleSpeedDrag"
-              value="{{lightInfoInner.fan_level}}"
+              value="{{fanLevel}}"
               bar-height="40"
               btn-width="{{40}}"
               btn-height="{{40}}"
@@ -129,14 +129,14 @@
           wx:else
           class="flex flex-col w-750rpx mb-22rpx"
         >
-          <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{lightInfoInner.brightness}}%</text>
+          <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{deviceProp.brightness}}%</text>
           <view class="px-48rpx pt-28rpx">
             <mz-slider
               catch:tap="sliderTap"
               catch:slideEnd="handleLevelChange"
               catch:slideChange="handleLevelDrag"
               disabled="{{!deviceProp.power}}"
-              value="{{lightInfoInner.brightness}}"
+              value="{{deviceProp.brightness}}"
               btn-width="{{40}}"
               btn-height="{{40}}"
               min="{{1}}"
@@ -153,7 +153,7 @@
               catch:slideEnd="handleColorTempChange"
               catch:slideChange="handleColorTempDrag"
               disabled="{{!deviceProp.power}}"
-              value="{{lightInfoInner.colorTemperature}}"
+              value="{{deviceProp.colorTemperature}}"
               use-button-slot
               btn-height="{{80}}"
               btn-width="{{80}}"
@@ -187,7 +187,7 @@
     <view class="w-750rpx">
       <mz-picker
         columns="{{pickerColumns}}"
-        unit="{{['小时', '分钟']}}"
+        unit="{{['时', '分']}}"
         unitTranslationX="{{[54, 6]}}"
         visible-item-count="{{3}}"
         bind:change="timeChange"
