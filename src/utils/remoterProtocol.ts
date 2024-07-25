@@ -574,7 +574,7 @@ const _generalCmdString = (values: number[], isV2 = false) => {
   // console.log('[指令码]', ...values.map((item) => item.toString().padStart(2, '0')))
   const channel = 0x01 // 通道，固定值
   const version = 0x01 // 协议版本
-  const cmdType = values.length > 1 ? 0x01 : 0x00
+  const cmdType = isV2 ? 0x00 : values.length > 1 ? 0x01 : 0x00
   let sum = channel + version + cmdType
   const data = [channel, version, cmdType, ...values]
   for (const v of values) {
