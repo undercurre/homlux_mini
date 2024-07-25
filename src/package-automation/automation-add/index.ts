@@ -169,6 +169,8 @@ ComponentWithComputed({
         sensorList: JSON.parse(JSON.stringify(deviceStore.allRoomSensorList)),
       })
       const { roomid, sceneInfo } = getCurrentPageParams()
+
+      console.log('getCurrentPageParams', getCurrentPageParams())
       if (!sceneInfo && !roomid) {
         // 新建场景
         return
@@ -399,36 +401,12 @@ ComponentWithComputed({
                 dragId: device.uniId + Math.floor(Math.random() * 1001),
               })
             })
-          } else if (device.proType === PRO_TYPE.light) {
-            const modelName = getModelName(device.proType, device.productId)
-            const property = {
-              ...device.mzgdPropertyDTOList[modelName],
-              ...action.controlAction[0],
-            }
-            const desc = toPropertyDesc(device.proType, property)
-            tempSceneDevicelinkSelectList.push(device.uniId)
-            tempSceneDeviceActionsFlatten.push({
-              uniId: device.uniId,
-              name: device.deviceName,
-              type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
-              desc,
-              pic: device.pic as string,
-              proType: device.proType,
-              value: {
-                ...property,
-                modelName: getModelName(device.proType, device.productId),
-              },
-              sceneProperty: {
-                ...property,
-              },
-              orderNum: 0,
-              dragId: device.uniId + Math.floor(Math.random() * 1001),
-            })
           } else {
             const property = {
               ...action.controlAction[0],
             }
             const desc = toPropertyDesc(device.proType, property)
+
             tempSceneDevicelinkSelectList.push(device.uniId)
             tempSceneDeviceActionsFlatten.push({
               uniId: device.uniId,
@@ -1395,18 +1373,7 @@ ComponentWithComputed({
                 ctrlAction.modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
               }
 
-              if (device.proType === PRO_TYPE.light) {
-                ctrlAction.power = property.power
-
-                if (property.power === 1) {
-                  ctrlAction.colorTemperature = property.colorTemperature
-                  ctrlAction.brightness = property.brightness
-                }
-
-                // if (device.deviceType === 3) {
-                //   ctrlAction = toWifiProperty(device.proType, ctrlAction)
-                // }
-              } else if (device.proType === PRO_TYPE.curtain) {
+              if (device.proType === PRO_TYPE.curtain) {
                 ctrlAction.curtain_position = property.curtain_position
               } else if (device.proType === PRO_TYPE.bathHeat) {
                 ctrlAction.light_mode = property.light_mode
@@ -1418,6 +1385,7 @@ ComponentWithComputed({
                 ctrlAction.light = property.light
               } else if (this.isNewScenarioSettingSupported(device.proType)) {
                 ctrlAction = action.sceneProperty!
+                delete ctrlAction?.colorTempRange
               }
               newSceneData.deviceActions.push({
                 controlAction: [ctrlAction],
