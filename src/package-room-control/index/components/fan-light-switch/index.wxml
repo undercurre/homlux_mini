@@ -20,11 +20,12 @@
       <text class="text">风扇｜{{isFanOn ? '开' : '关'}}</text>
 
       <mz-icon-button
-        disabled="{{false}}"
+        isOn="{{isFanOn}}"
         imageSize="{{48}}"
         wrapperWidth="{{64}}"
         wrapperHeight="{{64}}"
         round="{{32}}"
+        rebound="{{true}}"
         bgColor="#ffffff"
         bgColorActive="#267AFF"
         icon="/package-room-control/assets/base/power-blue.png"
@@ -46,13 +47,14 @@
       <text class="text">照明｜{{isLightOn ? '开' : '关'}}</text>
 
       <mz-icon-button
-        disabled="{{false}}"
+        isOn="{{isLightOn}}"
         imageSize="{{48}}"
         wrapperWidth="{{64}}"
         wrapperHeight="{{64}}"
         round="{{32}}"
+        rebound="{{true}}"
         bgColor="#ffffff"
-        bgColorActive="#267AFF"
+        bgColorActive="#FBBB32"
         icon="/package-room-control/assets/base/power-yellow.png"
         iconActive="/package-room-control/assets/base/power-white.png"
         bind:btnTouchStart="handleBtnTap"

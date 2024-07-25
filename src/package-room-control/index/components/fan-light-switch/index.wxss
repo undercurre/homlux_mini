@@ -7,14 +7,13 @@
   background-color: #f7f8f9;
   padding: 8rpx;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .button {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 342rpx;
+  width: 343rpx;
   height: 160rpx;
 }
 
@@ -28,7 +27,7 @@
 .slider-wrapper {
   position: absolute;
   border-radius: 32rpx;
-  width: 342rpx;
+  width: 343rpx;
   height: 160rpx;
   top: 0;
   left: 0;

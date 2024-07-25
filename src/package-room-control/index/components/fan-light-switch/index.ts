@@ -1,7 +1,7 @@
 // components/fan-light-switch.ts
 import { timing } from '../../../../skyline-components/common/worklet'
 
-const _BTN_WIDTH = 342
+const _BTN_WIDTH = 343
 
 Component({
   /**
