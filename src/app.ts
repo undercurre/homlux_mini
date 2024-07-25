@@ -15,7 +15,6 @@ import {
   showLoading,
   hideLoading,
 } from './utils/index'
-import svgs from './assets/svg/index'
 import { homeStore, othersStore, sceneStore, userStore } from './store/index'
 import { reaction } from 'mobx-miniprogram'
 import homOs from 'js-homos'
@@ -24,9 +23,6 @@ import mqtt from './lib/mqtt.min.js' // 暂时只能使用4.2.1版本，高版�
 // TODO 统一配置和管理 storage key
 App<IAppOption>({
   async onLaunch() {
-    // DESERTED 加载svg数据
-    this.globalData.svgs = svgs
-
     // 设备云端运行环境
     setCurrentEnv()
 
