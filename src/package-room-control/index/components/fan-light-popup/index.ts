@@ -10,6 +10,7 @@ import {
   defaultImgDir,
   WIND_SPEED_MAP,
   NO_SYNC_DEVICE_STATUS,
+  PRODUCT_ID,
 } from '../../../../config/index'
 import { sendDevice } from '../../../../apis/index'
 import Toast from '../../../../skyline-components/mz-toast/toast'
@@ -192,6 +193,9 @@ ComponentWithComputed({
     },
     isFanOn(data) {
       return data.deviceProp.fan_power === 'on'
+    },
+    isBaseFan(data) {
+      return data.deviceInfo.productId === PRODUCT_ID.fan_basic
     },
     // 是否局域网可控
     isLanCtl(data) {

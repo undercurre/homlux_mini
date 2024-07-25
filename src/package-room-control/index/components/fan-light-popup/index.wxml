@@ -34,7 +34,7 @@
       <text class="text-hex-555659 text-24 ml-32rpx">当前设备仅支持局域网控制，请检查您的网络！</text>
     </view>
 
-    <view class="w-full flex-center pt-20rpx">
+    <view class="w-full flex-center pt-48rpx">
       <fan-light-switch
         checkedIndex="{{tabIndex}}"
         bind:switchchange="handleType"
@@ -118,7 +118,17 @@
         catchtouchmove="true"
       >
         <!-- 灯光控制 -->
-        <view class="flex flex-col w-750rpx mb-22rpx">
+        <tips-box
+          wx:if="{{isBaseFan}}"
+          text="暂无功能"
+          icon="{{defaultImgDir}}/no-func.png"
+          size="240"
+          class="mt-98rpx"
+        ></tips-box>
+        <view
+          wx:else
+          class="flex flex-col w-750rpx mb-22rpx"
+        >
           <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">亮度 | {{lightInfoInner.brightness}}%</text>
           <view class="px-48rpx pt-28rpx">
             <mz-slider
