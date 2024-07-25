@@ -1,6 +1,7 @@
 interface IAppOption {
   globalData: {
     userInfo?: WechatMiniprogram.UserInfo
+    svgs?: Record<string, string>
     firstOnShow: boolean
   }
   userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback
