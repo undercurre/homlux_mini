@@ -55,8 +55,8 @@
           <text class="text-32rpx mt-70rpx ml-48rpx {{deviceProp.power ? 'text-black-59' : 'text-hex-a2a2a2'}}">风速 | {{lightInfoInner.fan_level}}档</text>
           <view class="px-48rpx pt-28rpx h-90rpx">
             <mz-slider
-              disabled="{{!deviceProp.power}}"
-              catch:tap="sliderTap"
+              disabled="{{deviceProp.fan_power === 'off'}}"
+              catch:tap="sliderTapFan"
               catch:slideEnd="handleSpeedChange"
               catch:slideChange="handleSpeedDrag"
               value="{{lightInfoInner.fan_level}}"
@@ -66,7 +66,7 @@
               min="{{1}}"
               max="{{6}}"
               active-color="#488FFF"
-              key="fan_level"
+              key="fanLevel"
               use-button-slot
             >
               <view
@@ -77,7 +77,7 @@
               </view>
             </mz-slider>
           </view>
-          <view class="flex justify-between px-48rpx">
+          <view class="flex justify-between px-50rpx">
             <view class="slider-indicator">1</view>
             <view class="slider-indicator">2</view>
             <view class="slider-indicator">3</view>
@@ -92,6 +92,7 @@
             wx:for="{{btnList}}"
             wx:key="key"
             data-key="{{item.key}}"
+            disabled="{{deviceProp.fan_power === 'off'}}"
             icon="{{item.icon}}"
             iconActive="{{item.iconActive}}"
             text="{{item.text}}"
@@ -104,7 +105,7 @@
             round="{{20}}"
             textColor="#a2a2a2"
             textColorActive="#488fff"
-            bind:btnTouchStart="handleModeTap"
+            bind:btnTouchStart="handleFuncTap"
           ></mz-icon-button>
         </view>
       </swiper-item>
@@ -127,7 +128,7 @@
               btn-height="{{40}}"
               min="{{1}}"
               active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"
-              key="fan-brightness"
+              key="fanBrightness"
             >
             </mz-slider>
           </view>
@@ -145,7 +146,7 @@
               btn-width="{{80}}"
               custom-class="slider-color-temp-bar"
               active-color="rgba(0,0,0,0)"
-              key="fan-colorTemp"
+              key="fanColorTemp"
             >
               <view
                 slot="button"
@@ -156,6 +157,43 @@
         </view>
       </swiper-item>
     </swiper>
+  </view>
+</mz-popup>
+
+<mz-popup
+  show="{{ isShowPicker }}"
+  z-index="1002"
+  round
+  position="bottom"
+  bind:close="handlePickerClose"
+  catchtouchmove="blank"
+>
+  <view class="w-750rpx h-600rpx relative flex flex-col items-center">
+    <text class="w-750rpx h-92rpx text-32rpx text-hex-999999 leading-92rpx text-center border-b-1px border-b-hex-EEF2F7 border-b-solid">{{pickerTitle}}</text>
+    <view class="h-52rpx"></view>
+    <view class="w-750rpx">
+      <mz-picker
+        columns="{{pickerColumns}}"
+        unit="{{['小时', '分钟']}}"
+        unitTranslationX="{{[54, 6]}}"
+        visible-item-count="{{3}}"
+        bind:change="timeChange"
+      ></mz-picker>
+    </view>
+
+    <view class="h-62rpx"></view>
+    <view class="flex justify-between items-end w-750rpx h-112rpx bg-hex-f9f9f9">
+      <view
+        class="h-96rpx w-374rpx leading-96rpx text-center secondary-popup-btn"
+        bindtap="handlePickerClose"
+        >取消</view
+      >
+      <view
+        class="h-96rpx w-374rpx leading-96rpx text-center secondary-popup-btn"
+        bindtap="handlePickerConfirm"
+        >确定</view
+      >
+    </view>
   </view>
 </mz-popup>
 
