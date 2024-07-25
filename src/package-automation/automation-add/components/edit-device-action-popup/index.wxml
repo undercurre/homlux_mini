@@ -15,24 +15,6 @@
       class="w-686rpx mt-48rpx"
       wx:if="{{groupList.length}}"
     >
-      <!-- <mz-cell-group inset>
-        <view
-          class="{{cellList[0].disabled ? 'cell-disabled' : 'cell'}}  px-32rpx "
-          data-item="{{cellList[0]}}"
-          bindtap="cellClicked"
-        >
-          <view class="flex flex-row justify-between items-center py-32rpx">
-            <text class="cell-title {{cellList[0].disabled ? 'disabled' : ''}}">{{cellList[0].title}}</text>
-            <view class="flex flex-row items-center">
-              <text class="cell-value {{cellList[0].disabled ? 'disabled' : ''}}">{{cellList[0].value}}</text>
-              <image
-                class="cell-right-icon {{cellList[0].disabled ? 'disabled' : ''}}"
-                src="../../../../assets/img/home/more.png"
-              ></image>
-            </view>
-          </view>
-        </view>
-      </mz-cell-group> -->
       <mz-cell-group
         wx:for="{{groupList}}"
         wx:for-item="group"

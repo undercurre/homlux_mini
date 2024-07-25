@@ -46,3 +46,10 @@ export const WIND_SPEED_MAP = {
   81: 5,
   100: 6,
 } as Record<number, number>
+
+// 风扇灯 风速场景key-> 场景名
+export const FAN_SCENE_MAP = {
+  breathing_wind: '自然风',
+  const_temperature: '恒温模式',
+  fanmanual: '手动模式',
+} as Record<string, string>

@@ -1,4 +1,4 @@
-import { PRO_TYPE, AC_MODE, CAC_MODE, CAC_FA_WINDSPEED } from '../config/index'
+import { PRO_TYPE, AC_MODE, CAC_MODE, CAC_FA_WINDSPEED, WIND_SPEED_MAP, FAN_SCENE_MAP } from '../config/index'
 import { isNullOrUnDef } from './index'
 
 /**
@@ -103,9 +103,19 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
     console.warn('转换属性描述失败，属性集为空')
     return []
   }
-  const descList = [] as string[]
+  let descList = [] as string[]
   if (proType === PRO_TYPE.light) {
-    !isNullOrUnDef(property.power) && descList.push(property.power ? '打开' : '关闭')
+    !isNullOrUnDef(property.power) &&
+      descList.push(`${isNullOrUnDef(property.fan_power) ? '' : '照明:'}${property.power ? '打开' : '关闭'}`) // 风扇灯开关需要区分风扇和照明开关
+
+    !isNullOrUnDef(property.fan_power) && descList.push(`风扇:${property.fan_power ? '打开' : '关闭'}`)
+
+    if (property.fan_power === 1) {
+      // WIND_SPEED_MAP, FAN_SCENE_MAP
+      !isNullOrUnDef(property.fan_scene) && descList.push(`${FAN_SCENE_MAP[property.fan_scene]}`)
+
+      !isNullOrUnDef(property.fan_speed) && descList.push(`${WIND_SPEED_MAP[property.fan_speed]}档`)
+    }
     if (property.power === 1) {
       !isNullOrUnDef(property.brightness) && descList.push(`亮度${property.brightness}%`)
 
@@ -218,6 +228,10 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
   if (proType === PRO_TYPE.floorHeating) {
     !isNullOrUnDef(property.power) && descList.push(property.power === 1 ? '开启' : '关闭')
     !isNullOrUnDef(property.targetTemperature) && descList.push(`${property.targetTemperature}℃`)
+  }
+
+  if (descList.length > 3) {
+    descList = [...descList.slice(0, 2), '...']
   }
 
   return descList

@@ -1,5 +1,14 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { PRO_TYPE, AC_MODE, CAC_FA_WINDSPEED, CAC_MODE, FAN_PID, PRODUCT_ID } from '../../../../config/index'
+import {
+  PRO_TYPE,
+  AC_MODE,
+  CAC_FA_WINDSPEED,
+  CAC_MODE,
+  FAN_PID,
+  PRODUCT_ID,
+  WIND_SPEED_MAP,
+  FAN_SCENE_MAP,
+} from '../../../../config/index'
 import { transferWindSpeedProperty, getColorTempText } from '../../../../utils/index'
 import { sendDevice } from '../../../../apis/index'
 import Toast from '../../../../skyline-components/mz-toast/toast'
@@ -222,18 +231,18 @@ ComponentWithComputed({
               value: fan_power === 0 ? '关闭' : '开启',
             },
             {
-              title: '档位',
+              title: '模式',
               key: 'fan_scene',
               propertyKey: 'fan_scene',
               disabled: fan_power === 0,
-              value: fan_power === 0 ? '- -' : `${fan_scene}`,
+              value: fan_power === 0 ? '- -' : `${FAN_SCENE_MAP[fan_scene]}`,
             },
             {
-              title: '模式',
+              title: '档位',
               key: 'fan_speed',
               propertyKey: 'fan_speed',
-              disabled: fan_power === 0,
-              value: fan_power === 0 ? '- -' : `${fan_speed}`,
+              disabled: fan_power === 0 || fan_scene !== 'fanmanual',
+              value: fan_power === 0 || fan_scene !== 'fanmanual' ? '- -' : `${WIND_SPEED_MAP[fan_speed]}档`,
             },
           ])
         } else {
