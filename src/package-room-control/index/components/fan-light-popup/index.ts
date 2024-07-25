@@ -124,18 +124,18 @@ ComponentWithComputed({
     btnMap: {
       delay_fan_off: {
         text: '定时',
-        icon: '../../assets/img/function/fb0.png',
-        iconActive: '../../assets/img/function/fb1.png',
+        icon: '/package-room-control/assets/function/fb0.png',
+        iconActive: '/package-room-control/assets/function/fb1.png',
       },
       arround_dir: {
         text: '反转',
-        icon: '../../assets/img/function/fc0.png',
-        iconActive: '../../assets/img/function/fc1.png',
+        icon: '/package-room-control/assets/function/fc0.png',
+        iconActive: '/package-room-control/assets/function/fc1.png',
       },
       breathing_wind: {
         text: '自然风',
-        icon: '../../assets/img/function/fd0.png',
-        iconActive: '../../assets/img/function/fd1.png',
+        icon: '/package-room-control/assets/function/fd0.png',
+        iconActive: '/package-room-control/assets/function/fd1.png',
       },
     } as Record<string, BtnItem>,
     _canSyncCloudData: true, // 是否响应云端变更
@@ -375,6 +375,27 @@ ComponentWithComputed({
       this.setData({
         isShowPicker: false,
       })
+    },
+    handleBtnTap(e: WechatMiniprogram.TouchEvent<{ key: string }>) {
+      const { key } = e.detail
+      console.log('handleBtnTap', key)
+      if (key === 'fan') {
+        const fan_power = this.data.isFanOn ? 'off' : 'on'
+        this.toSendDevice({
+          fan_power,
+        })
+        this.setData({
+          'deviceProp.fan_power': fan_power,
+        })
+      } else if (key === 'light') {
+        const power = this.data.deviceProp.power ? 0 : 1
+        this.toSendDevice({
+          power,
+        })
+        this.setData({
+          'deviceProp.power': power,
+        })
+      }
     },
   },
 })

@@ -1,17 +1,21 @@
-// components/marvels-switch.ts
+// components/fan-light-switch.ts
 import { timing } from '../../../../skyline-components/common/worklet'
+
+const _BTN_WIDTH = 342
 
 Component({
   /**
    * 组件的属性列表
    */
   properties: {
+    isLightOn: Boolean,
+    isFanOn: Boolean,
     checkedIndex: {
       type: Number,
       value: 0,
       observer(newVal) {
         this.data.left.value = timing(
-          newVal * 148 + 8,
+          newVal * _BTN_WIDTH,
           {
             duration: 100,
           },
@@ -27,11 +31,11 @@ Component({
    * 组件的初始数据
    */
   data: {
-    left: { value: 8 },
+    left: { value: 0 },
   },
   lifetimes: {
     attached() {
-      this.data.left = wx.worklet.shared(this.data.checkedIndex * 148 + 8)
+      this.data.left = wx.worklet.shared(this.data.checkedIndex * _BTN_WIDTH)
       this.applyAnimatedStyle('#slider', () => {
         'worklet'
         return {
@@ -44,10 +48,10 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    onSwitchChange(e: WechatMiniprogram.TouchEvent) {
+    onSwitchChange(e: WechatMiniprogram.TouchEvent<never, never, { index: number }>) {
       const { index } = e.currentTarget.dataset
       this.data.left.value = timing(
-        index * 148 + 8,
+        index * _BTN_WIDTH,
         {
           duration: 100,
         },
@@ -56,9 +60,14 @@ Component({
         },
       )
       this.setData({
-        checkedIndex: parseInt(index),
+        checkedIndex: Number(index),
       })
       this.triggerEvent('switchchange', { checkedIndex: index })
+    },
+    handleBtnTap(e: WechatMiniprogram.TouchEvent<never, never, { key: string }>) {
+      const { key } = e.currentTarget.dataset
+
+      this.triggerEvent('btnTap', { key })
     },
   },
 })
