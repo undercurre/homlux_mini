@@ -1,0 +1,63 @@
+<!--components/fan-light-switch.wxml-->
+
+<view class="switch-wrapper">
+  <view
+    id="slider"
+    class="slider-wrapper z-1"
+  >
+  </view>
+  <view class="flex flex-row z-2">
+    <view
+      data-index="0"
+      class="button"
+      bindtap="onSwitchChange"
+    >
+      <image
+        class="w-64 h-64 mr-10rpx"
+        src="/assets/img/function/fan{{isFanOn ? '1' : '0'}}.png"
+      ></image>
+
+      <text class="text">风扇｜{{isFanOn ? '开' : '关'}}</text>
+
+      <mz-icon-button
+        disabled="{{false}}"
+        imageSize="{{48}}"
+        wrapperWidth="{{64}}"
+        wrapperHeight="{{64}}"
+        round="{{32}}"
+        bgColor="#ffffff"
+        bgColorActive="#267AFF"
+        icon="/assets/img/base/power-blue.png"
+        iconActive="/assets/img/base/power-white.png"
+        bind:btnTouchStart="handleBtnTap"
+        data-key="fan"
+      ></mz-icon-button>
+    </view>
+    <view
+      data-index="1"
+      class="button"
+      bindtap="onSwitchChange"
+    >
+      <image
+        class="w-64 h-64 mr-10rpx"
+        src="/assets/img/function/light{{isLightOn ? '1' : '0'}}.png"
+      ></image>
+
+      <text class="text">照明｜{{isLightOn ? '开' : '关'}}</text>
+
+      <mz-icon-button
+        disabled="{{false}}"
+        imageSize="{{48}}"
+        wrapperWidth="{{64}}"
+        wrapperHeight="{{64}}"
+        round="{{32}}"
+        bgColor="#ffffff"
+        bgColorActive="#267AFF"
+        icon="/assets/img/base/power-yellow.png"
+        iconActive="/assets/img/base/power-white.png"
+        bind:btnTouchStart="handleBtnTap"
+        data-key="light"
+      ></mz-icon-button>
+    </view>
+  </view>
+</view>

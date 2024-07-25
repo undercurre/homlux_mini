@@ -5,7 +5,7 @@
   closeable
   bind:close="handleClose"
 >
-  <view class="w-750rpx h-700 bg-white flex-col flex items-center py-20rpx">
+  <view class="w-750rpx h-800 bg-white flex-col flex items-center py-20rpx">
     <!-- tab -->
     <view class="flex justify-evenly w-686rpx mt-10rpx relative">
       <view class="flex-col-center">
@@ -35,10 +35,13 @@
     </view>
 
     <view class="w-full flex-center pt-20rpx">
-      <marvels-switch
+      <fan-light-switch
         checkedIndex="{{tabIndex}}"
         bind:switchchange="handleType"
-      ></marvels-switch>
+        bind:btnTap="handleBtnTap"
+        is-light-on="{{deviceProp.power}}"
+        is-fan-on="{{isFanOn}}"
+      ></fan-light-switch>
     </view>
     <swiper
       class="swiper-list"
@@ -77,7 +80,7 @@
               </view>
             </mz-slider>
           </view>
-          <view class="flex justify-between px-50rpx">
+          <view class="flex justify-between px-54rpx">
             <view class="slider-indicator">1</view>
             <view class="slider-indicator">2</view>
             <view class="slider-indicator">3</view>

@@ -376,5 +376,26 @@ ComponentWithComputed({
         isShowPicker: false,
       })
     },
+    handleBtnTap(e: WechatMiniprogram.TouchEvent<{ key: string }>) {
+      const { key } = e.detail
+      console.log('handleBtnTap', key)
+      if (key === 'fan') {
+        const fan_power = this.data.isFanOn ? 'off' : 'on'
+        this.toSendDevice({
+          fan_power,
+        })
+        this.setData({
+          'deviceProp.fan_power': fan_power,
+        })
+      } else if (key === 'light') {
+        const power = this.data.deviceProp.power ? 0 : 1
+        this.toSendDevice({
+          power,
+        })
+        this.setData({
+          'deviceProp.power': power,
+        })
+      }
+    },
   },
 })

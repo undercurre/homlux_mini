@@ -1,0 +1,37 @@
+/* components/fan-light-switch.wxss */
+.switch-wrapper {
+  position: relative;
+  height: 160rpx;
+  width: 686rpx;
+  border-radius: 32rpx;
+  background-color: #f7f8f9;
+  padding: 8rpx;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 342rpx;
+  height: 160rpx;
+}
+
+.text {
+  font-size: 32rpx;
+  color: #000;
+  font-weight: 500;
+  margin-right: 32rpx;
+}
+
+.slider-wrapper {
+  position: absolute;
+  border-radius: 32rpx;
+  width: 342rpx;
+  height: 160rpx;
+  top: 0;
+  left: 0;
+  background-color: #fff;
+  box-shadow: 0 0 20rpx 0 rgba(0, 0, 0, 0.1);
+}
