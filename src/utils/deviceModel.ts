@@ -108,9 +108,9 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
     !isNullOrUnDef(property.power) &&
       descList.push(`${isNullOrUnDef(property.fan_power) ? '' : '照明:'}${property.power ? '打开' : '关闭'}`) // 风扇灯开关需要区分风扇和照明开关
 
-    !isNullOrUnDef(property.fan_power) && descList.push(`风扇:${property.fan_power ? '打开' : '关闭'}`)
+    !isNullOrUnDef(property.fan_power) && descList.push(`风扇:${property.fan_power === 'on' ? '打开' : '关闭'}`)
 
-    if (property.fan_power === 1) {
+    if (property.fan_power === 'on') {
       // WIND_SPEED_MAP, FAN_SCENE_MAP
       !isNullOrUnDef(property.fan_scene) && descList.push(`${FAN_SCENE_MAP[property.fan_scene]}`)
 

@@ -181,7 +181,7 @@ ComponentWithComputed({
           power = 0,
           brightness = 0,
           colorTemperature = 0,
-          fan_power = 0,
+          fan_power = 'off',
           fan_scene = 'fanmanual',
           fan_speed = 1,
         } = data.deviceActionInfo.sceneProperty
@@ -228,21 +228,21 @@ ComponentWithComputed({
               key: 'fan_power',
               propertyKey: 'fan_power',
               disabled: false,
-              value: fan_power === 0 ? '关闭' : '开启',
+              value: fan_power === 'off' ? '关闭' : '开启',
             },
             {
               title: '模式',
               key: 'fan_scene',
               propertyKey: 'fan_scene',
-              disabled: fan_power === 0,
-              value: fan_power === 0 ? '- -' : `${FAN_SCENE_MAP[fan_scene]}`,
+              disabled: fan_power === 'off',
+              value: fan_power === 'off' ? '- -' : `${FAN_SCENE_MAP[fan_scene]}`,
             },
             {
               title: '档位',
               key: 'fan_speed',
               propertyKey: 'fan_speed',
-              disabled: fan_power === 0 || fan_scene !== 'fanmanual',
-              value: fan_power === 0 || fan_scene !== 'fanmanual' ? '- -' : `${WIND_SPEED_MAP[fan_speed]}档`,
+              disabled: fan_power === 'off' || fan_scene !== 'fanmanual',
+              value: fan_power === 'off' || fan_scene !== 'fanmanual' ? '- -' : `${WIND_SPEED_MAP[fan_speed]}档`,
             },
           ])
         } else {
@@ -403,12 +403,22 @@ ComponentWithComputed({
       }
 
       if (this.data.deviceActionInfo.proType === PRO_TYPE.light) {
-        const { power = 0, brightness = 0, colorTemperature = 0 } = this.data.deviceActionInfo.sceneProperty
+        const {
+          power = 0,
+          brightness = 0,
+          colorTemperature = 0,
+          fan_power = 'off',
+          fan_scene = 'fanmanual',
+          fan_speed = 1,
+        } = this.data.deviceActionInfo.sceneProperty
 
         const tempInfo = {
           power,
           brightness,
           colorTemperature,
+          fan_power,
+          fan_scene,
+          fan_speed,
         }
         this.setData(
           {
@@ -483,11 +493,18 @@ ComponentWithComputed({
       } else if (
         e.detail.propertyKey === 'power' &&
         e.detail.value === 1 &&
-        this.data.deviceActionInfo.proType === PRO_TYPE.light
+        this.data.deviceActionInfo.proType === PRO_TYPE.light &&
+        this.data.deviceActionInfo.productId !== PRODUCT_ID.fan_basic
       ) {
-        // 如果电源为开启，灯具设备自动添加亮度、色温属性
+        // 如果电源为开启，灯具设备(支持亮度色温功能的)自动添加亮度、色温属性
         sceneProperty['brightness'] = 0
         sceneProperty['colorTemperature'] = 0
+      }
+
+      if (e.detail.propertyKey === 'fan_power' && e.detail.value === 'on') {
+        // 如果风扇电源为开启，风扇灯设备自动添加模式、风速属性
+        sceneProperty['fan_scene'] = 'fanmanual'
+        sceneProperty['fan_speed'] = 1
       }
 
       //WIFI空调模式为不设置时,不可设置温度和风速

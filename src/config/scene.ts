@@ -121,8 +121,8 @@ export const scenePropertyOptions = {
     key: 'targetTemperature',
   })),
   fan_power: [
-    { title: '关闭', key: 'power', value: 0 },
-    { title: '开启', key: 'power', value: 1 },
+    { title: '关闭', key: 'fan_power', value: 'off' },
+    { title: '开启', key: 'fan_power', value: 'on' },
   ],
   fan_scene: Object.keys(FAN_SCENE_MAP).map((item) => ({
     title: FAN_SCENE_MAP[item],

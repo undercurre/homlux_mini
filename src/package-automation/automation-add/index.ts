@@ -13,7 +13,7 @@ import {
   strUtil,
   toPropertyDesc,
 } from '../../utils/index'
-import { adviceSceneNameList } from '../../config/index'
+import { adviceSceneNameList, FAN_PID } from '../../config/index'
 
 ComponentWithComputed({
   options: {
@@ -850,7 +850,10 @@ ComponentWithComputed({
             if (this.isNewScenarioSettingSupported(device.proType)) {
               device.sceneProperty = device.sceneProperty || { power: 0 } // 场景控制属性初始化
               if (device.proType === PRO_TYPE.light) {
-                device.sceneProperty.colorTempRange = device.property?.colorTempRange
+                device.sceneProperty.colorTempRange = device.property?.colorTempRange // 灯具设备需要该属性计算色温显示标签
+              }
+              if (FAN_PID.includes(device.productId)) {
+                device.sceneProperty.fan_power = 'off'
               }
               desc = toPropertyDesc(device.proType, device.sceneProperty)
             } else {
