@@ -290,34 +290,16 @@ ComponentWithComputed({
                 orderNum: 0,
                 dragId: device.uniId + Math.floor(Math.random() * 1001),
               })
-            } else if (device.proType === PRO_TYPE.light) {
-              const modelName = getModelName(device.proType, device.productId)
-              const property = {
-                ...device.mzgdPropertyDTOList[modelName],
-                ...action.controlAction[0],
-              }
-              const desc = toPropertyDesc(device.proType, property)
-              tempSceneDeviceActionsFlatten.push({
-                uniId: device.uniId,
-                name: device.deviceName,
-                type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
-                desc,
-                pic: device.pic as string,
-                proType: device.proType,
-                value: {
-                  ...property,
-                  modelName: getModelName(device.proType, device.productId),
-                },
-                sceneProperty: {
-                  ...property,
-                },
-                orderNum: 0,
-                dragId: device.uniId + Math.floor(Math.random() * 1001),
-              })
             } else {
               const property = {
                 ...action.controlAction[0],
               }
+              const modelName = getModelName(device.proType, device.productId)
+
+              if (device.proType === PRO_TYPE.light) {
+                property.colorTempRange = device.mzgdPropertyDTOList[modelName].colorTempRange
+              }
+
               const desc = toPropertyDesc(device.proType, property)
               tempSceneDeviceActionsFlatten.push({
                 uniId: device.uniId,
@@ -328,7 +310,7 @@ ComponentWithComputed({
                 proType: device.proType,
                 value: {
                   ...property,
-                  modelName: getModelName(device.proType, device.productId),
+                  modelName,
                 },
                 sceneProperty: {
                   ...property,
@@ -405,6 +387,13 @@ ComponentWithComputed({
             const property = {
               ...action.controlAction[0],
             }
+
+            const modelName = getModelName(device.proType, device.productId)
+
+            if (device.proType === PRO_TYPE.light) {
+              property.colorTempRange = device.mzgdPropertyDTOList[modelName].colorTempRange
+            }
+
             const desc = toPropertyDesc(device.proType, property)
 
             tempSceneDevicelinkSelectList.push(device.uniId)
@@ -417,7 +406,7 @@ ComponentWithComputed({
               proType: device.proType,
               value: {
                 ...property,
-                modelName: getModelName(device.proType, device.productId),
+                modelName,
               },
               sceneProperty: {
                 ...property,
