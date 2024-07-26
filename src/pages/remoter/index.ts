@@ -1,6 +1,6 @@
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay, Logger } from '../../utils/index'
+import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
 import { deviceConfig, deviceConfigV2, MIN_RSSI, CMD, FREQUENCY_TIME, SEEK_INTERVAL, SEEK_TIMEOUT } from '../../config/remoter'
@@ -98,6 +98,7 @@ ComponentWithComputed({
       await delay(0)
 
       // 如果未在发现模式，则搜索设备
+      console.log('lmn>>>onShow')
       if (!this.data._isDiscoverying) {
         this.toSeek()
       }
@@ -303,7 +304,7 @@ ComponentWithComputed({
       }
 
       if (this.data._isDiscoverying) {
-        console.log('[已在发现中且未停止]')
+        console.log('lmn>>>已在搜索设备中...')
       } else {
         this.data._isDiscoverying = true
 
@@ -312,8 +313,8 @@ ComponentWithComputed({
           allowDuplicatesKey: true,
           powerLevel: 'high',
           interval: SEEK_INTERVAL,
-          fail: (err) => Logger.log('[startBluetoothDevicesDiscoveryErr]', err),
-          success: () => Logger.log('[startBluetoothDevicesDiscoverySuccess]'),
+          fail: (err) => console.log('lmn>>>开始搜索设备失败', JSON.stringify(err)),
+          success: () => console.log('lmn>>>开始搜索设备成功'),
         })
       }
     },
@@ -325,7 +326,7 @@ ComponentWithComputed({
       }
       wx.stopBluetoothDevicesDiscovery({
         success: () => {
-          Logger.log('[stopBluetoothDevicesDiscovery]')
+          console.log('lmn>>>停止搜索设备')
           this.data._isDiscoverying = false
           this.setData({
             isSeeking: false,

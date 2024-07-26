@@ -5,6 +5,7 @@ import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising, BleService } from '../../utils/remoterUtils'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
+import { hideLoading, showLoading } from '../../utils/system'
 // import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
@@ -179,7 +180,10 @@ ComponentWithComputed({
       '/package-remoter/assets/newUI/level1_w.png',
       '/package-remoter/assets/newUI/level2_w.png',
       '/package-remoter/assets/newUI/level3_w.png'
-    ]
+    ],
+    smellLevelArr: ['低', '中', '高'],
+    curLevelPickerIndex: [0],
+    pickerIndexTemp: [0],
   },
   watch: {
     curRemoter(value) {
@@ -619,9 +623,13 @@ ComponentWithComputed({
         return
       }
       if (key === 'SMELL') {
-        this.setData({
-          isShowLevelPopup: true
-        })
+        if (list[index].isOn) {
+          this.sendBluetoothCMD([CMD['BATH_SMELL']])
+        } else {
+          this.setData({
+            isShowLevelPopup: true
+          })
+        }
         return
       }
       list[index].isOn = !list[index].isOn
@@ -723,6 +731,29 @@ ComponentWithComputed({
         isShowPopup: false,
         isShowLevelPopup: false
       })
+    },
+    onLevelPickChange(e: any) {
+      const indexs = e.detail.value
+      this.setData({
+        pickerIndexTemp: indexs,
+      })
+    },
+    onLevelPickEnd() {
+      setTimeout(() => {
+        this.setData({
+          curLevelPickerIndex: this.data.pickerIndexTemp,
+        })
+      }, 100)
+    },
+    onPickLevelConfirm() {
+      showLoading('加载中')
+      setTimeout(() => {
+        hideLoading()
+        this.closePopup()
+        const index = this.data.curLevelPickerIndex[0]
+        const valArr = [3, 2, 1]
+        this.sendBluetoothCMD([CMD['BATH_SMELL'], valArr[index]])
+      }, 500);
     },
     percent2Rang(percent: number) {
       const value = percent > 100 ? 100 : percent < 0 ? 0 : percent
