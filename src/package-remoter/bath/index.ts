@@ -166,11 +166,11 @@ ComponentWithComputed({
     conTimer: null as any,
     tryConnectCnt: 0,
     isShowLevelPopup: false,
-    levelPopupOption: [
-      { name: '高档', value: 3, isSelect: true },
-      { name: '中档', value: 2, isSelect: false },
-      { name: '低档', value: 1, isSelect: false },
-    ],
+    // levelPopupOption: [
+    //   { name: '高档', value: 3, isSelect: true },
+    //   { name: '中档', value: 2, isSelect: false },
+    //   { name: '低档', value: 1, isSelect: false },
+    // ],
     iconLevelB: [
       '/package-remoter/assets/newUI/level1.png',
       '/package-remoter/assets/newUI/level2.png',
@@ -182,6 +182,7 @@ ComponentWithComputed({
       '/package-remoter/assets/newUI/level3_w.png'
     ],
     smellLevelArr: ['低', '中', '高'],
+    smellLevelVal: [3, 2, 1],
     curLevelPickerIndex: [0],
     pickerIndexTemp: [0],
   },
@@ -489,13 +490,12 @@ ComponentWithComputed({
             btns[i].isOn = status.BATH_SMELL
             btns[i].level = status.SMELL_LEVEL || 0
           }
-          const levelPopup = this.data.levelPopupOption
-          levelPopup.forEach(item => {
-            item.isSelect = item.value === btns[i].level
-          });
-          this.setData({
-            levelPopupOption: levelPopup
-          })
+          const newIndex = this.data.smellLevelVal.findIndex(item => item === btns[i].level)
+          if (newIndex >= 0) {
+            this.setData({
+              curLevelPickerIndex: [newIndex]
+            })
+          }
         }
       }
       bottom[0].isOn = !isAllClose
@@ -714,18 +714,18 @@ ComponentWithComputed({
         this.sendBluetoothCMD([CMD['BATH_DRY']])
       }
     },
-    onPopupLevelSelect(e: any) {
-      this.closePopup()
-      const val = e.currentTarget.dataset.value
-      const option = this.data.levelPopupOption
-      option.forEach(item => {
-        item.isSelect = item.value === val
-      });
-      this.setData({
-        levelPopupOption: option
-      })
-      this.sendBluetoothCMD([CMD['BATH_SMELL'], val])
-    },
+    // onPopupLevelSelect(e: any) {
+    //   this.closePopup()
+    //   const val = e.currentTarget.dataset.value
+    //   const option = this.data.levelPopupOption
+    //   option.forEach(item => {
+    //     item.isSelect = item.value === val
+    //   });
+    //   this.setData({
+    //     levelPopupOption: option
+    //   })
+    //   this.sendBluetoothCMD([CMD['BATH_SMELL'], val])
+    // },
     closePopup() {
       this.setData({
         isShowPopup: false,
@@ -751,8 +751,7 @@ ComponentWithComputed({
         hideLoading()
         this.closePopup()
         const index = this.data.curLevelPickerIndex[0]
-        const valArr = [3, 2, 1]
-        this.sendBluetoothCMD([CMD['BATH_SMELL'], valArr[index]])
+        this.sendBluetoothCMD([CMD['BATH_SMELL'], this.data.smellLevelVal[index]])
       }, 500);
     },
     percent2Rang(percent: number) {
