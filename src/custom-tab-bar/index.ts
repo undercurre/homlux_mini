@@ -41,6 +41,16 @@ Component({
     ],
   },
 
+  lifetimes: {
+    ready() {
+      console.debug('custom-tab-bar:ready', getCurrentPages())
+    },
+  },
+  pageLifetimes: {
+    show() {
+      console.debug('custom-tab-bar:pageLifetimes-show', getCurrentPages())
+    },
+  },
   /**
    * 组件的方法列表
    */

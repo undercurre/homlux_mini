@@ -4,7 +4,7 @@ import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import { deviceStore, homeBinding, homeStore, roomBinding } from '../../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../../store/bleDeviceStore'
-import { delay, emitter, getCurrentPageParams, Logger, strUtil } from '../../../utils/index'
+import { delay, emitter, getCurrentPageParams, Logger, goBackPage } from '../../../utils/index'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { batchUpdate, bindDevice, isDeviceOnline, sendCmdAddSubdevice, queryDeviceProInfo } from '../../../apis/index'
 import lottie from 'lottie-miniprogram'
@@ -891,11 +891,7 @@ ComponentWithComputed({
       bleDevicesStore.reset()
       wx.closeBluetoothAdapter()
 
-      wx.reLaunch({
-        url: strUtil.getUrlWithParams(cacheData.pageEntry, {
-          from: 'addDevice',
-        }),
-      })
+      goBackPage(cacheData.pageEntry)
     },
 
     toggleSelectAll() {
