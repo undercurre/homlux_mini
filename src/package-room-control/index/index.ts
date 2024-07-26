@@ -1010,7 +1010,7 @@ ComponentWithStore({
       else if (
         e.detail.deviceType === 3 &&
         e.detail.onLineStatus &&
-        (e.detail.authStatus === 1 || e.detail.authStatus === 2)
+        (e.detail.authStatus === null || e.detail.authStatus === 1 || e.detail.authStatus === 2)
       ) {
         const { deviceId } = e.detail
         const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId })
@@ -1134,7 +1134,7 @@ ComponentWithStore({
       if (
         e.detail.deviceType === 3 &&
         e.detail.onLineStatus &&
-        (e.detail.authStatus === 1 || e.detail.authStatus === 2)
+        (e.detail.authStatus === null || e.detail.authStatus === 1 || e.detail.authStatus === 2)
       ) {
         const { deviceId } = e.detail
         const res = await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId })
