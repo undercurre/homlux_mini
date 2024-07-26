@@ -244,7 +244,36 @@
     </view>
   </mx-popup>
 
-  <mx-popup
+  <mx-popup round show="{{isShowLevelPopup}}" position="bottom" bind:close="closePopup">
+    <view class="pup-block" style="height: 620rpx;">
+      <text class="text-36rpx font-semibold" style="margin-top: 42rpx; margin-bottom: 42rpx;">灵敏度</text>
+      <view class="popup-close" bind:tap="closePopup">
+        <image style="height: 48rpx; width: 48rpx;" src="/package-remoter/assets/newUI/close.png"></image>
+      </view>
+
+      <view class="pick-block flex-center">
+        <picker-view indicator-style="height: 56rpx;"
+          style="width: 500rpx; height: 320rpx;"
+          value="{{ curLevelPickerIndex }}"
+          bindchange="onLevelPickChange"
+          bindpickend='onLevelPickEnd'>
+          <picker-view-column>
+            <view wx:for="{{ smellLevelArr }}" 
+              wx:key="key"
+              class="picker-cloumn-text"
+              style="font-size: 40rpx;">{{item}}</view>
+          </picker-view-column>
+        </picker-view>
+      </view>
+
+      <mx-button
+        custom-style="width: 686rpx; margin-top: 40rpx"
+        color="linear-gradient(90deg, #468CFB 0%, #6BA3FC 100%)"
+        type="default" bind:click="onPickLevelConfirm">确定</mx-button>
+    </view>
+  </mx-popup>
+
+  <!-- <mx-popup
     round
     show="{{isShowLevelPopup}}"
     position="bottom"
@@ -271,7 +300,7 @@
         <text class="text-32rpx font-normal" style="color: #232323">取消</text>
       </view>
     </view>
-  </mx-popup>
+  </mx-popup> -->
 </view>
 
 <van-toast id="van-toast" />

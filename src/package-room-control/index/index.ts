@@ -688,11 +688,13 @@ ComponentWithStore({
           // 如果控制弹框为显示状态，则同步选中设备的状态
           // 因为【灯】异常推送较多，暂时不对弹框中的设备状态进行更新
           // 因为【窗帘】需要等待轨道运行，推送迟缓，不对弹框中的设备状态进行更新
+          const select = this.data.checkedList.includes(device.deviceId)
           if (
             device!.mzgdPropertyDTOList &&
-            this.data.checkedList.includes(originDevice!.deviceId) &&
-            originDevice!.select &&
-            (originDevice.proType === PRO_TYPE.bathHeat || originDevice.proType === PRO_TYPE.clothesDryingRack)
+            select &&
+            (originDevice.proType === PRO_TYPE.bathHeat ||
+              originDevice.proType === PRO_TYPE.clothesDryingRack ||
+              FAN_PID.includes(originDevice.productId))
           ) {
             const newVal = {
               ...originDevice,

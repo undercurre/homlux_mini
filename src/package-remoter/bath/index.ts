@@ -5,6 +5,7 @@ import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising, BleService } from '../../utils/remoterUtils'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
+import { hideLoading, showLoading } from '../../utils/system'
 // import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
@@ -165,11 +166,11 @@ ComponentWithComputed({
     conTimer: null as any,
     tryConnectCnt: 0,
     isShowLevelPopup: false,
-    levelPopupOption: [
-      { name: '高档', value: 3, isSelect: true },
-      { name: '中档', value: 2, isSelect: false },
-      { name: '低档', value: 1, isSelect: false },
-    ],
+    // levelPopupOption: [
+    //   { name: '高档', value: 3, isSelect: true },
+    //   { name: '中档', value: 2, isSelect: false },
+    //   { name: '低档', value: 1, isSelect: false },
+    // ],
     iconLevelB: [
       '/package-remoter/assets/newUI/level1.png',
       '/package-remoter/assets/newUI/level2.png',
@@ -179,7 +180,11 @@ ComponentWithComputed({
       '/package-remoter/assets/newUI/level1_w.png',
       '/package-remoter/assets/newUI/level2_w.png',
       '/package-remoter/assets/newUI/level3_w.png'
-    ]
+    ],
+    smellLevelArr: ['低', '中', '高'],
+    smellLevelVal: [3, 2, 1],
+    curLevelPickerIndex: [0],
+    pickerIndexTemp: [0],
   },
   watch: {
     curRemoter(value) {
@@ -485,13 +490,12 @@ ComponentWithComputed({
             btns[i].isOn = status.BATH_SMELL
             btns[i].level = status.SMELL_LEVEL || 0
           }
-          const levelPopup = this.data.levelPopupOption
-          levelPopup.forEach(item => {
-            item.isSelect = item.value === btns[i].level
-          });
-          this.setData({
-            levelPopupOption: levelPopup
-          })
+          const newIndex = this.data.smellLevelVal.findIndex(item => item === btns[i].level)
+          if (newIndex >= 0) {
+            this.setData({
+              curLevelPickerIndex: [newIndex]
+            })
+          }
         }
       }
       bottom[0].isOn = !isAllClose
@@ -619,9 +623,13 @@ ComponentWithComputed({
         return
       }
       if (key === 'SMELL') {
-        this.setData({
-          isShowLevelPopup: true
-        })
+        if (list[index].isOn) {
+          this.sendBluetoothCMD([CMD['BATH_SMELL']])
+        } else {
+          this.setData({
+            isShowLevelPopup: true
+          })
+        }
         return
       }
       list[index].isOn = !list[index].isOn
@@ -706,23 +714,45 @@ ComponentWithComputed({
         this.sendBluetoothCMD([CMD['BATH_DRY']])
       }
     },
-    onPopupLevelSelect(e: any) {
-      this.closePopup()
-      const val = e.currentTarget.dataset.value
-      const option = this.data.levelPopupOption
-      option.forEach(item => {
-        item.isSelect = item.value === val
-      });
-      this.setData({
-        levelPopupOption: option
-      })
-      this.sendBluetoothCMD([CMD['BATH_SMELL'], val])
-    },
+    // onPopupLevelSelect(e: any) {
+    //   this.closePopup()
+    //   const val = e.currentTarget.dataset.value
+    //   const option = this.data.levelPopupOption
+    //   option.forEach(item => {
+    //     item.isSelect = item.value === val
+    //   });
+    //   this.setData({
+    //     levelPopupOption: option
+    //   })
+    //   this.sendBluetoothCMD([CMD['BATH_SMELL'], val])
+    // },
     closePopup() {
       this.setData({
         isShowPopup: false,
         isShowLevelPopup: false
       })
+    },
+    onLevelPickChange(e: any) {
+      const indexs = e.detail.value
+      this.setData({
+        pickerIndexTemp: indexs,
+      })
+    },
+    onLevelPickEnd() {
+      setTimeout(() => {
+        this.setData({
+          curLevelPickerIndex: this.data.pickerIndexTemp,
+        })
+      }, 100)
+    },
+    onPickLevelConfirm() {
+      showLoading('加载中')
+      setTimeout(() => {
+        hideLoading()
+        this.closePopup()
+        const index = this.data.curLevelPickerIndex[0]
+        this.sendBluetoothCMD([CMD['BATH_SMELL'], this.data.smellLevelVal[index]])
+      }, 500);
     },
     percent2Rang(percent: number) {
       const value = percent > 100 ? 100 : percent < 0 ? 0 : percent

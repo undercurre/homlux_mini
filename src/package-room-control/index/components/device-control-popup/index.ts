@@ -10,6 +10,7 @@ import {
   SCREEN_PID,
   KNOB_PID,
   defaultImgDir,
+  FAN_PID,
 } from '../../../../config/index'
 import {
   sendDevice,
@@ -45,7 +46,7 @@ ComponentWithComputed({
       type: Object,
       value: {} as Device.DeviceItem,
       observer(device) {
-        if (!Object.keys(device).length) {
+        if (!Object.keys(device).length || FAN_PID.includes(device.productId)) {
           return
         }
         const diffData = {} as IAnyObject

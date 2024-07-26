@@ -11,6 +11,7 @@ import {
   WIND_SPEED_MAP,
   NO_SYNC_DEVICE_STATUS,
   PRODUCT_ID,
+  FAN_PID,
 } from '../../../../config/index'
 import { sendDevice } from '../../../../apis/index'
 import Toast from '../../../../skyline-components/mz-toast/toast'
@@ -38,7 +39,7 @@ ComponentWithComputed({
       type: Object,
       value: {} as Device.DeviceItem,
       observer(device) {
-        if (!Object.keys(device).length) {
+        if (!Object.keys(device).length || !FAN_PID.includes(device.productId)) {
           return
         }
         const diffData = {} as IAnyObject
@@ -61,8 +62,8 @@ ComponentWithComputed({
         diffData.deviceProp = prop
 
         // 色温范围计算，风扇灯判断
-        if (device.proType === PRO_TYPE.light) {
-          const { minColorTemp, maxColorTemp } = device.mzgdPropertyDTOList['light'].colorTempRange!
+        if (device.productId !== PRODUCT_ID.fan_basic) {
+          const { minColorTemp, maxColorTemp } = device.mzgdPropertyDTOList['light'].colorTempRange
           diffData.minColorTemp = minColorTemp
           diffData.maxColorTemp = maxColorTemp
         }
