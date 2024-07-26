@@ -19,7 +19,7 @@ const failTextData = {
     errorCode: '9844',
     mainTitle: 'XX联网失败',
     nextTitle: 'XX无法接连路由器',
-    guideDesc: ['该设备系统不支持'],
+    guideDesc: ['该设备型号系统不支持'],
     isTest: true, //是否有测试一下
     isNeedInputPsw: false, //是否需要WiFi密码确认框
   },
