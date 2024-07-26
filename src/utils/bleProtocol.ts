@@ -511,8 +511,6 @@ export const bleUtil = {
 
     const zigbeeMac = arr.join('')
 
-    console.debug(`【${zigbeeMac}】广播数据：`, msgStr)
-
     return parseInt(protocolVersion) >= 4
       ? {
           brand: msgStr.slice(0, 4),
