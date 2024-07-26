@@ -570,7 +570,7 @@ const _handleBleResponse = (response: string) => {
  * 根据电控协议生成控制指令
  * cmdType 命令号。灯协议，固定为0x00，实际上未使用；浴霸协议，控制键值为0x00，参数设置0x01；故统一按浴霸规则发送
  */
-const _generalCmdString = (values: number[], isV2 = false) => {
+const _generalCmdString = (values: number[], isV2 = false, isConnected = false) => {
   // console.log('[指令码]', ...values.map((item) => item.toString().padStart(2, '0')))
   const channel = 0x01 // 通道，固定值
   const version = 0x01 // 协议版本
@@ -581,7 +581,7 @@ const _generalCmdString = (values: number[], isV2 = false) => {
     sum += v
   }
   // 其余字节预留，默认0x00
-  const maxLen = isV2 ? 13 : 14
+  const maxLen = isConnected ? 14 : isV2 ? 13 : 14
   for (let i = 3 + values.length; i <= maxLen; ++i) {
     data[i] = 0x00
   }

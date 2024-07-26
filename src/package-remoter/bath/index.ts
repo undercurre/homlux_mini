@@ -386,7 +386,7 @@ ComponentWithComputed({
       if (!paramsArr || paramsArr.length == 0) return
       if (this.data.isBLEConnected) {
         const isV2 = this.data.devFunDes.length > 0
-        const payload = remoterProtocol.generalCmdString(paramsArr, isV2)
+        const payload = remoterProtocol.generalCmdString(paramsArr, isV2, true)
         this.data._bleService?.sendCmd(payload)
       } else {
         this.sendBluetoothAd(paramsArr)
