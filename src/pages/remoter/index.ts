@@ -339,16 +339,19 @@ ComponentWithComputed({
 
     // 处理搜索到的设备
     resolveFoundDevices(res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) {
-      const recoveredList =
+      const recoveredListSrc =
         unique(res.devices, 'deviceId') // 过滤重复设备
           .map((item) => remoterProtocol.searchDeviceCallBack(item)) // 过滤不支持的设备
           .filter((item) => !!item) || []
 
       // console.log('搜寻到的设备列表：', recoveredList)
 
-      if (!recoveredList?.length) {
+      if (!recoveredListSrc?.length) {
         return
       }
+      const recoveredList = recoveredListSrc.filter((object, index, self) => {
+        return index === self.findIndex(selfObj => selfObj?.addr === object?.addr)
+      });
 
       // 在终止搜寻前先记录本次搜索的操作方式
       const isUserControlled = this.data.isSeeking
@@ -441,7 +444,7 @@ ComponentWithComputed({
             }
           }
           const deviceName = devSuffix ? nameKey + devSuffix : nameKey
-          console.log(`lmn>>>发现新设备::品类=${deviceType}/型号=${deviceModel},命名=>${deviceName}`)
+          console.log(`lmn>>>发现新设备::mac=${item!.addr}/品类=${deviceType}/型号=${deviceModel},命名=>${deviceName}`)
 
           // 更新发现设备列表
           foundList.push({
