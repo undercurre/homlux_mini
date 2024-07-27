@@ -179,7 +179,7 @@ ComponentWithComputed({
       if (data.deviceActionInfo.proType === PRO_TYPE.light) {
         const {
           power = 0,
-          brightness = 0,
+          brightness = 1,
           colorTemperature = 0,
           fan_power = 'off',
           fan_scene = 'fanmanual',
