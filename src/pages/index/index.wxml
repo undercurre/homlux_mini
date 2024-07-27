@@ -164,6 +164,7 @@
   </view>
 </view>
 
+<custom-tab-bar select-index="0"></custom-tab-bar>
 <!-- TODO handleHomeSelect renewRoomPos -->
 <!-- <home-select-menu
   x="{{selectHomeMenu.x}}"

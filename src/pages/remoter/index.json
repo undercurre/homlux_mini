@@ -6,6 +6,7 @@
     "van-toast": "@vant/weapp/toast/index",
     "van-dialog": "@vant/weapp/dialog/index",
     "card": "./components/card/index",
+    "custom-tab-bar": "/components/custom-tab-bar/index",
     "drag": "/components/drag/index"
   },
   "navigationStyle": "custom"

@@ -3,7 +3,15 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
-import { deviceConfig, deviceConfigV2, MIN_RSSI, CMD, FREQUENCY_TIME, SEEK_INTERVAL, SEEK_TIMEOUT } from '../../config/remoter'
+import {
+  deviceConfig,
+  deviceConfigV2,
+  MIN_RSSI,
+  CMD,
+  FREQUENCY_TIME,
+  SEEK_INTERVAL,
+  SEEK_TIMEOUT,
+} from '../../config/remoter'
 import { defaultImgDir } from '../../config/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
@@ -46,13 +54,6 @@ ComponentWithComputed({
 
   methods: {
     async onLoad() {
-      // TabBar选中项处理
-      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-        this.getTabBar().setData({
-          selected: 1,
-        })
-      }
-
       // 是否点击过场景使用提示的我知道了，如果没点击过就显示
       const hasConfirmRemoterTips = storage.get<boolean>('hasConfirmRemoterTips')
       if (!hasConfirmRemoterTips) {
@@ -276,7 +277,7 @@ ComponentWithComputed({
       await bleAdvertising(this.data._bleServer, {
         addr,
         payload,
-        isV2: isV2Dev
+        isV2: isV2Dev,
       })
     },
 
@@ -351,8 +352,8 @@ ComponentWithComputed({
         return
       }
       const recoveredList = recoveredListSrc.filter((object, index, self) => {
-        return index === self.findIndex(selfObj => selfObj?.addr === object?.addr)
-      });
+        return index === self.findIndex((selfObj) => selfObj?.addr === object?.addr)
+      })
 
       // 在终止搜寻前先记录本次搜索的操作方式
       const isUserControlled = this.data.isSeeking
@@ -462,10 +463,11 @@ ComponentWithComputed({
             defaultAction: 0,
             DISCOVERED: 1,
             isV2: item!.isV2,
-            functionDes: item!.functionDes
+            functionDes: item!.functionDes,
           })
         } else {
-          if (!isSavedDevice) console.warn(`lmn>>>设备(品类=${deviceType}/mac=${item!.addr}/信号=${item!.RSSI})信号小于${cusRSSI}被排除`)
+          if (!isSavedDevice)
+            console.warn(`lmn>>>设备(品类=${deviceType}/mac=${item!.addr}/信号=${item!.RSSI})信号小于${cusRSSI}被排除`)
         }
       }
 

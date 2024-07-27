@@ -167,3 +167,5 @@
 />
 
 <van-toast id="van-toast" />
+
+<custom-tab-bar select-index="1"></custom-tab-bar>
