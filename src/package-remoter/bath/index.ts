@@ -135,6 +135,7 @@ ComponentWithComputed({
       //   iconOff: '/package-remoter/assets/newUI/delayOff.png',
       // }
     ],
+    btnStatusTextArr: [] as string[],
     bottomList: [
       {
         key: 'POWER',
@@ -204,16 +205,10 @@ ComponentWithComputed({
     },
     connectedText(data) {
       if (!data.isBLEConnected) return '未连接'
-      const list = data.btnList
-      const arr = []
+      let arr = []
       if (data.gearBtnConfig.isTopOn) arr.push('强暖')
       else if (data.gearBtnConfig.isBottomOn) arr.push('弱暖')
-      for (let i = 0; i < list.length; i++) {
-        if (list[i].isMode && list[i].isOn) {
-          if (list[i].gear > 0) arr.push(`${list[i].name}${list[i].gear}档`)
-          else arr.push(list[i].name)
-        }
-      }
+      arr = [...arr, ...data.btnStatusTextArr]
       if (arr.length === 0) return '已连接'
       else return arr.join(' | ')
     },
@@ -421,7 +416,7 @@ ComponentWithComputed({
       if (!this.data.isNeedUpdate) return
       const status = this.data.devStatus
       let temp = this.data.curTemp
-      const btns = JSON.parse(JSON.stringify(this.data.btnList))
+      const btns = this.data.btnList
       const bottom = this.data.bottomList
       const gear = this.data.gearBtnConfig
       if (status.BATH_TEMPERATURE != undefined) {
@@ -505,11 +500,20 @@ ComponentWithComputed({
       if (status.BATH_NIGHT_LAMP != undefined && bottom.length > 2) {
         bottom[2].isOn = status.BATH_NIGHT_LAMP
       }
+
+      const statusTextArr = []
+      for (let i = 0; i < btns.length; i++) {
+        if (btns[i].isMode && btns[i].isOn) {
+          if (btns[i].gear > 0) statusTextArr.push(`${btns[i].name}${btns[i].gear}档`)
+          else statusTextArr.push(btns[i].name)
+        }
+      }
       this.setData({
         curTemp: isShowTemp ? temp : '--',
         btnList: btns,
         bottomList: bottom,
         gearBtnConfig: gear,
+        btnStatusTextArr: statusTextArr
       })
       this.updateViewEn()
     },
