@@ -178,11 +178,11 @@
   z-index="1002"
   round
   position="bottom"
-  bind:close="handlePickerClose"
-  catchtouchmove="blank"
+  catch:click-overlay="blank"
+  catch:touchmove="blank"
 >
-  <view class="w-750rpx h-600rpx relative flex flex-col items-center">
-    <text class="w-750rpx h-92rpx text-32rpx text-hex-999999 leading-92rpx text-center border-b-1px border-b-hex-EEF2F7 border-b-solid">{{pickerTitle}}</text>
+  <view class="w-750rpx h-650rpx relative flex flex-col items-center">
+    <text class="w-750rpx h-92rpx text-32rpx text-hex-999999 text-center border-b-1px border-b-hex-EEF2F7 border-b-solid leading-92rpx">{{pickerTitle}}</text>
     <view class="h-52rpx"></view>
     <view class="w-750rpx">
       <mz-picker
@@ -193,8 +193,29 @@
         bind:change="timeChange"
       ></mz-picker>
     </view>
+    <view class="h-52rpx"></view>
 
-    <view class="h-62rpx"></view>
+    <view class="w-750rpx border-t-1px border-t-hex-EEF2F7 border-t-solid">
+      <mz-cell
+        title="是否启用"
+        center
+        border="{{false}}"
+      >
+        <view
+          slot="right-icon"
+          class="pt-12rpx"
+        >
+          <view hover-stop-propagation="true">
+            <mz-switch
+              checked="{{isTimerEnabled}}"
+              bind:change="timerEnable"
+              catch:tap="blank"
+            />
+          </view>
+        </view>
+      </mz-cell>
+    </view>
+
     <view class="flex justify-between items-end w-750rpx h-112rpx bg-hex-f9f9f9">
       <view
         class="h-96rpx w-374rpx leading-96rpx text-center secondary-popup-btn"

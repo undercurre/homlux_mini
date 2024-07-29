@@ -38,48 +38,60 @@ ComponentWithComputed({
     deviceInfo: {
       type: Object,
       value: {} as Device.DeviceItem,
-      observer(device) {
-        if (!Object.keys(device).length || !FAN_PID.includes(device.productId)) {
-          return
-        }
-        const diffData = {} as IAnyObject
-        const modelName = getModelName(device.proType, device.productId)
-        const prop = device.mzgdPropertyDTOList[modelName]
-
-        if (!isNullOrUnDef(prop.fan_speed)) {
-          diffData['fanLevel'] = WIND_SPEED_MAP[prop.fan_speed]
-        }
-
-        if (!isNullOrUnDef(prop.fan_time_onoff_1) && Number(prop.fan_time_onoff_1) < 10000) {
-          const timeStr = String(prop.fan_time_onoff_1)
-          const hour = timeStr.slice(0, 2)
-          const minute = timeStr.slice(2)
-          diffData['pickerColumns[0].defaultIndex'] = hour
-          diffData['pickerColumns[1].defaultIndex'] = minute
-        }
-
-        // 初始化设备属性
-        diffData.deviceProp = prop
-
-        // 色温范围计算，风扇灯判断
-        if (device.productId !== PRODUCT_ID.fan_basic) {
-          const { minColorTemp, maxColorTemp } = device.mzgdPropertyDTOList['light'].colorTempRange
-          diffData.minColorTemp = minColorTemp
-          diffData.maxColorTemp = maxColorTemp
-        }
-        console.log('deviceInfo', diffData)
-        this.setData(diffData)
-      },
+      observer() {},
     },
     // 是否显示弹窗（简化逻辑，即原controlPopup参数）
     show: {
       type: Boolean,
       value: false,
-      observer() {},
     },
     checkedList: {
       type: Array,
       value: [] as string[],
+    },
+  },
+
+  observers: {
+    deviceInfo(device) {
+      if (!Object.keys(device).length || !FAN_PID.includes(device.productId)) {
+        return
+      }
+      const diffData = {} as IAnyObject
+      const modelName = getModelName(device.proType, device.productId)
+      const prop = device.mzgdPropertyDTOList[modelName]
+
+      if (!isNullOrUnDef(prop.fan_speed)) {
+        diffData['fanLevel'] = WIND_SPEED_MAP[prop.fan_speed]
+      }
+
+      // 初始化设备属性
+      diffData.deviceProp = prop
+
+      // 色温范围计算，风扇灯判断
+      if (device.productId !== PRODUCT_ID.fan_basic) {
+        const { minColorTemp, maxColorTemp } = prop.colorTempRange ?? {}
+        diffData.minColorTemp = minColorTemp
+        diffData.maxColorTemp = maxColorTemp
+      }
+      if (!isNullOrUnDef(prop.fan_time_onoff_1) && Number(prop.fan_time_onoff_1) < 10000) {
+        const timeStr = String(prop.fan_time_onoff_1)
+        const hour = timeStr.slice(0, 2)
+        const minute = timeStr.slice(2)
+        diffData['pickerColumns[0].defaultIndex'] = hour
+        diffData['pickerColumns[1].defaultIndex'] = minute
+      }
+
+      console.log('deviceInfo', diffData)
+      this.setData(diffData)
+    },
+    isShowPicker(isShowPicker) {
+      // 初始化设置值，在当次弹窗期间有效
+      if (isShowPicker) {
+        this.setData({
+          'timerSetVal.fan_time_onoff_1': this.data.deviceProp.fan_time_onoff_1,
+          'timerSetVal.fan_enable_timeing_1': this.data.deviceProp.fan_enable_timeing_1,
+        })
+      }
     },
   },
 
@@ -101,6 +113,11 @@ ComponentWithComputed({
         defaultIndex: 0,
       },
     ],
+    // 定时器设置值的临时保存，仅当次弹窗期间有效
+    timerSetVal: {
+      fan_time_onoff_1: '',
+      fan_enable_timeing_1: '0',
+    },
     deviceProp: {} as Device.mzgdPropertyDTO,
     maxColorTemp,
     minColorTemp,
@@ -136,17 +153,10 @@ ComponentWithComputed({
         (data.deviceProp.colorTemperature / 100) * (data.maxColorTemp - data.minColorTemp) + data.minColorTemp,
       )
     },
-    // DESERTED 不显示，暂时用不着
-    // selectedTime(data) {
-    //   const { fan_enable_timeing_1 = '0', fan_time_onoff_1 = '255255' } = data.deviceProp ?? {}
-    //   if (fan_enable_timeing_1 === '0' || Number(fan_time_onoff_1) > 9999) return ''
-
-    //   const timeStr = String(fan_time_onoff_1)
-
-    //   const hour = timeStr.slice(0, 1)
-    //   const minute = timeStr.slice(2)
-    //   return `${hour}:${minute}`
-    // },
+    // 时间选择弹窗中的switch
+    isTimerEnabled(data) {
+      return data.timerSetVal.fan_enable_timeing_1 === '1'
+    },
     btnList(data) {
       const { btnMap, deviceProp } = data
       const res = Object.keys(btnMap).map((key: string) => {
@@ -155,7 +165,7 @@ ComponentWithComputed({
         switch (key) {
           case 'fan_time_onoff_1': {
             const time = Number(deviceProp.fan_time_onoff_1)
-            on = time > 0 && time < 10000
+            on = time > 0 && time < 10000 && deviceProp.fan_enable_timeing_1 === '1'
             break
           }
           case 'arround_dir':
@@ -336,21 +346,21 @@ ComponentWithComputed({
     timeChange(e: { detail: { value: string[] } }) {
       const setTime = e.detail.value.join('')
       const diffData = {} as IAnyObject
-      diffData['deviceProp.fan_time_onoff_1'] = setTime
-      diffData['deviceProp.fan_enable_timeing_1'] = setTime === '0000' ? '0' : '1'
+      diffData['timerSetVal.fan_time_onoff_1'] = setTime
+      diffData['timerSetVal.fan_enable_timeing_1'] = '1'
       this.setData(diffData)
     },
-    handlePickerClose() {
+    timerEnable(e: { detail: boolean }) {
       this.setData({
-        isShowPicker: false,
+        'timerSetVal.fan_enable_timeing_1': e.detail ? '1' : '0',
       })
     },
     handlePickerConfirm() {
       const property = {} as IAnyObject // 本次要发送的指令
-      property.fan_time_onoff_1 = this.data.deviceProp.fan_time_onoff_1
-      property.fan_enable_timeing_1 = this.data.deviceProp.fan_enable_timeing_1
-      property.fan_ctrl_onoff_1 = '0' // 关闭
-      property.fan_monday_endis_1 = '1'
+      property.fan_time_onoff_1 = this.data.timerSetVal.fan_time_onoff_1
+      property.fan_enable_timeing_1 = this.data.timerSetVal.fan_enable_timeing_1
+      property.fan_ctrl_onoff_1 = '0' // 定时【关闭】操作
+      property.fan_monday_endis_1 = '1' // 周一定时允许
       property.fan_tuesday_endis_1 = '1'
       property.fan_wednesday_endis_1 = '1'
       property.fan_thursday_endis_1 = '1'
@@ -359,6 +369,13 @@ ComponentWithComputed({
       property.fan_sunday_endis_1 = '1'
       this.toSendDevice(property)
 
+      this.setData({
+        'deviceProp.fan_time_onoff_1': property.fan_time_onoff_1,
+        'deviceProp.fan_enable_timeing_1': property.fan_enable_timeing_1,
+        isShowPicker: false,
+      })
+    },
+    handlePickerClose() {
       this.setData({
         isShowPicker: false,
       })
@@ -383,6 +400,9 @@ ComponentWithComputed({
           'deviceProp.power': power,
         })
       }
+    },
+    blank() {
+      console.log('blank')
     },
   },
 })
