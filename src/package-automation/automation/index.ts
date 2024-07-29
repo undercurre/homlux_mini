@@ -67,10 +67,10 @@ ComponentWithComputed({
   methods: {
     async getSceneList(isInit = false) {
       if (isInit) {
-        this.updateSceneList(false)
+        this.updateSceneList()
       }
       await sceneStore.updateAllRoomSceneList()
-      this.updateSceneList(true)
+      this.updateSceneList()
     },
     async getAutoSceneList() {
       await autosceneStore.updateAllRoomAutoSceneList()
@@ -134,7 +134,7 @@ ComponentWithComputed({
       )
     },
 
-    updateSceneList(updateDrag: boolean) {
+    updateSceneList() {
       const allRoomScene = {} as Record<string, Scene.SceneListItem[]>
       const deviceMap = deviceStore.allRoomDeviceMap
 
@@ -174,20 +174,10 @@ ComponentWithComputed({
           allRoomScene: JSON.parse(JSON.stringify(allRoomScene)),
         },
         () => {
-          if (updateDrag) {
-            this.onRoomChange({ detail: { selectedId: this.data.selectedRoomId } })
-          }
-          if (this.data.selectedRoomId) return
-          // 在房间里跳转到场景页时使用
-          const { selectedRoomId = '' } = getCurrentPageParams()
-          this.setData(
-            {
-              selectedRoomId: selectedRoomId || this.data.roomTab[0]?.id || '',
-            },
-            () => {
-              this.onRoomChange({ detail: { selectedId: this.data.selectedRoomId } })
-            },
-          )
+          // 在房间里跳转到场景页时使用getCurrentPageParams().selectedRoomId
+          const selectedRoomId =
+            this.data.selectedRoomId || getCurrentPageParams().selectedRoomId || this.data.roomTab[0]?.id || ''
+          this.onRoomChange({ detail: { selectedId: selectedRoomId } })
         },
       )
     },
