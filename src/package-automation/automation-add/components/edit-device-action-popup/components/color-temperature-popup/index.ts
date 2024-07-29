@@ -71,6 +71,7 @@ ComponentWithComputed({
     handleColorTempChange(e: { detail: number }) {
       this.setData({
         _colorTemperature: e.detail,
+        colorTemperature: e.detail,
       })
     },
     handleColorTempDrag(e: { detail: number }) {

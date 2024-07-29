@@ -61,6 +61,7 @@ ComponentWithComputed({
     handleLevelChange(e: { detail: number }) {
       this.setData({
         _brightness: e.detail,
+        brightness: e.detail,
       })
     },
   },
