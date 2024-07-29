@@ -405,7 +405,7 @@ ComponentWithComputed({
       if (this.data.deviceActionInfo.proType === PRO_TYPE.light) {
         const {
           power = 0,
-          brightness = 0,
+          brightness = 1,
           colorTemperature = 0,
           fan_power = 'off',
           fan_scene = 'fanmanual',
@@ -497,7 +497,7 @@ ComponentWithComputed({
         this.data.deviceActionInfo.productId !== PRODUCT_ID.fan_basic
       ) {
         // 如果电源为开启，灯具设备(支持亮度色温功能的)自动添加亮度、色温属性
-        sceneProperty['brightness'] = 0
+        sceneProperty['brightness'] = 1
         sceneProperty['colorTemperature'] = 0
       }
 
