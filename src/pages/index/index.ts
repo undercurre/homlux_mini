@@ -377,13 +377,13 @@ ComponentWithStore({
     // 更新灯总数、亮灯数统计
     updateLightCount() {
       const { lightSummary } = this.data
-      roomStore.roomList.forEach((room) => {
-        lightSummary[room.roomId] = {
-          lightCount: 0,
-          lightOnCount: 0,
-        }
-      })
       deviceStore.allRoomDeviceFlattenList.forEach((device) => {
+        if (!Object.prototype.hasOwnProperty.call(lightSummary, device.roomId)) {
+          lightSummary[device.roomId] = {
+            lightCount: 0,
+            lightOnCount: 0,
+          }
+        }
         if (device.deviceType !== 4 && (device.proType === PRO_TYPE.switch || device.proType === PRO_TYPE.light)) {
           lightSummary[device.roomId].lightCount++
         }

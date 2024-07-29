@@ -195,9 +195,19 @@ ComponentWithComputed({
           showBottom.push(bottom[i])
         }
       }
+      const popMode = this.data.popSelectMode
+      const showPop = []
+      for (let i = 0; i < popMode.length; i++) {
+        if (popMode[i].key === 'VENT') {
+          if (support.vent) showPop.push(popMode[i])
+        } else {
+          showPop.push(popMode[i])
+        }
+      }
       this.setData({
         btnList: showBtns,
         bottomList: showBottom,
+        popSelectMode: showPop,
       })
     },
     getFunSupport() {
