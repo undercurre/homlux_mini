@@ -1599,10 +1599,6 @@ export const deviceConfigV2: Record<string, Remoter.ConfigItem> = {
         key: 'BATH_ALL_OFF',
         name: '待机',
       },
-      {
-        key: 'BATH_VENTILATE',
-        name: '换气',
-      },
     ],
   },
   // '17': {
