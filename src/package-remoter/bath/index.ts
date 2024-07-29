@@ -172,14 +172,14 @@ ComponentWithComputed({
     //   { name: '低档', value: 1, isSelect: false },
     // ],
     iconLevelB: [
-      '/package-remoter/assets/newUI/level1.png',
+      '/package-remoter/assets/newUI/level3.png',
       '/package-remoter/assets/newUI/level2.png',
-      '/package-remoter/assets/newUI/level3.png'
+      '/package-remoter/assets/newUI/level1.png'
     ],
     iconLevelW: [
-      '/package-remoter/assets/newUI/level1_w.png',
+      '/package-remoter/assets/newUI/level3_w.png',
       '/package-remoter/assets/newUI/level2_w.png',
-      '/package-remoter/assets/newUI/level3_w.png'
+      '/package-remoter/assets/newUI/level1_w.png'
     ],
     smellLevelArr: ['低', '中', '高'],
     smellLevelVal: [3, 2, 1],
@@ -421,7 +421,7 @@ ComponentWithComputed({
       if (!this.data.isNeedUpdate) return
       const status = this.data.devStatus
       let temp = this.data.curTemp
-      const btns = this.data.btnList
+      const btns = JSON.parse(JSON.stringify(this.data.btnList))
       const bottom = this.data.bottomList
       const gear = this.data.gearBtnConfig
       if (status.BATH_TEMPERATURE != undefined) {
