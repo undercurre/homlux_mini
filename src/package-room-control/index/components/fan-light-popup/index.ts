@@ -168,7 +168,7 @@ ComponentWithComputed({
         switch (key) {
           case 'fan_time_onoff_1': {
             const time = Number(deviceProp.fan_time_onoff_1)
-            on = time > 0 && time < 10000 && deviceProp.fan_enable_timeing_1 === '1'
+            on = time < 10000 && deviceProp.fan_enable_timeing_1 === '1'
             break
           }
           case 'arround_dir':
