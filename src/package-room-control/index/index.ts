@@ -147,7 +147,7 @@ ComponentWithStore({
     roomHasDevice: false, // 房间存在可显示的设备
     allSelectBtnText: '', // 设备批量选择按钮文字
     isLightSelectSome: false, // 是否选中灯具有，包括一个或多个
-    toolboxContentHeight: 60, // 工具栏内容区域高度
+    toolboxContentHeight: rpx2px(120), // 工具栏内容区域高度
     scrollViewHeight: '0px', // 可滚动区域高度
     isShowCommonControl: false, // 是否打开控制面板
     isFan: false, // 当前选中项是否风扇灯
@@ -176,7 +176,7 @@ ComponentWithStore({
       )
       const roomHasLight = deviceList.some((d) => !!(d.proType === PRO_TYPE.light))
       const roomHasDevice = !!deviceList?.length
-      const toolboxContentHeight = roomHasLight ? 150 : 60
+      const toolboxContentHeight = roomHasLight ? rpx2px(300) : rpx2px(120)
       let baseHeight =
         (storage.get('windowHeight') as number) -
         (storage.get('statusBarHeight') as number) -
