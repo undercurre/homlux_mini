@@ -29,7 +29,6 @@
           textColor="#2b4067"
           fontWeight="bold"
           bind:btnTouchStart="handleAllOff"
-          data-key="minus"
           rebound
           textInset
         ></mz-icon-button>
