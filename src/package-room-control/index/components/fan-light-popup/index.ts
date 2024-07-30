@@ -90,9 +90,14 @@ ComponentWithComputed({
     isShowPicker(isShowPicker) {
       // 初始化设置值，在当次弹窗期间有效
       if (isShowPicker) {
+        const timeStr = String(this.data.deviceProp.fan_time_onoff_1)
+        const hour = timeStr.slice(0, 2)
+        const minute = timeStr.slice(2)
         this.setData({
           'timerSetVal.fan_time_onoff_1': this.data.deviceProp.fan_time_onoff_1,
           'timerSetVal.fan_enable_timeing_1': this.data.deviceProp.fan_enable_timeing_1,
+          'pickerColumns[0].defaultIndex': hour,
+          'pickerColumns[1].defaultIndex': minute,
         })
       }
     },
