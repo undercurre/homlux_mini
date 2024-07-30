@@ -8,7 +8,7 @@
     "skylineRenderEnable": true,
     "autoAudits": false
   },
-  "libVersion": "3.5.0",
+  "libVersion": "3.5.1",
   "condition": {
     "miniprogram": {
       "list": [

@@ -13,7 +13,8 @@
     "lint": "lint-staged -c lintstagedrc.js",
     "typecheck": "tsc --noEmit --skipLibCheck",
     "format": "prettier --write ./**/*.{js,ts,wxs,wxml,wxss,json}",
-    "getIconify": "esno build/getIconify json=../iconify.json path=./src/assets/svg/iconify.ts"
+    "getIconify": "esno build/getIconify json=../iconify.json path=./src/assets/svg/iconify.ts",
+    "vant": "vant-tree-shaking --vantPath=src/miniprogram_npm/@vant/weapp"
   },
   "dependencies": {
     "@vant/weapp": "^1.11.4",
@@ -50,6 +51,7 @@
     "prettier": "^2.8.8",
     "typescript": "^4.9.5",
     "unocss": "^0.48.5",
-    "unocss-preset-weapp": "^0.3.0"
+    "unocss-preset-weapp": "^0.3.0",
+    "vant-tree-shaking": "^1.0.4"
   }
 }
