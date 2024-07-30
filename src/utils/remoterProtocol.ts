@@ -33,6 +33,7 @@ const _searchDeviceCallBack = (device: WechatMiniprogram.BlueToothDevice) => {
     else if (typeVal === 2) deviceType = '13a'
     else if (typeVal === 3) deviceType = '13b'
     else if (typeVal === 4) deviceType = '17'
+    else if (typeVal === 5) deviceType = 'a1'
     else return
     if (!SUPPORT_LIST_V2.includes(deviceType.toLocaleUpperCase())) return
 
@@ -283,6 +284,14 @@ const _parsePayloadV2 = (payload: string, deviceType: string) => {
   // if (deviceType === '17') {
   //   return {}
   // }
+  if (deviceType === 'a1') {
+    return {
+      isV2: true,
+      FAN_SWITCH: !!rxU16[0],
+      FAN_GEAR: rxU16[1],
+      FAN_DELAY_OFF_MIN: rxU16[2] * 256 + rxU16[3],
+    }
+  }
   return {}
 }
 

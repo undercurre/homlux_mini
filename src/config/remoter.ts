@@ -1611,6 +1611,16 @@ export const deviceConfigV2: Record<string, Remoter.ConfigItem> = {
   //     },
   //   ],
   // }
+  'a1': {
+    deviceName: '换气扇',
+    devicePic: '/assets/img/remoter/fanLight.png',
+    actions: [
+      {
+        key: 'FAN_SWITCH',
+        name: '风扇',
+      },
+    ],
+  },
 }
 
 // 控制指令
@@ -1648,6 +1658,9 @@ export const CMD: Record<string, number> = {
   FAN_DELAY_OFF_5: 0x57, // 延时5小时关风扇
   FAN_DELAY_OFF_6: 0x58, // 延时6小时关风扇
   CLOSE_DISPLAY: 0x8c, //关闭屏显
+
+  FAN_GEAR: 0x52, // 风速档位
+  FAN_DELAY_OFF_MIN: 0x53, // 延迟关分钟
 
   // 浴霸
   BATH_ALL_OFF: 0x0d, // 全关，待机

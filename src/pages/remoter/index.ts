@@ -217,6 +217,8 @@ ComponentWithComputed({
             page = 'bath'
           } else if (deviceType === '40') {
             page = 'cool-bath'
+          } else if (deviceType === 'a1') {
+            page = 'vent-fan'
           }
           if (!page) return
           wx.navigateTo({

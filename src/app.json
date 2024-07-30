@@ -109,7 +109,8 @@
         "fan-light/index",
         "bath/index",
         "cool-bath/index",
-        "clothes/index"
+        "clothes/index",
+        "vent-fan/index"
       ]
     },
     {
