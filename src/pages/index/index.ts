@@ -361,9 +361,10 @@ ComponentWithStore({
 
       if (res.success) {
         await homeStore.homeInit()
-        sceneStore.updateAllRoomSceneList()
+        await sceneStore.updateAllRoomSceneList()
         this.updateLightCount()
       }
+      await delay(0)
       hideLoading()
     },
     handleAddTap(e: { detail: string }) {
