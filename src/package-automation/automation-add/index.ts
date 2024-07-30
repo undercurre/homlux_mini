@@ -162,6 +162,8 @@ ComponentWithComputed({
   },
   lifetimes: {
     async ready() {
+      await deviceStore.updateAllRoomDeviceList()
+
       this.setData({
         deviceList: deviceStore.allRoomDeviceFlattenList.filter(
           (item) => item.proType !== PRO_TYPE.gateway && item.proType !== PRO_TYPE.sensor,
