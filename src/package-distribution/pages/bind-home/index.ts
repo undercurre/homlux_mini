@@ -4,7 +4,7 @@ import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { getCurrentPageParams, checkInputNameIllegal, Logger, goBackPage } from '../../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../../apis/index'
-import { homeBinding, homeStore, roomBinding } from '../../../store/index'
+import { homeBinding, homeStore, roomBinding, deviceStore } from '../../../store/index'
 import { PRO_TYPE, defaultImgDir } from '../../../config/index'
 import cacheData from '../../common/cacheData'
 
@@ -130,6 +130,8 @@ ComponentWithComputed({
       }
 
       if (res.success) {
+        deviceStore.updateAllRoomDeviceList() // 刷新全屋设备列表，以免其他地方获取不到最新数据
+
         // 关闭扫描页面可能开启的蓝牙资源
         wx.closeBluetoothAdapter()
 
