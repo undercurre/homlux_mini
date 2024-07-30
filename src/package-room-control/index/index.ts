@@ -130,7 +130,7 @@ ComponentWithStore({
     checkedDeviceInfo: {} as DeviceCard, // 选中设备的数据
     deviceListInited: false, // 设备列表是否初始化完毕
     roomLight: {
-      brightness: 0,
+      brightness: 1,
       colorTemperature: 0,
       maxColorTemp,
       minColorTemp,

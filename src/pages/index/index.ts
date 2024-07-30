@@ -233,6 +233,7 @@ ComponentWithStore({
         await homeStore.updateHomeInfo({ isInit: false }, { isDefaultErrorTips: false })
         await homeStore.updateRoomCardList()
         this.updateLightCount()
+        await delay(0)
         this.setData({ isRefreshing: false })
       }
 
