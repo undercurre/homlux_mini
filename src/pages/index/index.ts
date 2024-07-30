@@ -171,7 +171,7 @@ ComponentWithStore({
     'roomList,lightSummary.**'(roomList: roomInfo[], lightSummary) {
       const roomCardList = roomList.map((room) => ({
         ...room,
-        ...lightSummary[room.roomId],
+        ...(lightSummary[room.roomId] ?? { lightCount: 0, lightOnCount: 0 }),
         id: room.roomId,
       }))
       this.setData({ roomCardList })
@@ -376,7 +376,7 @@ ComponentWithStore({
 
     // 更新灯总数、亮灯数统计
     updateLightCount() {
-      const { lightSummary } = this.data
+      const lightSummary = {} as IAnyObject
       deviceStore.allRoomDeviceFlattenList.forEach((device) => {
         if (!Object.prototype.hasOwnProperty.call(lightSummary, device.roomId)) {
           lightSummary[device.roomId] = {
