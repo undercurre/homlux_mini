@@ -17,6 +17,7 @@ import {
   strUtil,
   showLoading,
   hideLoading,
+  delay,
 } from '../../utils/index'
 import {
   maxColorTemp,
@@ -518,6 +519,8 @@ ComponentWithStore({
       }
 
       await deviceStore.updateRoomDeviceList()
+
+      await delay(0) // ! nextTick 确保store数据已生效
 
       this.updateQueue({ isRefresh: true })
 

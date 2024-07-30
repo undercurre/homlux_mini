@@ -64,12 +64,9 @@ ComponentWithComputed({
         diffData['fanLevel'] = WIND_SPEED_MAP[prop.fan_speed]
       }
 
-      // 初始化设备属性
-      diffData.deviceProp = prop
-
       // 色温范围计算，风扇灯判断
       if (device.productId !== PRODUCT_ID.fan_basic) {
-        const { minColorTemp, maxColorTemp } = prop.colorTempRange ?? {}
+        const { minColorTemp, maxColorTemp } = prop.colorTempRange ?? this.data.deviceProp.colorTempRange ?? {} // ! 上报数据不包含色温范围
         diffData.minColorTemp = minColorTemp
         diffData.maxColorTemp = maxColorTemp
       }
@@ -79,6 +76,12 @@ ComponentWithComputed({
         const minute = timeStr.slice(2)
         diffData['pickerColumns[0].defaultIndex'] = hour
         diffData['pickerColumns[1].defaultIndex'] = minute
+      }
+
+      // 初始化设备属性，// ! 上报属性可能丢失，作覆盖更新
+      diffData.deviceProp = {
+        ...this.data.deviceProp,
+        ...prop,
       }
 
       console.log('deviceInfo', diffData)
@@ -165,7 +168,7 @@ ComponentWithComputed({
         switch (key) {
           case 'fan_time_onoff_1': {
             const time = Number(deviceProp.fan_time_onoff_1)
-            on = time > 0 && time < 10000 && deviceProp.fan_enable_timeing_1 === '1'
+            on = time < 10000 && deviceProp.fan_enable_timeing_1 === '1'
             break
           }
           case 'arround_dir':
