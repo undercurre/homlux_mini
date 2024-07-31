@@ -22,7 +22,7 @@ export const Logger = {
     log.info(args)
   },
   error(...args: unknown[]) {
-    console.error(...args)
+    console.error(`${dayjs().format('HH:mm:ss.SSS')} |`, ...args)
     log.error(args)
   },
   setFilter(msg: string) {
