@@ -27,12 +27,14 @@ ComponentWithComputed({
     devModel: '',
     devAddr: '',
     devFunDes: '',
-    gearBtnConfig: {
-      isEnable: true,
-      isTopOn: false,
-      isMiddleOn: false,
-      isBottomOn: false,
+    gearSlicerConfig: {
+      min: 1,
+      max: 3,
+      step: 1,
+      value: 1,
+      disable: false,
     },
+    indArr: ['低', '中', '高'],
     btnList: [
       {
         key: 'DELAY',
@@ -81,9 +83,12 @@ ComponentWithComputed({
       if (!data.isBLEConnected) return '未连接'
       const list = data.btnList
       const arr = []
-      if (data.gearBtnConfig.isTopOn) arr.push('1档')
-      else if (data.gearBtnConfig.isMiddleOn) arr.push('2档')
-      else if (data.gearBtnConfig.isBottomOn) arr.push('3档')
+      if (!data.gearSlicerConfig.disable) {
+        const gear = data.gearSlicerConfig.value
+        if (gear === 1) arr.push('低档')
+        else if (gear === 2) arr.push('中档')
+        else if (gear === 3) arr.push('高档')
+      }
       for (let i = 0; i < list.length; i++) {
         if (list[i].isMode && list[i].isOn) arr.push(list[i].name)
       }
@@ -220,14 +225,9 @@ ComponentWithComputed({
       const status = this.data.devStatus
       const btns = this.data.btnList
       const bottom = this.data.bottomList
-      const gear = this.data.gearBtnConfig
+      const gear = this.data.gearSlicerConfig
       if (status.FAN_GEAR != undefined) {
-        gear.isTopOn = false
-        gear.isMiddleOn = false
-        gear.isBottomOn = false
-        if (status.FAN_GEAR === 1) gear.isTopOn = true
-        else if (status.FAN_GEAR === 2) gear.isMiddleOn = true
-        else if (status.FAN_GEAR === 3) gear.isBottomOn = true
+        if (status.FAN_GEAR >= gear.min && status.FAN_GEAR <= gear.max) gear.value = status.FAN_GEAR
       }
       if (status.FAN_SWITCH != undefined) {
         bottom[0].isOn = status.FAN_SWITCH
@@ -238,8 +238,9 @@ ComponentWithComputed({
         const min = status.FAN_DELAY_OFF_MIN % 60
         for (let i = 0; i < btns.length; i++) {
           if (btns[i].key === 'DELAY') {
-            btns[i].isOn = status.FAN_DELAY_OFF_MIN > 0
-            if (status.FAN_DELAY_OFF_MIN > 0) {
+            const isRunning = status.FAN_DELAY_OFF_MIN > 0 && status.FAN_DELAY_OFF_RUNNING
+            btns[i].isOn = isRunning
+            if (isRunning) {
               btns[i].name = `剩余${hour >= 10 ? '' : '0'}${hour}:${min >= 10 ? '' : '0'}${min}`
             } else {
               btns[i].name = '定时关'
@@ -252,7 +253,7 @@ ComponentWithComputed({
         }
       }
       this.setData({
-        gearBtnConfig: gear,
+        gearSlicerConfig: gear,
         btnList: btns,
         bottomList: bottom,
         curTimePickerIndex: timeIndex,
@@ -263,86 +264,32 @@ ComponentWithComputed({
       if (!this.data.isNeedUpdate) return
       const bottom = this.data.bottomList
       const btns = this.data.btnList
-      const gear = this.data.gearBtnConfig
+      const gear = this.data.gearSlicerConfig
       if (this.data.isBLEConnected) {
         const isPowerOn = bottom[0].isOn
         for (let i = 0; i < btns.length; i++) {
           btns[i].isEnable = isPowerOn
         }
-        gear.isEnable = isPowerOn
+        gear.disable = !isPowerOn
       } else {
         for (let i = 0; i < btns.length; i++) {
           btns[i].isEnable = true
         }
-        gear.isEnable = true
+        gear.disable = false
       }
       this.setData({
-        gearBtnConfig: gear,
+        gearSlicerConfig: gear,
         btnList: btns,
       })
     },
-    onGearTopClick() {
-      const config = this.data.gearBtnConfig
-      if (!config.isEnable) return
-      config.isTopOn = true
-      config.isMiddleOn = false
-      config.isBottomOn = false
+    onSliderChange(e: any) {
+      const value = e.detail
+      const config = this.data.gearSlicerConfig
+      config.value = value
       this.setData({
-        gearBtnConfig: config,
+        gearSlicerConfig: config,
       })
-      if (!this.data.isBLEConnected) {
-        setTimeout(() => {
-          config.isTopOn = false
-          config.isMiddleOn = false
-          config.isBottomOn = false
-          this.setData({
-            gearBtnConfig: config,
-          })
-        }, 300)
-      }
-      this.sendBluetoothCMD([CMD['FAN_GEAR'], 1])
-    },
-    onGearMiddleClick() {
-      const config = this.data.gearBtnConfig
-      if (!config.isEnable) return
-      config.isTopOn = false
-      config.isMiddleOn = true
-      config.isBottomOn = false
-      this.setData({
-        gearBtnConfig: config,
-      })
-      if (!this.data.isBLEConnected) {
-        setTimeout(() => {
-          config.isTopOn = false
-          config.isMiddleOn = false
-          config.isBottomOn = false
-          this.setData({
-            gearBtnConfig: config,
-          })
-        }, 300)
-      }
-      this.sendBluetoothCMD([CMD['FAN_GEAR'], 2])
-    },
-    onGearBottomClick() {
-      const config = this.data.gearBtnConfig
-      if (!config.isEnable) return
-      config.isTopOn = false
-      config.isMiddleOn = false
-      config.isBottomOn = true
-      this.setData({
-        gearBtnConfig: config,
-      })
-      if (!this.data.isBLEConnected) {
-        setTimeout(() => {
-          config.isTopOn = false
-          config.isMiddleOn = false
-          config.isBottomOn = false
-          this.setData({
-            gearBtnConfig: config,
-          })
-        }, 300)
-      }
-      this.sendBluetoothCMD([CMD['FAN_GEAR'], 3])
+      this.sendBluetoothCMD([CMD['FAN_GEAR'], value])
     },
     onBtnListClick(e: any) {
       const index = e.currentTarget.dataset.index

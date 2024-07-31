@@ -21,28 +21,31 @@
     <text class="text-28rpx font-normal">{{connectedText}}</text>
   </view>
 
-  <view class="temp-block flex-center">
-    <view class="gear-block" style="opacity: {{gearBtnConfig.isEnable ? 1 : 0.4}};">
-      <view class="gear-btn gear-btn-top flex-center" hover-class="high-select-2"
-        style="background-image: {{gearBtnConfig.isTopOn ? 'linear-gradient(0deg, rgba(80,127,255,0.80) 0%, rgba(80,127,255,0.60) 100%)' : ''}};"
-        bind:tap="onGearTopClick"
-      >
-        <text class="text-28rpx font-normal" style="color: {{gearBtnConfig.isTopOn ? '#ffffff' : '#979EAD'}};">1档</text>
-      </view>
+  <image class="fan-img" src="/package-remoter/assets/newUI/ventFan.png"></image>
 
-      <view class="gear-btn flex-center" hover-class="high-select-2"
-        style="background-image: {{gearBtnConfig.isMiddleOn ? 'linear-gradient(180deg, rgba(80,127,255,0.80) 0%, rgba(80,127,255,0.80) 100%)' : ''}};"
-        bind:tap="onGearMiddleClick"
-      >
-        <text class="text-28rpx font-normal" style="color: {{gearBtnConfig.isMiddleOn ? '#ffffff' : '#979EAD'}};">2档</text>
-      </view>
+  <text class="gear-text text-26rpx font-normal">换气</text>
+  <view class="gear-block">
+    <mx-slider
+      class="gear-slider"
+      min="{{gearSlicerConfig.min}}"
+      max="{{gearSlicerConfig.max}}"
+      step="{{gearSlicerConfig.step}}"
+      value="{{gearSlicerConfig.value}}"
+      disabled="{{gearSlicerConfig.disable}}"
+      bar-height="8"
+      active-color="#488FFF"
+      inactive-color="#F3F5FE"
+      useButtonSlot="true"
+      bind:change="onSliderChange">
+      <image slot="button" src="/package-remoter/assets/newUI/sliderBtn.png" class="slider-btn"/>
+    </mx-slider>
+  </view>
 
-      <view class="gear-btn gear-btn-bottom flex-center" hover-class="high-select-2"
-        style="background-image: {{gearBtnConfig.isBottomOn ? 'linear-gradient(180deg, rgba(80,127,255,0.80) 0%, rgba(80,127,255,0.60) 100%)' : ''}};"
-        bind:tap="onGearBottomClick"
-      >
-        <text class="text-28rpx font-normal" style="color: {{gearBtnConfig.isBottomOn ? '#ffffff' : '#979EAD'}};">3档</text>
-      </view>
+  <view class="ind-block">
+    <view style="width: 64rpx; height: 64rpx; display: flex; justify-content: center;" wx:for="{{indArr}}" wx:key="key">
+      <text class="text-24rpx font-normal"
+        style="color: #8A8A8F; line-height: 64rpx;"
+        wx:key="item">{{item}}</text>
     </view>
   </view>
 
@@ -53,7 +56,7 @@
       indicatorActiveColor="#A5A8AF"
       indicator="{{btnList.length > 4}}"
     >
-      <view style="width: {{btnList.length >= 4 ? btnList.length * 170 : 715}}rpx; display: flex; flex-direction: row; margin-left: 35rpx;">
+      <view style="width: {{btnList.length >= 4 ? btnList.length * 170 : 715}}rpx; display: flex; flex-direction: row; margin-left: 30rpx;">
         <view
           class="btn-item flex-center"
           style="margin-left: {{btnList.length >= 4 ? 0 : (700 - btnList.length * 170) / btnList.length / 2}}rpx; margin-right: {{btnList.length >= 4 ? 0 : (700 - btnList.length * 170) / btnList.length / 2}}rpx;"

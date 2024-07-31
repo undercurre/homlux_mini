@@ -290,6 +290,7 @@ const _parsePayloadV2 = (payload: string, deviceType: string) => {
       FAN_SWITCH: !!rxU16[0],
       FAN_GEAR: rxU16[1],
       FAN_DELAY_OFF_MIN: rxU16[2] * 256 + rxU16[3],
+      FAN_DELAY_OFF_RUNNING: !!rxU16[4],
     }
   }
   return {}

@@ -2,7 +2,7 @@
 export const MIN_RSSI = -65
 
 // 搜寻超时时间
-export const SEEK_TIMEOUT = 5000
+export const SEEK_TIMEOUT = 30000
 
 // 操作间隔时间
 export const FREQUENCY_TIME = 700
