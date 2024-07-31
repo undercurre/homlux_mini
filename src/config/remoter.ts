@@ -1617,7 +1617,7 @@ export const deviceConfigV2: Record<string, Remoter.ConfigItem> = {
     actions: [
       {
         key: 'FAN_SWITCH',
-        name: '风扇',
+        name: '换气',
       },
     ],
   },
