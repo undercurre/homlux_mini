@@ -35,7 +35,7 @@ const _searchDeviceCallBack = (device: WechatMiniprogram.BlueToothDevice) => {
     else if (typeVal === 4) deviceType = '17'
     else if (typeVal === 5) deviceType = 'a1'
     else return
-    if (!SUPPORT_LIST_V2.includes(deviceType.toLocaleUpperCase())) return
+    if (!SUPPORT_LIST_V2.includes(deviceType)) return
 
     const devRssi = (advertisDataArr[3] & 0x70) >> 4
     const rssiArr = [-90, -85, -80, -75, -70, -65, -60, -55]
