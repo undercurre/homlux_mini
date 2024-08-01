@@ -13,6 +13,8 @@ import {
   delay,
   Logger,
   isLightOn,
+  isConnect,
+  verifyNetwork,
 } from '../../utils/index'
 import {
   MAX_DEVICES_USING_WS,
@@ -225,9 +227,10 @@ ComponentWithStore({
       if (roomStore.currentRoomId) {
         roomStore.setCurrentRoom('')
       }
+      await verifyNetwork()
 
       // 首次onShow，有App.onLaunch初始化加载
-      if (!this.data._isFirstShow || this.data._from === 'addDevice') {
+      if (isConnect() && (!this.data._isFirstShow || this.data._from === 'addDevice')) {
         this.setData({ isRefreshing: true })
         // updateHomeInfo 先加载后面的接口依赖获取当前家庭Id
         await homeStore.updateHomeInfo({ isInit: false }, { isDefaultErrorTips: false })
@@ -340,7 +343,7 @@ ComponentWithStore({
       }
 
       // 如果在首页的房间或设备数据未加载完成，则先等待完成，并通过observers执行回调
-      if (this.data.isRefreshing) {
+      if (this.data.isRefreshing && isConnect()) {
         showLoading('数据刷新中...')
       }
       // 无刷新中标志，则直接执行
