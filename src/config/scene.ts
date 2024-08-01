@@ -1,3 +1,5 @@
+import { FAN_SCENE_MAP, WIND_SPEED_MAP } from './dic'
+
 export const sceneMap = {
   'all-on': {
     value: 'all-on',
@@ -117,5 +119,19 @@ export const scenePropertyOptions = {
     title: i === 0 ? '不设置' : `${i + 4}℃`,
     value: i === 0 ? i : i + 4,
     key: 'targetTemperature',
+  })),
+  fan_power: [
+    { title: '关闭', key: 'fan_power', value: 'off' },
+    { title: '开启', key: 'fan_power', value: 'on' },
+  ],
+  fan_scene: Object.keys(FAN_SCENE_MAP).map((item) => ({
+    title: FAN_SCENE_MAP[item],
+    key: 'fan_scene',
+    value: item,
+  })),
+  fan_speed: Object.keys(WIND_SPEED_MAP).map((item) => ({
+    title: `${WIND_SPEED_MAP[item as unknown as number]}档`,
+    key: 'fan_speed',
+    value: parseInt(item),
   })),
 }

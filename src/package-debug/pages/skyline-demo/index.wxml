@@ -21,7 +21,6 @@
         model:value="{{ inputValue }}"
         placeholder="请输入家庭名称"
         clearable="{{true}}"
-        focus="{{isFocus}}"
         show-word-limit
         maxlength="12"
         border="{{false}}"

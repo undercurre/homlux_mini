@@ -1,0 +1,16 @@
+{
+  "component": true,
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-dialog": "/skyline-components/mz-dialog/index",
+    "mz-popup": "/skyline-components/mz-popup/index",
+    "mz-slider": "/skyline-components/mz-slider/index",
+    "mz-icon-button": "/skyline-components/mz-icon-button/index",
+    "mz-picker": "/skyline-components/mz-picker/index",
+    "mz-cell": "/skyline-components/mz-cell/index",
+    "mz-switch": "/skyline-components/mz-switch/index",
+    "fan-light-switch": "../../components/fan-light-switch/index",
+    "tips-box": "/components/tips-box/index"
+  }
+}

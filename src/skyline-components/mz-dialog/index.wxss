@@ -57,7 +57,6 @@
 }
 
 .mz-dialog__message-text {
-  word-wrap: break-word;
   font-size: 28rpx;
   color: #666;
   line-height: 48rpx;

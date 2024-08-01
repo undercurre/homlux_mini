@@ -44,7 +44,6 @@ export const deviceStore = observable({
    * @description 房间设备拍扁列表
    */
   get deviceFlattenList(): Device.DeviceItem[] {
-    console.log('get deviceFlattenList trigger', this.deviceList.length)
     return deviceFlatten(this.deviceList)
   },
   // 当前房间灯组数量
@@ -147,7 +146,7 @@ export const deviceStore = observable({
     roomId: string = roomStore.currentRoomId,
     options?: IApiRequestOption,
   ) {
-    const res = await querySubDeviceList({ houseId, roomId }, { ...options, loading: true })
+    const res = await querySubDeviceList({ houseId, roomId }, { ...options })
     if (!res.success) {
       console.log('加载房间设备失败！', res)
       return
@@ -201,6 +200,6 @@ export const deviceStore = observable({
 
 export const deviceBinding = {
   store: deviceStore,
-  fields: ['deviceList', 'allRoomDeviceList', 'deviceFlattenList'],
+  fields: ['deviceList', 'allRoomDeviceList', 'deviceFlattenList', 'deviceTimestamp'],
   actions: [],
 }

@@ -61,7 +61,9 @@ declare namespace AutoScene {
     uniId: string
     // 名称
     name: string
-    //类型 1-网关，2-子设备，3-wifi设备,4-分组,5-场景,6-延时6不会发送到云端
+    /**
+     * 类型 1-网关，2-子设备，3-wifi设备,4-分组,5-场景,6-延时6不会发送到云端
+     */
     type: 1 | 2 | 3 | 4 | 5 | 6
     // 图片
     pic: string

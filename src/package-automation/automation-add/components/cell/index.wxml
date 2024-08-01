@@ -11,16 +11,23 @@
         />
       </view>
 
-      <view class="flex flex-col items-start ml-32rpx">
+      <view class="flex flex-col items-start ml-32rpx w-full">
         <text class="text-32rpx text-black-2a font-medium leading-none mt-10rpx">{{item.data.name}}</text>
-        <view class="flex flex-row flex-wrap text-26 text-black-tips mt-22rpx">
+
+        <scroll-view
+          scroll-x
+          enhanced
+          type="list"
+          show-scrollbar="{{false}}"
+          class="mt-22rpx w-full h-56rpx"
+        >
           <text
-            class="px-24rpx bg-hex-F4F5F8 rounded-32rpx leading-56rpx h-56rpx mr-16rpx"
+            class="px-24rpx bg-hex-F4F5F8 rounded-32rpx leading-56rpx h-56rpx mr-16rpx text-26 text-black-tips"
             wx:for="{{item.data.desc}}"
             wx:key="index"
             >{{item}}</text
           >
-        </view>
+        </scroll-view>
       </view>
       <tap-gesture-handler
         data-dragId="{{item.data.dragId}}"

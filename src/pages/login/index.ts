@@ -1,11 +1,14 @@
 import Toast from '../../skyline-components/mz-toast/toast'
 import { login } from '../../apis/index'
-import { homeStore, othersStore, userStore } from '../../store/index'
+import { homeStore, othersStore, sceneStore, userStore } from '../../store/index'
 import { storage, showLoading, hideLoading, Logger } from '../../utils/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
 // pages/login/index.ts
 Component({
+  options: {
+    pureDataPattern: /^_/,
+  },
   behaviors: [pageBehavior],
   /**
    * 页面的初始数据
@@ -26,7 +29,7 @@ Component({
       })
     },
 
-    handleLoginTap() {
+    async handleLoginTap() {
       if (!this.data.isAgree) {
         Toast('请同意协议')
         return
@@ -82,13 +85,16 @@ Component({
     async login(data: { jsCode: string; code: string; lat?: number; lon?: number }) {
       const loginRes = await login(data)
       if (loginRes.success && loginRes.result) {
-        console.log('loginRes', loginRes)
+        Logger.log('loginRes', loginRes)
         storage.set('token', loginRes.result.token, null)
+        userStore.openId = loginRes.result.openId
 
         await userStore.updateUserInfo()
         userStore.setIsLogin(true)
         othersStore.setIsInit(false)
         homeStore.homeInit()
+        sceneStore.updateAllRoomSceneList()
+
         wx.switchTab({
           url: '/pages/index/index',
         })

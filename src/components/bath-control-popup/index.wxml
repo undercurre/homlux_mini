@@ -65,6 +65,7 @@
           bgColorActive="#488fff"
           round="{{20}}"
           textColor="#a2a2a2"
+          textColorActive="#488fff"
           bind:btnTouchStart="handleModeTap"
         ></mz-icon-button>
       </view>

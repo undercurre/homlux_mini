@@ -9,12 +9,11 @@ import {
   checkInputNameIllegal,
   emitter,
   getCurrentPageParams,
-  isNullOrUnDef,
   storage,
   strUtil,
   toPropertyDesc,
 } from '../../utils/index'
-import { adviceSceneNameList } from '../../config/scene'
+import { adviceSceneNameList, FAN_PID } from '../../config/index'
 
 ComponentWithComputed({
   options: {
@@ -163,6 +162,8 @@ ComponentWithComputed({
   },
   lifetimes: {
     async ready() {
+      await deviceStore.updateAllRoomDeviceList()
+
       this.setData({
         deviceList: deviceStore.allRoomDeviceFlattenList.filter(
           (item) => item.proType !== PRO_TYPE.gateway && item.proType !== PRO_TYPE.sensor,
@@ -170,6 +171,8 @@ ComponentWithComputed({
         sensorList: JSON.parse(JSON.stringify(deviceStore.allRoomSensorList)),
       })
       const { roomid, sceneInfo } = getCurrentPageParams()
+
+      console.log('getCurrentPageParams', getCurrentPageParams())
       if (!sceneInfo && !roomid) {
         // 新建场景
         return
@@ -215,6 +218,15 @@ ComponentWithComputed({
           //暂时设备只有传感器条件
           autoSceneInfo.deviceConditions.forEach((action) => {
             sensorlinkSelectList.push(action.deviceId)
+            try {
+              const sensor = this.data.sensorList.find((item) => item.uniId === action.deviceId)
+              sensor!.property = action.controlEvent[0]
+              this.setData({
+                sensorList: [...this.data.sensorList],
+              })
+            } catch (error) {
+              console.error(error)
+            }
           })
         } else {
           //时间条件
@@ -280,34 +292,16 @@ ComponentWithComputed({
                 orderNum: 0,
                 dragId: device.uniId + Math.floor(Math.random() * 1001),
               })
-            } else if (device.proType === PRO_TYPE.light) {
-              const modelName = getModelName(device.proType, device.productId)
-              const property = {
-                ...device.mzgdPropertyDTOList[modelName],
-                ...action.controlAction[0],
-              }
-              const desc = toPropertyDesc(device.proType, property)
-              tempSceneDeviceActionsFlatten.push({
-                uniId: device.uniId,
-                name: device.deviceName,
-                type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
-                desc,
-                pic: device.pic as string,
-                proType: device.proType,
-                value: {
-                  ...property,
-                  modelName: getModelName(device.proType, device.productId),
-                },
-                sceneProperty: {
-                  ...property,
-                },
-                orderNum: 0,
-                dragId: device.uniId + Math.floor(Math.random() * 1001),
-              })
             } else {
               const property = {
                 ...action.controlAction[0],
               }
+              const modelName = getModelName(device.proType, device.productId)
+
+              if (device.proType === PRO_TYPE.light) {
+                property.colorTempRange = device.mzgdPropertyDTOList[modelName].colorTempRange
+              }
+
               const desc = toPropertyDesc(device.proType, property)
               tempSceneDeviceActionsFlatten.push({
                 uniId: device.uniId,
@@ -318,7 +312,7 @@ ComponentWithComputed({
                 proType: device.proType,
                 value: {
                   ...property,
-                  modelName: getModelName(device.proType, device.productId),
+                  modelName,
                 },
                 sceneProperty: {
                   ...property,
@@ -391,36 +385,19 @@ ComponentWithComputed({
                 dragId: device.uniId + Math.floor(Math.random() * 1001),
               })
             })
-          } else if (device.proType === PRO_TYPE.light) {
-            const modelName = getModelName(device.proType, device.productId)
-            const property = {
-              ...device.mzgdPropertyDTOList[modelName],
-              ...action.controlAction[0],
-            }
-            const desc = toPropertyDesc(device.proType, property)
-            tempSceneDevicelinkSelectList.push(device.uniId)
-            tempSceneDeviceActionsFlatten.push({
-              uniId: device.uniId,
-              name: device.deviceName,
-              type: device.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
-              desc,
-              pic: device.pic as string,
-              proType: device.proType,
-              value: {
-                ...property,
-                modelName: getModelName(device.proType, device.productId),
-              },
-              sceneProperty: {
-                ...property,
-              },
-              orderNum: 0,
-              dragId: device.uniId + Math.floor(Math.random() * 1001),
-            })
           } else {
             const property = {
               ...action.controlAction[0],
             }
+
+            const modelName = getModelName(device.proType, device.productId)
+
+            if (device.proType === PRO_TYPE.light) {
+              property.colorTempRange = device.mzgdPropertyDTOList[modelName].colorTempRange
+            }
+
             const desc = toPropertyDesc(device.proType, property)
+
             tempSceneDevicelinkSelectList.push(device.uniId)
             tempSceneDeviceActionsFlatten.push({
               uniId: device.uniId,
@@ -431,7 +408,7 @@ ComponentWithComputed({
               proType: device.proType,
               value: {
                 ...property,
-                modelName: getModelName(device.proType, device.productId),
+                modelName,
               },
               sceneProperty: {
                 ...property,
@@ -817,6 +794,7 @@ ComponentWithComputed({
       const sceneDeviceActionsFlattenIds = this.data.sceneDeviceActionsFlatten.map((item) => item.uniId)
       //从后面插入已选中的设备和场景
       this.data.sceneDevicelinkSelectList.forEach((id) => {
+        // 手动场景，已选择的设备无需再插入
         if (this.data.opearationType === 'yijian' && sceneDeviceActionsFlattenIds.includes(id)) {
           return
         }
@@ -839,7 +817,13 @@ ComponentWithComputed({
             modelName = getModelName(device.proType, device.productId)
             pic = device.pic
             if (this.isNewScenarioSettingSupported(device.proType)) {
-              if (isNullOrUnDef(device.sceneProperty)) device.sceneProperty = { power: 0 }
+              device.sceneProperty = device.sceneProperty || { power: 0 } // 场景控制属性初始化
+              if (device.proType === PRO_TYPE.light) {
+                device.sceneProperty.colorTempRange = device.property?.colorTempRange // 灯具设备需要该属性计算色温显示标签
+              }
+              if (FAN_PID.includes(device.productId)) {
+                device.sceneProperty.fan_power = 'off'
+              }
               desc = toPropertyDesc(device.proType, device.sceneProperty)
             } else {
               desc = toPropertyDesc(device.proType, device.property!)
@@ -1081,6 +1065,7 @@ ComponentWithComputed({
      */
     handleAutoSceneActionEdit(dragId: string) {
       const action = this.data.sceneDeviceActionsFlatten.find((item) => item.dragId === dragId)
+
       console.log('handleAutoSceneActionEdit', action)
       if (!action) return
       if (action.type === 6) {
@@ -1112,6 +1097,7 @@ ComponentWithComputed({
             gatewayId: device.gatewayId,
             deviceId: device.deviceId,
             proType: device.proType,
+            productId: device.productId,
             sceneProperty: { ...action.sceneProperty },
           },
           showEditPopup: device.proType,
@@ -1378,18 +1364,7 @@ ComponentWithComputed({
                 ctrlAction.modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
               }
 
-              if (device.proType === PRO_TYPE.light) {
-                ctrlAction.power = property.power
-
-                if (property.power === 1) {
-                  ctrlAction.colorTemperature = property.colorTemperature
-                  ctrlAction.brightness = property.brightness
-                }
-
-                // if (device.deviceType === 3) {
-                //   ctrlAction = toWifiProperty(device.proType, ctrlAction)
-                // }
-              } else if (device.proType === PRO_TYPE.curtain) {
+              if (device.proType === PRO_TYPE.curtain) {
                 ctrlAction.curtain_position = property.curtain_position
               } else if (device.proType === PRO_TYPE.bathHeat) {
                 ctrlAction.light_mode = property.light_mode
@@ -1401,6 +1376,7 @@ ComponentWithComputed({
                 ctrlAction.light = property.light
               } else if (this.isNewScenarioSettingSupported(device.proType)) {
                 ctrlAction = action.sceneProperty!
+                delete ctrlAction?.colorTempRange
               }
               newSceneData.deviceActions.push({
                 controlAction: [ctrlAction],
@@ -1648,7 +1624,8 @@ ComponentWithComputed({
         proType === PRO_TYPE.airConditioner ||
         proType === PRO_TYPE.freshAir ||
         proType === PRO_TYPE.floorHeating ||
-        proType === PRO_TYPE.centralAirConditioning
+        proType === PRO_TYPE.centralAirConditioning ||
+        proType === PRO_TYPE.light
       )
     },
     onItemClick(e: { detail: { type: string; data: unknown } }) {

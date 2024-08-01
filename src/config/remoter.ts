@@ -1532,6 +1532,87 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
   }
 }
 
+export const deviceConfigV2: Record<string, Remoter.ConfigItem> = {
+  // '13a': {
+  //   deviceName: '吸顶灯',
+  //   devicePic: '/assets/img/remoter/ceilLight.png',
+  //   actions: [
+  //     {
+  //       key: 'LIGHT_LAMP',
+  //       name: '照明',
+  //     },
+  //     {
+  //       key: 'LIGHT_NIGHT_LAMP',
+  //       name: '夜灯',
+  //     },
+  //   ],
+  // },
+  // '13b': {
+  //   deviceName: '风扇灯',
+  //   devicePic: '/assets/img/remoter/fanLight.png',
+  //   actions: [
+  //     {
+  //       key: 'LIGHT_LAMP',
+  //       name: '照明',
+  //     },
+  //     {
+  //       key: 'FAN_SWITCH',
+  //       name: '风扇',
+  //     },
+  //   ],
+  // },
+  '26': {
+    deviceName: '浴霸',
+    devicePic: '/assets/img/remoter/bathHeater.png',
+    actions: [
+      {
+        key: 'BATH_LAMP',
+        name: '照明',
+      },
+      {
+        key: 'BATH_ALL_OFF',
+        name: '待机',
+      },
+      {
+        key: 'BATH_WIND',
+        name: '吹风',
+      },
+      {
+        key: 'BATH_VENTILATE',
+        name: '换气',
+      },
+      {
+        key: 'BATH_DRY',
+        name: '干燥',
+      },
+    ],
+  },
+  '40': {
+    deviceName: '凉霸',
+    devicePic: '/assets/img/remoter/bathHeater.png',
+    actions: [
+      {
+        key: 'BATH_LAMP',
+        name: '照明',
+      },
+      {
+        key: 'BATH_ALL_OFF',
+        name: '待机',
+      },
+    ],
+  },
+  // '17': {
+  //   deviceName: '晾衣机',
+  //   devicePic: '/assets/img/remoter/clothes.png',
+  //   actions: [
+  //     {
+  //       key: 'CLOTHES_LIGHT',
+  //       name: '照明',
+  //     },
+  //   ],
+  // }
+}
+
 // 控制指令
 export const CMD: Record<string, number> = {
   // 吸顶灯
@@ -1589,7 +1670,7 @@ export const CMD: Record<string, number> = {
   BATH_DELAY_CLOSE: 0x41, // 延时关
   BATH_RADAR: 0x42, //人感
   BATH_ANION: 0x43, //负离子
-  BATH_TVOC: 0x44, //异味感应
+  BATH_SMELL: 0x44, //异味感应
 
   // 凉霸（其余指令同浴霸）
   KITCHEN_WIND_STRONG: 0x02, // 强吹风

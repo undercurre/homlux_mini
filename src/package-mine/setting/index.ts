@@ -11,7 +11,7 @@ Component({
       {
         icon: 'upgrade.png',
         title: '固件升级',
-        url: '/package-mine/ota/index',
+        url: '/package-mine/pages/ota/index',
         auth: true,
       },
       {

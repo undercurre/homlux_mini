@@ -2,13 +2,9 @@ import { observable, runInAction } from 'mobx-miniprogram'
 import {
   getHomeList,
   queryUserHouseInfo,
-  queryHouseUserList,
-  updateHouseUserAuth,
-  deleteHouseUser,
   inviteHouseUser,
   saveOrUpdateUserHouseInfo,
   updateDefaultHouse,
-  getShareId,
   queryLocalKey,
 } from '../apis/index'
 import { asyncStorage, storage, Logger, IApiRequestOption, isConnect } from '../utils/index'
@@ -25,10 +21,6 @@ export const homeStore = observable({
 
   /** 当前家庭详细信息 */
   currentHomeDetail: {} as Home.IHomeDetail,
-
-  homeMemberInfo: {} as Home.HomeMemberInfo,
-
-  shareId: '',
 
   /**
    * 退出登录时清空数据
@@ -164,7 +156,7 @@ export const homeStore = observable({
    */
   async updateRoomCardList() {
     await deviceStore.updateAllRoomDeviceList()
-    await roomStore.updateRoomList()
+    await roomStore.updateRoomList() // 最后刷新
     this.saveHomeDate()
   },
 
@@ -186,64 +178,6 @@ export const homeStore = observable({
   },
 
   /**
-   * 更新家庭成员列表
-   */
-  async updateHomeMemberList() {
-    const res = await queryHouseUserList({ houseId: this.currentHomeId })
-    if (res.success) {
-      runInAction(() => {
-        homeStore.homeMemberInfo = res.result
-      })
-      return
-    } else {
-      return Promise.reject('获取成员信息失败')
-    }
-  },
-
-  /**
-   * 更改家庭成员权限
-   * 家庭成员权限，创建者：1 管理员：2 游客：3
-   */
-  async updateMemberAuth(userId: string, auth: Home.UserRole) {
-    const res = await updateHouseUserAuth({ userId, auth, houseId: this.currentHomeId })
-    if (res.success) {
-      runInAction(() => {
-        for (let i = 0; i < homeStore.homeMemberInfo.houseUserList.length; i++) {
-          if (userId === homeStore.homeMemberInfo.houseUserList[i].userId) {
-            if (homeStore.homeMemberInfo.houseUserList[i].userHouseAuth === 1) continue
-            const map = ['', '创建者', '管理员', '访客']
-            homeStore.homeMemberInfo.houseUserList[i].userHouseAuth = auth
-            homeStore.homeMemberInfo.houseUserList[i].userHouseAuthName = map[auth]
-          }
-        }
-      })
-      return
-    } else {
-      return Promise.reject('设置权限失败')
-    }
-  },
-
-  /**
-   * 删除家庭成员
-   */
-  async deleteMember(userId: string) {
-    const res = await deleteHouseUser({ houseId: this.currentHomeId, userId })
-    if (res.success) {
-      runInAction(() => {
-        for (let i = 0; i < homeStore.homeMemberInfo.houseUserList.length; i++) {
-          if (userId === homeStore.homeMemberInfo.houseUserList[i].userId) {
-            homeStore.homeMemberInfo.houseUserList.splice(i, 1)
-            break
-          }
-        }
-      })
-      return
-    } else {
-      return Promise.reject('删除家庭成员失败')
-    }
-  },
-
-  /**
    * 邀请家庭成员
    */
   async inviteMember(houseId: string, auth: number, shareId: string) {
@@ -252,21 +186,6 @@ export const homeStore = observable({
       return
     } else {
       return Promise.reject(res)
-    }
-  },
-
-  /**
-   * 获取分享连接ID
-   */
-  async getInviteShareId() {
-    const res = await getShareId({ houseId: this.currentHomeId })
-    if (res.success) {
-      runInAction(() => {
-        homeBinding.store.shareId = res.result.shareId
-      })
-      return
-    } else {
-      return Promise.reject('获取分享链接失败')
     }
   },
 
@@ -352,9 +271,6 @@ export const homeBinding = {
     'updateHomeInfo',
     'updateHomeList',
     // 'updateCurrentHomeDetail',
-    'updateHomeMemberList',
-    'updateMemberAuth',
-    'deleteMember',
     'updateHomeNameOrLocation',
   ],
 }

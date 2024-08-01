@@ -1,5 +1,5 @@
 {
   "usingComponents": {
-    "device-showcase": "/components/device-showcase/index"
+    "device-showcase": "../../components/device-showcase/index"
   }
 }

@@ -111,6 +111,8 @@ ComponentWithStore({
       draggable: true,
     },
     _isFirstShow: true, // 是否首次加载
+    isRefreshing: false, // 非首次加载，后台数据刷新中的标志
+    refreshCallback: null as null | (() => void),
     _from: '', // 页面进入来源
     _timeId: null as null | number,
     _timer: 0, // 记录加载时间点
@@ -169,21 +171,22 @@ ComponentWithStore({
     'roomList,lightSummary.**'(roomList: roomInfo[], lightSummary) {
       const roomCardList = roomList.map((room) => ({
         ...room,
-        ...lightSummary[room.roomId],
+        ...(lightSummary[room.roomId] ?? { lightCount: 0, lightOnCount: 0 }),
         id: room.roomId,
       }))
       this.setData({ roomCardList })
     },
+    isRefreshing(v) {
+      console.log('isRefreshing', v)
+      if (!v && this.data.refreshCallback) {
+        hideLoading()
+        this.data.refreshCallback()
+      }
+    },
   },
 
   pageLifetimes: {
-    show() {
-      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-        this.getTabBar().setData({
-          selected: 0,
-        })
-      }
-    },
+    show() {},
   },
 
   methods: {
@@ -223,8 +226,15 @@ ComponentWithStore({
         roomStore.setCurrentRoom('')
       }
 
+      // 首次onShow，有App.onLaunch初始化加载
       if (!this.data._isFirstShow || this.data._from === 'addDevice') {
+        this.setData({ isRefreshing: true })
+        // updateHomeInfo 先加载后面的接口依赖获取当前家庭Id
+        await homeStore.updateHomeInfo({ isInit: false }, { isDefaultErrorTips: false })
         await homeStore.updateRoomCardList()
+        this.updateLightCount()
+        await delay(0)
+        this.setData({ isRefreshing: false })
       }
 
       this.data._isFirstShow = false
@@ -316,6 +326,28 @@ ComponentWithStore({
         'addMenu.isShow': !this.data.addMenu.isShow,
       })
     },
+    /**
+     * 房间卡片点击的响应
+     * @param e 房间id
+     */
+    handleRoomCardTap(e: { detail: string }) {
+      this.data.refreshCallback = () => {
+        roomStore.setCurrentRoom(e.detail)
+        wx.navigateTo({
+          url: '/package-room-control/index/index',
+        })
+        this.data.refreshCallback = null
+      }
+
+      // 如果在首页的房间或设备数据未加载完成，则先等待完成，并通过observers执行回调
+      if (this.data.isRefreshing) {
+        showLoading('数据刷新中...')
+      }
+      // 无刷新中标志，则直接执行
+      else {
+        this.data.refreshCallback()
+      }
+    },
     async handleHomeTap(e: { detail: string }) {
       this.setData({
         'selectHomeMenu.isShow': false,
@@ -329,9 +361,10 @@ ComponentWithStore({
 
       if (res.success) {
         await homeStore.homeInit()
-        sceneStore.updateAllRoomSceneList()
+        await sceneStore.updateAllRoomSceneList()
         this.updateLightCount()
       }
+      await delay(0)
       hideLoading()
     },
     handleAddTap(e: { detail: string }) {
@@ -345,14 +378,14 @@ ComponentWithStore({
 
     // 更新灯总数、亮灯数统计
     updateLightCount() {
-      const { lightSummary } = this.data
-      roomStore.roomList.forEach((room) => {
-        lightSummary[room.roomId] = {
-          lightCount: 0,
-          lightOnCount: 0,
-        }
-      })
+      const lightSummary = {} as IAnyObject
       deviceStore.allRoomDeviceFlattenList.forEach((device) => {
+        if (!Object.prototype.hasOwnProperty.call(lightSummary, device.roomId)) {
+          lightSummary[device.roomId] = {
+            lightCount: 0,
+            lightOnCount: 0,
+          }
+        }
         if (device.deviceType !== 4 && (device.proType === PRO_TYPE.switch || device.proType === PRO_TYPE.light)) {
           lightSummary[device.roomId].lightCount++
         }
@@ -367,7 +400,6 @@ ComponentWithStore({
     // 节流更新房间卡片信息
     updateRoomDataThrottle: throttle(async function (this: IAnyObject) {
       await homeStore.updateRoomCardList()
-      await sceneStore.updateAllRoomSceneList()
       this.updateLightCount()
       this.autoRefreshDevice()
     }, 3000),
@@ -400,28 +432,34 @@ ComponentWithStore({
     inviteMember() {
       const enterOption = wx.getEnterOptionsSync()
 
-      if (enterOption.scene != 1007 && enterOption.scene != 1044) {
+      if (
+        enterOption.scene != 1007 && // 单人聊天会话中的小程序消息卡片
+        enterOption.scene != 1044 && // 带 shareTicket 的小程序消息卡片
+        enterOption.scene != 1194 // URL Link
+      ) {
         return
       }
       const enterQuery = enterOption.query
       const token = storage.get('token', '')
       const type = enterQuery.type as string
       const houseId = enterQuery.houseId as string
-      const time = enterQuery.time as string
+      const expireTime = parseInt(enterQuery.expireTime)
       const shareId = enterQuery.shareId as string
-      if (token && type && type !== 'transferHome' && houseId && time) {
+      if (token && type && type !== 'transferHome' && houseId && expireTime) {
         this.data._isAcceptShare = true
-        console.log(`lmn>>>邀请参数:token=${token}/type=${type}/houseId=${houseId}/time=${time}/shareId=${shareId}`)
+        console.log(
+          `家庭邀请参数:token=${token}/type=${type}/houseId=${houseId}/expireTime=${expireTime}/shareId=${shareId}`,
+        )
         for (let i = 0; i < homeStore.homeList.length; i++) {
           if (homeStore.homeList[i].houseId == houseId) {
-            console.log('lmn>>>已经在该家庭')
+            console.log('已经在该家庭')
             return
           }
         }
         const now = new Date().valueOf()
         // 邀请链接一天单次有效
-        if (now - parseInt(time) > 86400000) {
-          console.log('lmn>>>邀请超时')
+        if (now > expireTime) {
+          console.log('邀请超时')
           Dialog.confirm({
             title: '邀请过期',
             message: '该邀请已过期，请联系邀请者重新邀请',

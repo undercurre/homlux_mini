@@ -64,7 +64,7 @@
           is-link
           center
           link-type="navigateTo"
-          url="/package-mine/member-manage/index"
+          url="/package-mine/pages/member-manage/index"
           border="{{false}}"
         />
       </van-cell-group>

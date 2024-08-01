@@ -4,7 +4,7 @@ import { runInAction } from 'mobx-miniprogram'
 import Toast from '@vant/weapp/toast/toast'
 import { deviceStore, homeBinding, homeStore, roomBinding } from '../../../store/index'
 import { bleDevicesBinding, bleDevicesStore } from '../../store/bleDeviceStore'
-import { delay, emitter, getCurrentPageParams, Logger, strUtil } from '../../../utils/index'
+import { delay, emitter, getCurrentPageParams, Logger, goBackPage } from '../../../utils/index'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { batchUpdate, bindDevice, isDeviceOnline, sendCmdAddSubdevice, queryDeviceProInfo } from '../../../apis/index'
 import lottie from 'lottie-miniprogram'
@@ -582,8 +582,6 @@ ComponentWithComputed({
         )
 
         this.data._zigbeeTaskQueue.add(zigbeeTaskList)
-
-        Logger.log('初始化zigbee任务队列:end')
       } catch (err) {
         Logger.error('beginAddBleDevice-err', err)
       }
@@ -890,14 +888,11 @@ ComponentWithComputed({
     },
 
     finish() {
+      deviceStore.updateAllRoomDeviceList() // 刷新全屋设备列表，以免其他地方获取不到最新数据
       bleDevicesStore.reset()
       wx.closeBluetoothAdapter()
 
-      wx.reLaunch({
-        url: strUtil.getUrlWithParams(cacheData.pageEntry, {
-          from: 'addDevice',
-        }),
-      })
+      goBackPage(cacheData.pageEntry)
     },
 
     toggleSelectAll() {

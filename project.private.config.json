@@ -5,12 +5,42 @@
     "compileHotReLoad": false,
     "urlCheck": true,
     "bigPackageSizeSupport": true,
-    "skylineRenderEnable": true
+    "skylineRenderEnable": true,
+    "autoAudits": false
   },
-  "libVersion": "3.4.6",
+  "libVersion": "3.5.1",
   "condition": {
     "miniprogram": {
       "list": [
+        {
+          "name": "场景首页",
+          "pathName": "package-automation/automation/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "选择设备界面",
+          "pathName": "package-distribution/pages/choose-device/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
+        {
+          "name": "成员管理",
+          "pathName": "package-mine/pages/member-manage/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
         {
           "name": "产测工具",
           "pathName": "package-debug/pages/test-util/index",
@@ -278,13 +308,6 @@
         {
           "name": "配网指引页面",
           "pathName": "package-distribution-meiju/pages/addGuide/addGuide",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "选择设备界面",
-          "pathName": "package-distribution/choose-device/index",
           "query": "",
           "launchMode": "default",
           "scene": null

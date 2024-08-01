@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { execScene } from '../../../../apis/scene'
-import { roomStore } from '../../../../store/index'
+// import { roomStore } from '../../../../store/index'
 import { sceneImgDir } from '../../../../config/index'
 import { runOnJS } from '../../../../skyline-components/common/worklet'
 
@@ -20,18 +20,13 @@ ComponentWithComputed({
   },
 
   computed: {
-    showScene(data) {
-      return !data.editMode
-    },
     sceneList(data) {
-      return data.cardInfo?.sceneList?.map((scene: Scene.SceneBase) => {
-        return {
-          ...scene,
-          sceneName: scene.sceneName.slice(0, 4),
-        }
-      })
+      return data.cardInfo?.sceneList?.map((scene: Scene.SceneBase) => ({
+        ...scene,
+        sceneName: scene.sceneName.slice(0, 4),
+      }))
     },
-    hasBottomPadding(data) {
+    isLargeSize(data) {
       return data.cardInfo?.sceneList?.length > 0 && !data.editMode
     },
     desc(data) {
@@ -72,13 +67,15 @@ ComponentWithComputed({
       }, 1050)
     },
     handleCardTap() {
-      roomStore.setCurrentRoom(this.data.cardInfo.roomId)
-      wx.navigateTo({
-        url: '/package-room-control/index/index',
-      })
+      this.triggerEvent('cardTap', this.data.cardInfo.roomId)
+      // roomStore.setCurrentRoom(this.data.cardInfo.roomId)
+      // wx.navigateTo({
+      //   url: '/package-room-control/index/index',
+      // })
     },
     handleTapWorklet() {
       'worklet'
+      // runOnJS(this.triggerEvent.bind(this))('cardTap', this.data.cardInfo.roomId)
       runOnJS(this.handleCardTap.bind(this))()
     },
     handleSceneTapWorklet(e: WechatMiniprogram.CustomEvent) {

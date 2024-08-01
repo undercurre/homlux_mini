@@ -7,6 +7,8 @@
     "mz-popup": "../../../../skyline-components/mz-popup/index",
     "mz-cell-group": "../../../../skyline-components/mz-cell-group/index",
     "mz-cell": "../../../../skyline-components/mz-cell/index",
-    "picker-view-popup": "../picker-view-popup/index"
+    "picker-view-popup": "../picker-view-popup/index",
+    "brightness-popup": "./components/brightness-popup/index",
+    "color-temperature-popup": "./components/color-temperature-popup/index"
   }
 }

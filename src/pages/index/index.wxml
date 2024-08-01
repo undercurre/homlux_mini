@@ -29,7 +29,6 @@
           textColor="#2b4067"
           fontWeight="bold"
           bind:btnTouchStart="handleAllOff"
-          data-key="minus"
           rebound
           textInset
         ></mz-icon-button>
@@ -89,6 +88,7 @@
         edit-mode="{{editMode}}"
         direction="vertical"
         movable-list="{{roomCardList}}"
+        bind:cardTap="handleRoomCardTap"
         bind:dragBegin="handleDragBegin"
         bind:dragEnd="handleSortSaving"
       >
@@ -163,6 +163,7 @@
   </view>
 </view>
 
+<custom-tab-bar select-index="0"></custom-tab-bar>
 <!-- TODO handleHomeSelect renewRoomPos -->
 <!-- <home-select-menu
   x="{{selectHomeMenu.x}}"

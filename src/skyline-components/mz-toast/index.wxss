@@ -14,7 +14,6 @@
 }
 
 .mz-toast {
-  word-wrap: break-word;
   align-items: center;
   background-color: var(--toast-background-color, rgba(0, 0, 0, 0.7));
   border-radius: var(--toast-border-radius, 8px);
@@ -34,8 +33,6 @@
   position: fixed;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: -webkit-fit-content;
-  width: fit-content;
 }
 
 .mz-toast--text {

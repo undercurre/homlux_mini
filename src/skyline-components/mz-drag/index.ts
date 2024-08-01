@@ -37,7 +37,10 @@ Component({
       type: Array,
       value: [] as CardItem[],
     },
-    // 是否处于编辑模式 // ! 目前是否能拖动与编辑模式无内在关联，只是业务逻辑需要
+    // 列表数据更新的时间戳
+    listTimestamp: Number,
+
+    // 是否处于编辑模式
     editMode: Boolean,
 
     // 单个元素的占位宽度（含边距）
@@ -46,7 +49,7 @@ Component({
     itemHeight: Number,
     // 单个元素的非拖动态占位高度（含边距）
     itemHeightLarge: Number,
-    // 滚动高度
+    // 滚动区域高度
     scrollHeight: {
       type: String,
       value: '80vh',
@@ -67,29 +70,12 @@ Component({
         hasSizeChange,
         useAccumulatedY,
       })
-      if (!editMode) {
-        this.initList()
-      }
     },
-    'movableList.**,itemHeight'(_, itemHeight) {
-      console.log('[drag observer]', this.data.movableList)
-
-      // 只初始化，忽略后续逻辑
-      if (!this.data._inited) {
-        this.data._inited = true
-        this.data._itemHeight = itemHeight
-        this.initList()
-        return
-      }
-
-      // 如项目高度变化触发，则不进行列表初始化，由用户操作后进行列表初始化
-      if (itemHeight !== this.data._itemHeight) {
-        this.data._itemHeight = itemHeight
-        return
-      }
+    'movableList,itemHeight'() {
+      // Logger.trace('[movableList observer]', this.data.movableList)
 
       // 列表变更触发
-      this.initListThrottle(true)
+      this.initListThrottle()
     },
   },
 
@@ -103,12 +89,12 @@ Component({
     moveareaHeight: 0,
     hasSizeChange: false, // 元素是否有动态尺寸变化
     useAccumulatedY: false, // 纵向坐标是否使用累加值计算法
-    scrollTop: 0,
+    scrollTop: 0, // 滚动条位置
+    _moving: false, // 是否正在拖动
     _scrollHeightRes: 0,
     _touchY: 0,
     _originOrder: -1, // 被拖动元素，拖动开始前的排序号，从1开始
-    _inited: false,
-    _itemHeight: 0,
+    _lastTimestamp: 0, // 记录上次的时间戳
   },
 
   lifetimes: {
@@ -123,67 +109,83 @@ Component({
   },
 
   methods: {
-    initListThrottle: throttle(function (this: IAnyObject, isListTrigger: boolean) {
-      this.initList(isListTrigger)
-    }, 1000),
+    initListThrottle: throttle(function (this: IAnyObject) {
+      this.initList()
+    }, 800),
     /**
      * 初始化列表
-     * 索引号可能与排序号不对应，注意避免变更物理索引引起的界面跳动
+     * 索引号可能与排序号不对应，要注意避免变更oldList物理索引，而引起界面跳动；故优先旧列表排序号
      */
-    async initList(isListTrigger = false) {
+    async initList() {
       const { itemWidth, cols, movableList, itemHeight, itemHeightLarge } = this.data
-      let accumulatedY = 0
+      const oldList = JSON.parse(JSON.stringify(this.data.list)) as CardItem[]
+      const newList = JSON.parse(JSON.stringify(movableList)) as CardItem[]
+      const isUpdateList = this.data.listTimestamp > this.data._lastTimestamp || this.data.listTimestamp === 0
 
-      // useAccumulatedY 模式下，需要提前计算位置映射，id -> posY
+      Logger.trace('[initList]', this.data._lastTimestamp, '->', this.data.listTimestamp, oldList, '->', newList)
+
+      const diffData = {} as IAnyObject
+      const list = []
+      let deleted = 0 // 已删除卡片计数
+      let orderNum = 0
+
+      // 遍历旧列表，对照新列表进行更新或者删除
+      for (const index in oldList) {
+        const item = oldList[index]
+        const newItem = newList.find((ele) => ele.id === item.id)
+
+        // 过滤已删除的内容（在新列表中不存在 || 带有已删除已添加标记）
+        if (!newItem || newItem.deleted || newItem.added) {
+          deleted++
+          continue
+        }
+
+        // 如果更新列表，则使用新列表序号（物理索引不变）；否则直接基于旧序号计算
+        orderNum = isUpdateList ? newItem.orderNum : item.orderNum - deleted
+
+        const mergedItem = {
+          ...item,
+          ...newItem,
+          orderNum,
+        } as IAnyObject
+
+        list.push(mergedItem)
+
+        // 标记新列表中已添加
+        newItem.added = true
+      } // for
+
+      // 遍历新列表，添加剩余的新增项
+      for (const newItem of newList) {
+        // 过滤已删除、已添加的内容
+        if (newItem.deleted || newItem.added) continue
+
+        orderNum = isUpdateList ? newItem.orderNum : orderNum + 1
+
+        list.push({
+          ...newItem,
+          orderNum,
+        })
+      }
+
+      // useAccumulatedY 模式下，提前计算位置映射，id -> posY
       const posMap = {} as IAnyObject
+      let accumulatedY = 0
       if (this.data.useAccumulatedY) {
-        // 复制一个重排序列表，避免影响已有列表
-        const sortedList = [...this.data.list]?.sort((a, b) => a.orderNum - b.orderNum) ?? []
+        const sortedList = [...list]?.sort((a, b) => a.orderNum - b.orderNum) ?? []
         for (const item of sortedList) {
           posMap[item.id] = accumulatedY
           accumulatedY += item.slimSize ? itemHeight : itemHeightLarge
         }
       }
 
-      const newList = JSON.parse(JSON.stringify(movableList)) as CardItem[]
-      console.log(
-        'initList|newList',
-        // @ts-ignore
-        newList.map((d: Device) => [d.deviceName, d.orderNum]),
-      )
-
-      const diffData = {} as IAnyObject
-      const list = []
-      let deleted = 0 // 已删除卡片计数
-      let orderNum = 0
-      for (const index in this.data.list) {
-        const item = this.data.list[index]
-        const newItem = newList.find((ele) => ele.id === item.id)
-
-        // 过滤已删除的内容
-        if (!newItem || newItem.deleted || newItem.added) {
-          deleted++
-          delete posMap[item.id]
-          accumulatedY -= item.slimSize ? itemHeight : itemHeightLarge
-          continue
-        }
-
-        orderNum = isListTrigger ? newItem.orderNum : item.orderNum - deleted
-
-        const i = orderNum - 1
-        const itemData = {
-          ...item,
-          ...newItem,
-          // select: this.data.editMode || item.select === null ? item.select : false, // 若编辑状态，或select未设定，则不变；否则设为true
-          y: accumulatedY,
-          orderNum,
-        } as IAnyObject
-
-        // 纵坐标计算
+      // 再次遍历，补充位置信息
+      list.forEach((item, index) => {
+        const i = item.orderNum - 1
         const itemY = this.data.useAccumulatedY ? posMap[item.id] : Math.floor(i / cols) * itemHeight
 
         // 当前拖拽中的元素，按拖拽位置及滚动偏移量计算位置
-        if (parseInt(index) === this.data.currentIndex && this.data.hasSizeChange) {
+        if (index === this.data.currentIndex && this.data.hasSizeChange) {
           const marginBottom = 120 // 按钮占位及边距
           // ! 新的滚动位置：0 ~ i个卡片高度-滚动区域高度+触摸位置 ~ 列表高度-可滚动区域高度
           const maxScrollTop = i * itemHeight - this.data._scrollHeightRes + this.data._touchY + marginBottom
@@ -191,51 +193,22 @@ Component({
             0,
             Math.min(maxScrollTop, newList.length * itemHeight - this.data._scrollHeightRes),
           )
-          itemData.pos = [item.pos[0], item.pos[1] - this.data.scrollTop + newScrollTop]
+          item.pos = [item.pos[0], item.pos[1] - this.data.scrollTop + newScrollTop]
           diffData.scrollTop = newScrollTop
           console.log('[reset scrollTop]max:', newList.length * itemHeight, '-', this.data._scrollHeightRes)
-        }
-        // 非拖拽中的元素，按排序计算位置
-        else {
-          itemData.pos = [(i % cols) * itemWidth, itemY]
-        }
-        list.push(itemData)
-
-        // 标记新列表中已添加
-        newItem.added = true
-      } // for
-
-      // 添加剩余的新增项
-      for (const newItem of newList) {
-        // 过滤已删除、已添加的内容
-        if (newItem.deleted || newItem.added) continue
-
-        orderNum = isListTrigger ? newItem.orderNum : orderNum + 1
-        const i = orderNum - 1
-        // 纵坐标计算
-        let itemY = 0
-        if (this.data.useAccumulatedY) {
-          itemY = accumulatedY
-          accumulatedY += newItem.slimSize ? itemHeight : itemHeightLarge
         } else {
-          itemY = Math.floor(i / cols) * itemHeight
+          item.pos = [(i % cols) * itemWidth, itemY]
         }
+      })
 
-        list.push({
-          ...newItem,
-          // 补充位置数据
-          orderNum,
-          pos: [(i % cols) * itemWidth, itemY],
-        })
-      }
       diffData.list = list
       diffData.moveareaHeight = this.data.useAccumulatedY ? accumulatedY : itemHeight * Math.ceil(list.length / cols)
 
       this.setData(diffData)
-      Logger.trace(
-        '[initList]diffData',
-        diffData.list.map((d: Device.DeviceItem) => [d.deviceName, d.orderNum]),
-      )
+
+      this.data._lastTimestamp = this.data.listTimestamp
+
+      // Logger.trace('[initList result]', diffData.list)
     },
     /**
      * 根据坐标位置计算索引
@@ -283,13 +256,17 @@ Component({
     },
     // 点击事件处理
     cardTap(e: WechatMiniprogram.CustomEvent) {
+      if (this.data._moving) {
+        this.data._moving = false
+        return
+      }
       this.triggerEvent('cardTap', e.detail)
 
       const { type } = e.detail
       const { index } = e.currentTarget.dataset
       const { select } = this.data.list[index]
       console.log('cardTap', index, select, type)
-      if (typeof select !== 'boolean' || type === 'control') return
+      if (typeof select !== 'boolean' || type === 'control' || (type === 'offline' && !this.data.editMode)) return
 
       // 处理选择样式渲染逻辑
       this.setData({
@@ -305,6 +282,7 @@ Component({
       } as IAnyObject
 
       const { select } = this.data.list[index]
+
       // （进入编辑模式）首次拖动的同时，选中当前卡片
       if (!this.data.editMode && typeof select === 'boolean') {
         diffData[`list[${index}].select`] = !select
@@ -312,12 +290,16 @@ Component({
 
       this.setData(diffData)
 
-      this.data._originOrder = orderNum
-      console.log('⇅ [dragBegin]', e)
+      console.log(`⇅ [dragBegin][${index}] draggable: ${this.data.config.draggable}`)
 
       this.triggerEvent('dragBegin', this.data.list[index])
 
+      if (!this.data.config.draggable) return
+
+      this.data._moving = true
+      this.data._originOrder = orderNum
       this.data._touchY = e.detail.y - this.data.scrollTop
+
       if (this.data.hasSizeChange) this.initList()
     },
     dragMove(e: WechatMiniprogram.CustomEvent<number[], IAnyObject, { index: number }>) {
@@ -335,6 +317,7 @@ Component({
       const { index } = e.target.dataset
       const newOrder = this.data.placeholder
       this.data.placeholder = -1
+
       console.log(`⇅ [dragEnd]->${newOrder}`)
 
       if (newOrder < 0) return
@@ -364,6 +347,10 @@ Component({
       const isMoved = newOrder !== this.data._originOrder
 
       this.triggerEvent('dragEnd', { isMoved, list: this.data.list })
+
+      await delay(160) // 确保拖拽操作已结束，屏蔽tap事件
+
+      this.data._moving = false
 
       Logger.trace('⇅ [dragEnd]diffData', diffData, 'isMoved', isMoved)
     },

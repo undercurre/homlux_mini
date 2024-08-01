@@ -255,23 +255,44 @@ ComponentWithComputed({
         targetRoomId: device.roomId,
       })
     },
+    /**
+     * 自动生成灯组默认名称，后缀规则：
+     * 【后缀号】N=【已有灯组数】+1
+     * 当N=1时默认名称为【灯组】，N>1时；默认名称为【灯组N】
+     * 如果同空间灯组命名重复，N再+1
+     */
+    getNewGroupName() {
+      const lightGroup = deviceStore.deviceList.filter((d) => d.deviceType === 4)
+      let suffix = (lightGroup?.length ?? 0) + 1
+      while (lightGroup.some((d) => d.deviceName === `灯组${suffix}`)) {
+        suffix++
+      }
+      return suffix > 1 ? `灯组${suffix}` : ''
+    },
     handleCreateGroup() {
       if (!this.data.canGroup) {
         Toast('请选择多个在线灯具')
         return
       }
       const lightList = this.data.editSelectList
-      const lightGroup = deviceStore.deviceList.filter((d) => d.deviceType === 4)
       wx.navigateTo({
         url: '/package-room-control/group/index',
         success: (res) => {
           res.eventChannel.emit('createGroup', {
             lightList,
-            groupName: lightGroup?.length ? `灯组${lightGroup.length + 1}` : '',
+            groupName: this.getNewGroupName(),
           })
         },
       })
       this.triggerEvent('close')
+    },
+    handleFinish() {
+      this.setData({
+        showEditName: false,
+        showEditRoom: false,
+      })
+
+      this.triggerEvent('finish')
     },
     handleClose() {
       this.setData({
@@ -284,7 +305,7 @@ ComponentWithComputed({
     handleBatchMove() {
       const actionFn = async () => {
         // 可能存在未重新开始移动，目标已被移动成功的情况
-        if (!this.data.moveWaitlist.length) {
+        if (!this.data.moveWaitlist.length && !this.data.moveFailCount) {
           this.triggerEvent('updateList')
           Dialog.close() // 关闭【前端超时】提示窗口
           emitter.off('group_device_result_status') // 取消监听
@@ -477,8 +498,6 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             this.handleClose()
-            // await homeStore.updateRoomCardList()
-
             // 如果修改的是面板名称，则需要同时更新面板其余的按键对应的卡片
             if (type === '0') {
               deviceStore.deviceFlattenList.forEach((d) => {
@@ -553,7 +572,6 @@ ComponentWithComputed({
               zIndex: 9999,
             })
             this.handleClose()
-            // await homeStore.updateRoomCardList()
             device.deviceName = this.data.editDeviceName // 用于传参，更新视图
             this.triggerEvent('updateDevice', device)
           } else {

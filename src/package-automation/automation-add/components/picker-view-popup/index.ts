@@ -11,26 +11,35 @@ Component({
     },
     dataInfo: {
       type: Object,
-      observer(value) {
-        if (typeof value === 'object') {
-          if (Object.keys(value).length == 0) {
-            this.setData({
-              value: 0,
-              pickerColumns: [],
-            })
-          } else {
-            const tempValue = scenePropertyOptions[value.propertyKey as keyof typeof scenePropertyOptions].findIndex(
-              (item) => item.value === value.value,
-            )
-            this.setData({
-              value: tempValue < 0 ? 0 : tempValue,
-              pickerColumns: scenePropertyOptions[value.propertyKey as keyof typeof scenePropertyOptions].map(
-                (item) => item.title,
-              ),
-            })
-          }
+    },
+  },
+
+  observers: {
+    show: function (show) {
+      if (!show) {
+        return
+      }
+
+      const value = this.data.dataInfo
+
+      if (typeof value === 'object') {
+        if (Object.keys(value).length == 0) {
+          this.setData({
+            value: 0,
+            pickerColumns: [],
+          })
+        } else {
+          const tempValue = scenePropertyOptions[value.propertyKey as keyof typeof scenePropertyOptions].findIndex(
+            (item) => item.value === value.value,
+          )
+          this.setData({
+            value: tempValue < 0 ? 0 : tempValue,
+            pickerColumns: scenePropertyOptions[value.propertyKey as keyof typeof scenePropertyOptions].map(
+              (item) => item.title,
+            ),
+          })
         }
-      },
+      }
     },
   },
 

@@ -5,6 +5,9 @@ import { defaultImgDir } from '../../config/index'
 import pageBehavior from '../../behaviors/pageBehaviors'
 
 Component({
+  options: {
+    pureDataPattern: /^_/,
+  },
   behaviors: [BehaviorWithStore({ storeBindings: [userBinding, homeBinding] }), pageBehavior],
   /**
    * 页面的初始数据
@@ -25,7 +28,7 @@ Component({
       {
         icon: '/assets/img/mine/member.png',
         text: '成员管理',
-        url: '/package-mine/member-manage/index',
+        url: '/package-mine/pages/member-manage/index',
       },
     ],
     urls: {
@@ -46,12 +49,6 @@ Component({
   },
   pageLifetimes: {
     show() {
-      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-        this.getTabBar().setData({
-          selected: 2,
-        })
-      }
-
       this.setData({
         userInfo: userStore.userInfo,
         isLogin: userStore.isLogin,

@@ -46,8 +46,15 @@
             value-class="longValue"
             title-class="shortTitle"
           ></van-cell>
+
           <van-cell
-            wx:if="{{isSubDeviceOrGateway}}"
+            wx:if="{{isScreen}}"
+            title="系统版本"
+            value="{{deviceInfo.softVersion}}"
+          ></van-cell>
+
+          <van-cell
+            wx:if="{{isGateway || isSubDevice}}"
             is-link="{{canEditDevice}}"
             bind:click="handleToOTA"
             value="{{deviceInfo.version}}"

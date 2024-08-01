@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { storage, isDevMode } from '../utils/index'
-import { COLORTEMP_RANGE, deviceConfig } from '../config/remoter'
+import { COLORTEMP_RANGE, deviceConfig, deviceConfigV2 } from '../config/remoter'
 
 const MOCK_DEVICES = [
   {
@@ -117,6 +117,7 @@ export const storeRmList = (list: Remoter.DeviceRx[], key = RM_KEY) => {
     deviceModel: r.deviceModel,
     actionStatus: r.actionStatus,
     defaultAction: r.defaultAction,
+    functionDes: r.functionDes,
   }))
   storage.set(key, filterList)
 }
@@ -155,7 +156,13 @@ export const remoterStore = observable({
     return list
       .map((device) => {
         const { deviceModel, deviceType, addr } = device
-        const config = deviceConfig[deviceType][deviceModel]
+        const isV2 = deviceModel.length === 1
+        let config
+        if (isV2) {
+          config = deviceConfigV2[deviceType]
+        } else {
+          config = deviceConfig[deviceType][deviceModel]
+        }
         if (!config) {
           console.log('device config NOT EXISTED IN remoterViewList')
           return {} as Remoter.DeviceRx
@@ -183,7 +190,13 @@ export const remoterStore = observable({
     if (!deviceModel || !deviceType) {
       return {} as Remoter.DeviceRx
     }
-    const config = deviceConfig[deviceType][deviceModel] || {}
+    const isV2 = deviceModel.length === 1
+    let config
+    if (isV2) {
+      config = deviceConfigV2[deviceType] || {}
+    } else {
+      config = deviceConfig[deviceType][deviceModel] || {}
+    }
 
     return {
       ...config,
@@ -256,9 +269,14 @@ export const remoterStore = observable({
     const result = [] as Remoter.DeviceRx[]
     for (let i = 0; i < this.remoterList.length; i++) {
       const { deviceModel, deviceType, addr, defaultAction } = this.remoterList[i]
-      if (deviceConfig[deviceType] == undefined) continue
-      if (deviceConfig[deviceType][deviceModel] == undefined) continue
-      const config = deviceConfig[deviceType][deviceModel]
+      let config
+      const isV2 = deviceModel.length === 1
+      if (isV2) {
+        config = deviceConfigV2[deviceType] || null
+      } else {
+        config = deviceConfig[deviceType][deviceModel] || null
+      }
+      if (!config) continue
       const { actions } = config
       const isDiscovered = rListIds.includes(addr)
       const actionKey = actions[defaultAction].key ?? ''

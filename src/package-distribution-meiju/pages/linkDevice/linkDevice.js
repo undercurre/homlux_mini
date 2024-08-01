@@ -74,7 +74,7 @@ Component({
     moduleType: '',
     addDeviceInfo: {},
     combinedDeviceInfo: [{ sn: '', a0: '' }],
-    time: 80,
+    time: 110,
     curStep: 0,
     currentRoomId: 0,
     isOnbleResp: true,
@@ -280,6 +280,7 @@ Component({
                 })
                 this.data.autoCloseBleConnection = true
                 let bindRes = await this.bindDeviceToHome()
+
                 console.log('绑定设备至默认家庭房间', resp)
 
                 let plainSn = addDeviceSDK.getDeviceSn(bindRes.data.data.sn)
@@ -768,7 +769,7 @@ Component({
         //配网指令上行
         let code = parseInt(decodeMsg.body, 16)
         if (code == 0) {
-          Logger.log('模组响应收到wifi信息')
+          Logger.debug('模组响应收到wifi信息')
           this.data.deviceRecWifiInfo = true
           this.finishTcp()
         } else {
@@ -1188,7 +1189,7 @@ Component({
             if (this.apUtils.decode2body(hexMsg).type === '807a') {
               this.data.udpMsgBody = this.apUtils.decode2body(hexMsg).body
               let adData = this.apUtils.parseUdpBody(this.data.udpMsgBody)
-              console.log('获取udp返回', adData)
+              Logger.log('获取udp返回', adData)
               this.setIfSupportAds(adData)
               if (hexCharCodeToStr(adData.ssid).toLocaleLowerCase() === app.addDeviceInfo.ssid.toLocaleLowerCase()) {
                 //校验响应包
@@ -1382,6 +1383,7 @@ Component({
               //发送完wifi信息就开始查询云
               if (!this.data.checkExists) {
                 this.data.checkExists = true
+                console.log('发送完wifi信息就开始查询云')
                 this.sendApWifiAfter()
               }
             }
@@ -1651,7 +1653,7 @@ Component({
      * 构造AP配网指令
      */
     constrLinknetorder() {
-      Logger.debug('constrLinknetorder', 'app.addDeviceInfo', app.addDeviceInfo)
+      Logger.debug('linkDevice----constrLinknetorder', 'app.addDeviceInfo', app.addDeviceInfo)
       if (!this.data.bindWifiInfo) return
       let bindWifiInfo = this.data.bindWifiInfo
 
@@ -1711,6 +1713,7 @@ Component({
      * @param {Boolean} forceValidRandomCode 是否强制校验随机数
      */
     async sendApWifiAfter(forceValidRandomCode = true) {
+      Logger.debug('sendApWifiAfter')
       let self = this
       let randomCode = this.data.randomCode
       let wifiInfo = this.data.bindWifiInfo
@@ -1764,8 +1767,8 @@ Component({
             console.error(error)
           }
 
-          Logger.log('绑定成功')
-          if (bindRes) {
+          if (bindRes.success) {
+            Logger.log('绑定成功')
             this.setData({
               curStep: 3,
             })
@@ -1806,7 +1809,7 @@ Component({
           } else {
             //绑定设备接口失败，跳转配网失败页
             Logger.debug('绑定设备接口失败，跳转配网失败页')
-            this.goLinkDeviceFailPage()
+            this.goLinkDeviceFailPage(`homlux_${bindRes.code}`)
           }
         },
         async () => {
@@ -2074,6 +2077,8 @@ Component({
       // }
 
       const res = await bindMideaDevice({
+        applianceType: '0x' + app.addDeviceInfo.type,
+        sn8: app.addDeviceInfo.sn8,
         deviceId: this.data.deviceId,
         houseId: homeStore.currentHomeId,
         roomId: roomStore.currentRoomId,
@@ -2082,15 +2087,10 @@ Component({
 
       Logger.log('bindMideaDevice', res)
 
-      await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId: this.data.deviceId })
-
       if (res.success) {
+        await queryAuthGetStatus({ houseId: homeStore.currentHomeId, deviceId: this.data.deviceId })
+
         app.addDeviceInfo.applianceCode = this.data.deviceId
-      } else {
-        app.addDeviceInfo.errorCode = this.creatErrorCode({
-          errorCode: '',
-          isCustom: true,
-        })
       }
 
       return res
@@ -2293,7 +2293,11 @@ Component({
      */
     goLinkDeviceFailPage(errorCode, isCustom = true) {
       Logger.debug('goLinkDeviceFailPage', errorCode)
-      errorCode = 1307 // 写死错误码，统一展示所有错误
+      if (errorCode?.includes('homlux_')) {
+        errorCode = errorCode.replace('homlux_', '')
+      } else {
+        errorCode = 1307 // 美居原有逻辑定义的错误码，写死错误码，统一展示所有错误
+      }
       // step1: 创建错误码
       if (errorCode) {
         app.addDeviceInfo.errorCode = this.creatErrorCode({

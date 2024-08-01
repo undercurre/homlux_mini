@@ -155,7 +155,6 @@
     >
       <mz-drag
         generic:item="device-card"
-        bind:cardTap="cardTap"
         cols="{{4}}"
         scroll-height="{{scrollViewHeight}}"
         item-height="{{itemHeight}}"
@@ -163,6 +162,8 @@
         config="{{cardListConfig}}"
         edit-mode="{{editMode}}"
         movable-list="{{deviceCardList}}"
+        list-timestamp="{{deviceTimestamp}}"
+        bind:cardTap="cardTap"
         bind:dragBegin="handleEditMode"
         bind:dragEnd="handleSortSaving"
       >
@@ -235,6 +236,15 @@
   bind:close="cancelCheckAndPops"
 ></heat-control-popup>
 
+<fan-light-popup
+  show="{{isFan && controlType === '0x13'}}"
+  deviceInfo="{{checkedDeviceInfo}}"
+  checkedList="{{checkedList}}"
+  bind:close="cancelCheckAndPops"
+  bind:updateDevice="updateQueue"
+  bind:lightStatusChange="refreshLightStatus"
+></fan-light-popup>
+
 <device-control-popup
   show="{{isShowCommonControl}}"
   deviceInfo="{{checkedDeviceInfo}}"
@@ -248,6 +258,7 @@
   bind:updateDevice="updateQueue"
   bind:updateList="reloadDeviceListThrottle"
   bind:close="exitEditMode"
+  bind:finish="exitEditModeAndReload"
   bind:selectAll="editSelectAll"
   editSelectMode="{{editMode}}"
   editSelectList="{{checkedList}}"

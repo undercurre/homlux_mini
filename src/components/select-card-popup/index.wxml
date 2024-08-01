@@ -81,9 +81,10 @@
             wx:if="{{cardTypeUI==='scene'}}"
             class="px-32rpx flex flex-row flex-wrap justify-between"
           >
+            <!-- HACK skyline直接使用roomItem会导致不响应setDate -->
             <scene-card
               class="mb-24rpx"
-              wx:for="{{roomItem}}"
+              wx:for="{{allRoomItem[roomIndex]}}"
               wx:key="sceneId"
               bind:cardTap="handleCardTap"
               scene-info="{{item}}"

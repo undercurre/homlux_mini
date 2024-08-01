@@ -17,6 +17,8 @@ declare namespace Remoter {
     DISCOVERED?: number // 是否被搜索到, 用于我的设备列表
     connected?: boolean // 是否与设备建立连接
     defaultAction: number // 默认首页开关索引
+    functionDes?: string
+    isV2: boolean
   }
 
   interface ButtonRes {
@@ -61,5 +63,8 @@ declare namespace Remoter {
       visibility: boolean
       encryptType: number
       encryptIndex: number
+      deviceRSSI: number
+      isV2: boolean
+      functionDes: string
     }
 }

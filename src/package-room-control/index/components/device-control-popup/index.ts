@@ -1,4 +1,4 @@
-import { Logger, isArrEqual, showLoading, hideLoading, isNullOrUnDef } from '../../../../utils/index'
+import { Logger, isArrEqual, showLoading, hideLoading, isNullOrUnDef, delay } from '../../../../utils/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding, deviceStore, sceneStore, homeStore } from '../../../../store/index'
@@ -10,6 +10,7 @@ import {
   SCREEN_PID,
   KNOB_PID,
   defaultImgDir,
+  FAN_PID,
 } from '../../../../config/index'
 import {
   sendDevice,
@@ -45,7 +46,7 @@ ComponentWithComputed({
       type: Object,
       value: {} as Device.DeviceItem,
       observer(device) {
-        if (!Object.keys(device).length) {
+        if (!Object.keys(device).length || FAN_PID.includes(device.productId)) {
           return
         }
         const diffData = {} as IAnyObject
@@ -348,7 +349,6 @@ ComponentWithComputed({
 
     async handleLinkSelect(e: { detail: string }) {
       const deviceMap = deviceStore.allRoomDeviceFlattenMap
-      const switchUniId = this.data.checkedList[0]
       const selectId = e.detail
 
       // 取消选择逻辑
@@ -361,7 +361,7 @@ ComponentWithComputed({
         return
       }
 
-      const switchSceneConditionMap = deviceStore.switchSceneConditionMap
+      const { switchSceneConditionMap } = deviceStore
 
       // 关联开关和灯时，选择设备的预校验
       if (['light', 'switch'].includes(this.data.selectLinkType)) {
@@ -377,12 +377,12 @@ ComponentWithComputed({
 
         const linkScene = switchSceneConditionMap[selectId]
 
-        // 关联开关时，针对选择的开关做校验，是否已关联场景
+        // 对选择的开关做校验，是否已关联场景
         if (this.data.selectLinkType === 'switch' && linkScene) {
           const dialogRes = await Dialog.confirm({
-            title: '此开关已关联场景，是否取消关联？',
+            title: '此开关已关联场景，确定变更？',
             cancelButtonText: '取消',
-            confirmButtonText: '确定',
+            confirmButtonText: '变更',
             zIndex: 2000,
             context: this,
           })
@@ -398,13 +398,14 @@ ComponentWithComputed({
         this.setData({
           linkSelectList: this.data.selectLinkType === 'switch' ? [...this.data.linkSelectList, selectId] : [selectId],
         })
-      } else if (this.data.selectLinkType === 'scene') {
-        const switchSceneActionMap = deviceStore.switchSceneActionMap
+      }
+      // 对选择的场景做校验，是否已被其他开关关联
+      else if (this.data.selectLinkType === 'scene') {
+        const linkedScenes = Object.values(switchSceneConditionMap) // 所有被其他开关关联的场景列表
 
-        // todo: 是否需要该提示
-        if (switchSceneActionMap[switchUniId]?.includes(selectId)) {
+        if (linkedScenes?.includes(selectId)) {
           const dialogRes = await Dialog.confirm({
-            title: '此开关已被当前场景使用，是否需要变更？',
+            title: '此场景已被其他开关关联，确定变更？',
             cancelButtonText: '取消',
             confirmButtonText: '变更',
             zIndex: 2000,
@@ -837,27 +838,56 @@ ComponentWithComputed({
         Toast('控制失败')
       }
     },
-    openCurtain() {
+    async openCurtain() {
       this.curtainControl({
         curtain_position: '100',
         curtain_status: 'open',
       })
+
+      await delay(1000)
+
+      this.setData({
+        curtainInfo: { position: 100 },
+      })
     },
-    closeCurtain() {
+    async closeCurtain() {
       this.curtainControl({
         curtain_position: '0',
         curtain_status: 'close',
       })
+
+      await delay(1000)
+
+      this.setData({
+        curtainInfo: { position: 0 },
+      })
     },
-    pauseCurtain() {
+    async pauseCurtain() {
       this.curtainControl({
         curtain_status: 'stop',
       })
+
+      await delay(3000)
+
+      this.renewCurtainStatus()
     },
     changeCurtain(e: { detail: number }) {
       this.curtainControl({
         curtain_position: e.detail,
       })
+    },
+    // 主动获取窗帘状态
+    async renewCurtainStatus() {
+      const deviceInfo = deviceStore.allRoomDeviceFlattenMap[this.data.deviceInfo.uniId]
+      const modelName = getModelName(deviceInfo.proType)
+      const prop = deviceInfo.mzgdPropertyDTOList[modelName]
+      const position = prop.curtain_position
+      console.log('[active renewCurtainStatus]', position)
+      if (typeof position === 'number') {
+        this.setData({
+          curtainInfo: { position },
+        })
+      }
     },
     handleCardTap() {},
   },

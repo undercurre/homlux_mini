@@ -50,6 +50,7 @@
       >
         <mz-tabs
           tabs="{{roomTab}}"
+          activeId="{{ selectedRoomId }}"
           bind:change="onRoomChange"
         >
         </mz-tabs>

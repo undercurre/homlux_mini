@@ -2,7 +2,7 @@ import { observable, runInAction } from 'mobx-miniprogram'
 import { querySceneListByHouseId } from '../apis/scene'
 import { homeStore } from './home'
 import { roomStore } from './room'
-import { IApiRequestOption } from '../utils/index'
+import { IApiRequestOption, Logger } from '../utils/index'
 
 export const sceneStore = observable({
   /**
@@ -56,6 +56,11 @@ export const sceneStore = observable({
   },
 
   async updateAllRoomSceneList(houseId: string = homeStore.currentHomeId, options?: IApiRequestOption) {
+    if (!houseId) {
+      Logger.error('updateAllRoomSceneList缺少houseId参数')
+      return
+    }
+
     const res = await querySceneListByHouseId(houseId, options)
     if (res.success) {
       const list = res.result

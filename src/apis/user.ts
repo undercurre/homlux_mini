@@ -1,4 +1,4 @@
-import { mzaioRequest } from '../utils/index'
+import { IApiRequestOption, mzaioRequest } from '../utils/index'
 
 /**
  * 查询用户信息
@@ -50,5 +50,37 @@ export async function authQrcode(qrcode: string) {
     data: {
       qrcode,
     },
+  })
+}
+
+/**
+ * 保存用户消息订阅
+ */
+export async function saveWxSubscribe(params: { openId: string; templateIdList: string[] }) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: false,
+    url: '/v1/mzgdApi/mzgdUserWxSubscribe',
+    data: params,
+  })
+}
+
+/**
+ * 邀请家庭成员（手机号邀请）
+ */
+export async function inviteHouseUserForMobile(
+  params: {
+    houseId: string // 家庭id
+    houseUserAuth: number // 家庭成员权限id，创建者：1 管理员：2 游客：3
+    mobilePhone: string // 手机号
+    subscribeType: number // 订阅类型 1：邀请家庭
+  },
+  options?: IApiRequestOption,
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/user/inviteHouseUserForMobile',
+    data: params,
   })
 }

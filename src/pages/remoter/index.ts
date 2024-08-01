@@ -1,9 +1,17 @@
 import pageBehaviors from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay, Logger } from '../../utils/index'
+import { initBleCapacity, storage, unique, isNullOrUnDef, emitter, delay } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising } from '../../utils/remoterUtils'
-import { deviceConfig, MIN_RSSI, CMD, FREQUENCY_TIME, SEEK_INTERVAL, SEEK_TIMEOUT } from '../../config/remoter'
+import {
+  deviceConfig,
+  deviceConfigV2,
+  MIN_RSSI,
+  CMD,
+  FREQUENCY_TIME,
+  SEEK_INTERVAL,
+  SEEK_TIMEOUT,
+} from '../../config/remoter'
 import { defaultImgDir } from '../../config/index'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
@@ -46,13 +54,6 @@ ComponentWithComputed({
 
   methods: {
     async onLoad() {
-      // TabBar选中项处理
-      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-        this.getTabBar().setData({
-          selected: 1,
-        })
-      }
-
       // 是否点击过场景使用提示的我知道了，如果没点击过就显示
       const hasConfirmRemoterTips = storage.get<boolean>('hasConfirmRemoterTips')
       if (!hasConfirmRemoterTips) {
@@ -98,6 +99,7 @@ ComponentWithComputed({
       await delay(0)
 
       // 如果未在发现模式，则搜索设备
+      console.log('lmn>>>onShow')
       if (!this.data._isDiscoverying) {
         this.toSeek()
       }
@@ -197,7 +199,7 @@ ComponentWithComputed({
 
     // 点击设备卡片
     async handleCardTap(e: WechatMiniprogram.TouchEvent) {
-      const { deviceType, deviceModel, saved, addr } = e.detail
+      const { deviceType, deviceModel, saved, addr, isV2, functionDes } = e.detail
       if (isNullOrUnDef(deviceType) || isNullOrUnDef(deviceModel)) {
         return
       }
@@ -208,21 +210,35 @@ ComponentWithComputed({
       // 跳转到控制页
       else {
         this.data._holdBleScan = true
-        let page = 'pannel'
-        if (deviceType === '13') {
-          page = deviceModel === '01' || deviceModel === '04' || deviceModel === '05' ? 'light' : 'fan-light'
-        } else if (deviceType === '26') {
-          const v2 = ['01', '03', '07', '77', '22', '66', '27', '6f']
-          if (v2.includes(deviceModel)) page = 'bath'
-        } else if (deviceType === '40') {
-          const v2 = ['03', '07', '23', '63', 'e7']
-          if (v2.includes(deviceModel)) page = 'cool-bath'
-        } else if (deviceType === '17') {
-          page = 'clothes'
+        const isV2Dev = isV2 !== undefined ? isV2 : deviceModel.length === 1
+        if (isV2Dev) {
+          let page = null
+          if (deviceType === '26') {
+            page = 'bath'
+          } else if (deviceType === '40') {
+            page = 'cool-bath'
+          }
+          if (!page) return
+          wx.navigateTo({
+            url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&addr=${addr}&functionDes=${functionDes}`,
+          })
+        } else {
+          let page = 'pannel'
+          if (deviceType === '13') {
+            page = deviceModel === '01' || deviceModel === '04' || deviceModel === '05' ? 'light' : 'fan-light'
+          } else if (deviceType === '26') {
+            const v2 = ['01', '02', '03', '07', '77', '22', '66', '27', '6f']
+            if (v2.includes(deviceModel)) page = 'bath'
+          } else if (deviceType === '40') {
+            const v2 = ['03', '07', '23', '63', 'e7']
+            if (v2.includes(deviceModel)) page = 'cool-bath'
+          } else if (deviceType === '17') {
+            page = 'clothes'
+          }
+          wx.navigateTo({
+            url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&addr=${addr}&functionDes=${functionDes}`,
+          })
         }
-        wx.navigateTo({
-          url: `/package-remoter/${page}/index?deviceType=${deviceType}&deviceModel=${deviceModel}&deviceModel=${deviceModel}&addr=${addr}`,
-        })
       }
     },
     // 点击设备按钮
@@ -235,15 +251,14 @@ ComponentWithComputed({
       }
 
       const now = new Date().getTime()
-      console.log('now - this.data._timer', now - this.data._timer)
       if (now - this.data._timer < FREQUENCY_TIME) {
         console.log('丢弃频繁操作')
         return
       }
       this.data._timer = now
 
-      const { addr, actions, defaultAction } = e.detail
-      // const addr = '18392c0c5566' // 模拟遥控器mac
+      const { addr, actions, defaultAction, deviceModel, isV2 } = e.detail
+      const isV2Dev = isV2 !== undefined ? isV2 : deviceModel.length === 1
 
       // HACK 特殊的照明按钮反转处理
       const { key } = actions[defaultAction]
@@ -251,7 +266,7 @@ ComponentWithComputed({
         this.data._lastPowerKey = this.data._lastPowerKey === `${key}_OFF` ? `${key}_ON` : `${key}_OFF`
         // this.data._lastPowerKey = key
       }
-      const payload = remoterProtocol.generalCmdString([CMD[key]])
+      const payload = remoterProtocol.generalCmdString([CMD[key]], isV2Dev)
 
       // 建立BLE外围设备服务端
       if (!this.data._bleServer) {
@@ -262,6 +277,7 @@ ComponentWithComputed({
       await bleAdvertising(this.data._bleServer, {
         addr,
         payload,
+        isV2: isV2Dev,
       })
     },
 
@@ -289,7 +305,7 @@ ComponentWithComputed({
       }
 
       if (this.data._isDiscoverying) {
-        console.log('[已在发现中且未停止]')
+        console.log('lmn>>>已在搜索设备中...')
       } else {
         this.data._isDiscoverying = true
 
@@ -298,8 +314,8 @@ ComponentWithComputed({
           allowDuplicatesKey: true,
           powerLevel: 'high',
           interval: SEEK_INTERVAL,
-          fail: (err) => Logger.log('[startBluetoothDevicesDiscoveryErr]', err),
-          success: () => Logger.log('[startBluetoothDevicesDiscoverySuccess]'),
+          fail: (err) => console.log('lmn>>>开始搜索设备失败', JSON.stringify(err)),
+          success: () => console.log('lmn>>>开始搜索设备成功'),
         })
       }
     },
@@ -311,7 +327,7 @@ ComponentWithComputed({
       }
       wx.stopBluetoothDevicesDiscovery({
         success: () => {
-          Logger.log('[stopBluetoothDevicesDiscovery]')
+          console.log('lmn>>>停止搜索设备')
           this.data._isDiscoverying = false
           this.setData({
             isSeeking: false,
@@ -325,16 +341,19 @@ ComponentWithComputed({
 
     // 处理搜索到的设备
     resolveFoundDevices(res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) {
-      const recoveredList =
+      const recoveredListSrc =
         unique(res.devices, 'deviceId') // 过滤重复设备
           .map((item) => remoterProtocol.searchDeviceCallBack(item)) // 过滤不支持的设备
           .filter((item) => !!item) || []
 
       // console.log('搜寻到的设备列表：', recoveredList)
 
-      if (!recoveredList?.length) {
+      if (!recoveredListSrc?.length) {
         return
       }
+      const recoveredList = recoveredListSrc.filter((object, index, self) => {
+        return index === self.findIndex((selfObj) => selfObj?.addr === object?.addr)
+      })
 
       // 在终止搜寻前先记录本次搜索的操作方式
       const isUserControlled = this.data.isSeeking
@@ -364,23 +383,36 @@ ComponentWithComputed({
         const deviceType = item!.deviceType
         const deviceModel = item!.deviceModel
         let cusRSSI = this.data.MIN_RSSI
-        if (deviceType === '13') {
-          if (deviceModel === '02' || deviceModel === '03') {
-            if (isIOS) cusRSSI = -80
-            else cusRSSI = -75
-          } else if (deviceModel === '04') cusRSSI = -70
-          else if (deviceModel === '05') cusRSSI = -60
-        } else if (deviceType === '26') {
-          if (deviceModel === '0f' || deviceModel === '6f') {
-            if (isIOS) cusRSSI = -68
+        if (item!.isV2) {
+          cusRSSI = item!.deviceRSSI
+        } else {
+          if (deviceType === '13') {
+            if (deviceModel === '02' || deviceModel === '03') {
+              if (isIOS) cusRSSI = -80
+              else cusRSSI = -75
+            } else if (deviceModel === '04') cusRSSI = -70
+            else if (deviceModel === '05') {
+              if (isIOS) cusRSSI = -63
+              else cusRSSI = -60
+            }
+          } else if (deviceType === '26') {
+            if (deviceModel === '0f' || deviceModel === '6f') {
+              if (isIOS) cusRSSI = -68
+            } else if (deviceModel === '66') {
+              if (isIOS) cusRSSI = -66
+            }
           }
         }
         if (
           item!.RSSI >= cusRSSI && // 过滤弱信号设备
           !isSavedDevice // 排除已在我的设备列表的设备
         ) {
-          const config = deviceConfig[deviceType][deviceModel]
-
+          let config = null
+          if (item!.isV2) {
+            config = deviceConfigV2[deviceType] || null
+          } else {
+            config = deviceConfig[deviceType][deviceModel] || null
+          }
           if (!config) {
             console.log('config NOT EXISTED in onBluetoothDeviceFound')
             continue
@@ -414,7 +446,7 @@ ComponentWithComputed({
             }
           }
           const deviceName = devSuffix ? nameKey + devSuffix : nameKey
-          console.log(`lmn>>>发现新设备::品类=${deviceType}/型号=${deviceModel},命名=>${deviceName}`)
+          console.log(`lmn>>>发现新设备::mac=${item!.addr}/品类=${deviceType}/型号=${deviceModel},命名=>${deviceName}`)
 
           // 更新发现设备列表
           foundList.push({
@@ -430,7 +462,12 @@ ComponentWithComputed({
             saved: false,
             defaultAction: 0,
             DISCOVERED: 1,
+            isV2: item!.isV2,
+            functionDes: item!.functionDes,
           })
+        } else {
+          if (!isSavedDevice)
+            console.warn(`lmn>>>设备(品类=${deviceType}/mac=${item!.addr}/信号=${item!.RSSI})信号小于${cusRSSI}被排除`)
         }
       }
 
