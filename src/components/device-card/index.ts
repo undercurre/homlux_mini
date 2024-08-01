@@ -1,5 +1,5 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import { proName, PRO_TYPE, getModelName } from '../../config/index'
+import { proName, PRO_TYPE, getModelName, FAN_PID } from '../../config/index'
 import { throttle } from '../../utils/index'
 
 const CONTROL_INTERVAL = 3000 // 开关操作间隔时间
@@ -215,7 +215,8 @@ ComponentWithComputed({
         data.cardInfo.proType !== PRO_TYPE.gateway &&
         data.cardInfo.proType !== PRO_TYPE.sensor &&
         data.cardInfo.proType !== PRO_TYPE.bathHeat &&
-        data.cardInfo.proType !== PRO_TYPE.clothesDryingRack
+        data.cardInfo.proType !== PRO_TYPE.clothesDryingRack &&
+        !FAN_PID.includes(data.cardInfo.productId)
       )
     },
   },

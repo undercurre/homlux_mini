@@ -96,18 +96,7 @@ ComponentWithComputed({
             ctrlAction.modelName = device.proType === PRO_TYPE.light ? 'light' : 'wallSwitch1'
           }
 
-          if (device.proType === PRO_TYPE.light) {
-            ctrlAction.power = property.power
-
-            if (property.power === 1) {
-              ctrlAction.colorTemperature = property.colorTemperature
-              ctrlAction.brightness = property.brightness
-            }
-
-            // if (device.deviceType === 3) {
-            //   ctrlAction = toWifiProperty(device.proType, ctrlAction)
-            // }
-          } else if (device.proType === PRO_TYPE.curtain) {
+          if (device.proType === PRO_TYPE.curtain) {
             ctrlAction.curtain_position = property.curtain_position
           } else if (device.proType === PRO_TYPE.bathHeat) {
             ctrlAction.light_mode = property.light_mode
@@ -119,6 +108,8 @@ ComponentWithComputed({
             ctrlAction.light = property.light
           } else if (this.isNewScenarioSettingSupported(device.proType)) {
             ctrlAction = action.sceneProperty!
+
+            delete action.sceneProperty?.colorTempRange
           }
           sceneData?.deviceActions?.push({
             controlAction: [ctrlAction],
@@ -378,7 +369,8 @@ ComponentWithComputed({
         proType === PRO_TYPE.airConditioner ||
         proType === PRO_TYPE.freshAir ||
         proType === PRO_TYPE.floorHeating ||
-        proType === PRO_TYPE.centralAirConditioning
+        proType === PRO_TYPE.centralAirConditioning ||
+        proType === PRO_TYPE.light
       )
     },
   },

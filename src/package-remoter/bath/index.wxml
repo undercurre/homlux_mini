@@ -30,29 +30,28 @@
       <text class="unit-text">℃</text>
       <view
         class="step-block"
-        style="opacity: {{tempBtnConfig.isEnable ? 1 : 0.4}};"
       >
         <view
           class="step-btn flex-center"
           hover-class="high-select-2"
-          style="background-color: {{tempBtnConfig.isLeftOn ? '#488FFF' : '#fffff'}};"
-          bind:tap="onTempLeftClick"
+          style="background-color: {{tempBtnConfig.isSubOn ? '#488FFF' : '#fffff'}}; opacity: {{tempBtnConfig.isSubEnable ? 1 : 0.4}};"
+          bind:tap="onTempSubClick"
         >
           <image
             style="width: 64rpx; height: 64rpx"
-            src="{{tempBtnConfig.isLeftOn ? '/package-remoter/assets/newUI/addOn.png' : '/package-remoter/assets/newUI/addOff.png'}}"
+            src="{{tempBtnConfig.isSubOn ? '/package-remoter/assets/newUI/subOn.png' : '/package-remoter/assets/newUI/subOff.png'}}"
           ></image>
         </view>
         <text class="step-text">温度</text>
         <view
           class="step-btn flex-center"
           hover-class="high-select-2"
-          style="background-color: {{tempBtnConfig.isRightOn ? '#488FFF' : '#fffff'}};"
-          bind:tap="onTempRightClick"
+          style="background-color: {{tempBtnConfig.isAddOn ? '#488FFF' : '#fffff'}}; opacity: {{tempBtnConfig.isAddEnable ? 1 : 0.4}};"
+          bind:tap="onTempAddClick"
         >
           <image
             style="width: 64rpx; height: 64rpx"
-            src="{{tempBtnConfig.isRightOn ? '/package-remoter/assets/newUI/subOn.png' : '/package-remoter/assets/newUI/subOff.png'}}"
+            src="{{tempBtnConfig.isAddOn ? '/package-remoter/assets/newUI/addOn.png' : '/package-remoter/assets/newUI/addOff.png'}}"
           ></image>
         </view>
       </view>
@@ -127,9 +126,9 @@
               src="{{item.isOn ? item.iconOn : item.iconOff}}"
             ></image>
             <image
-              wx:if="{{item.level > 0}}"
+              wx:if="{{item.level >= 1 && item.level <= 3}}"
               style="width: 48rpx; height: 4rpx; position: absolute; left: 34rpx; bottom: 10rpx;"
-              src="{{item.level === 1 ? '/package-remoter/assets/newUI/level1.png' : item.level === 2 ? '/package-remoter/assets/newUI/level2.png' : '/package-remoter/assets/newUI/level3.png'}}"
+              src="{{item.isOn ? iconLevelW[item.level - 1] : iconLevelB[item.level - 1]}}"
             ></image>
           </view>
           <text
@@ -245,7 +244,36 @@
     </view>
   </mx-popup>
 
-  <mx-popup
+  <mx-popup round show="{{isShowLevelPopup}}" position="bottom" bind:close="closePopup">
+    <view class="pup-block" style="height: 620rpx;">
+      <text class="text-36rpx font-semibold" style="margin-top: 42rpx; margin-bottom: 42rpx;">灵敏度</text>
+      <view class="popup-close" bind:tap="closePopup">
+        <image style="height: 48rpx; width: 48rpx;" src="/package-remoter/assets/newUI/close.png"></image>
+      </view>
+
+      <view class="pick-block flex-center">
+        <picker-view indicator-style="height: 56rpx;"
+          style="width: 500rpx; height: 320rpx;"
+          value="{{ curLevelPickerIndex }}"
+          bindchange="onLevelPickChange"
+          bindpickend='onLevelPickEnd'>
+          <picker-view-column>
+            <view wx:for="{{ smellLevelArr }}" 
+              wx:key="key"
+              class="picker-cloumn-text"
+              style="font-size: 40rpx;">{{item}}</view>
+          </picker-view-column>
+        </picker-view>
+      </view>
+
+      <mx-button
+        custom-style="width: 686rpx; margin-top: 40rpx"
+        color="linear-gradient(90deg, #468CFB 0%, #6BA3FC 100%)"
+        type="default" bind:click="onPickLevelConfirm">确定</mx-button>
+    </view>
+  </mx-popup>
+
+  <!-- <mx-popup
     round
     show="{{isShowLevelPopup}}"
     position="bottom"
@@ -272,7 +300,7 @@
         <text class="text-32rpx font-normal" style="color: #232323">取消</text>
       </view>
     </view>
-  </mx-popup>
+  </mx-popup> -->
 </view>
 
 <van-toast id="van-toast" />

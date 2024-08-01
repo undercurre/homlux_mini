@@ -13,32 +13,16 @@
 
     <view
       class="w-686rpx mt-48rpx"
-      wx:if="{{cellList.length}}"
+      wx:if="{{groupList.length}}"
     >
-      <mz-cell-group inset>
-        <view
-          class="{{cellList[0].disabled ? 'cell-disabled' : 'cell'}}  px-32rpx "
-          data-item="{{cellList[0]}}"
-          bindtap="cellClicked"
-        >
-          <view class="flex flex-row justify-between items-center py-32rpx">
-            <text class="cell-title {{cellList[0].disabled ? 'disabled' : ''}}">{{cellList[0].title}}</text>
-            <view class="flex flex-row items-center">
-              <text class="cell-value {{cellList[0].disabled ? 'disabled' : ''}}">{{cellList[0].value}}</text>
-              <image
-                class="cell-right-icon {{cellList[0].disabled ? 'disabled' : ''}}"
-                src="../../../../assets/img/home/more.png"
-              ></image>
-            </view>
-          </view>
-        </view>
-      </mz-cell-group>
       <mz-cell-group
+        wx:for="{{groupList}}"
+        wx:for-item="group"
         inset
         border="{{false}}"
       >
         <view
-          wx:for="{{tools.slice(cellList, 1)}}"
+          wx:for="{{group}}"
           wx:key="index"
           class="{{item.disabled ? 'cell-disabled' : 'cell'}}  px-32rpx "
           data-item="{{item}}"
@@ -76,8 +60,26 @@
     </view>
   </view>
 </mz-popup>
+
+<brightness-popup
+  show="{{showPropertyPopup && editingPropertyInfo.key === 'brightness'}}"
+  title="照明亮度"
+  value="{{editingPropertyInfo.value}}"
+  bind:confirm="onSliderConfirm"
+  bind:close="onPropertyPopupClose"
+></brightness-popup>
+
+<color-temperature-popup
+  show="{{showPropertyPopup && editingPropertyInfo.key === 'colorTemperature'}}"
+  title="照明色温"
+  value="{{editingPropertyInfo.value}}"
+  option="{{editingPropertyInfo.option}}"
+  bind:confirm="onSliderConfirm"
+  bind:close="onPropertyPopupClose"
+></color-temperature-popup>
+
 <picker-view-popup
-  show="{{showPropertyPopup}}"
+  show="{{showPropertyPopup && editingPropertyInfo.key !== 'brightness' && editingPropertyInfo.key !== 'colorTemperature'}}"
   dataInfo="{{editingPropertyInfo}}"
   bind:confirm="onPropertyPopupConfirm"
   bind:close="onPropertyPopupClose"

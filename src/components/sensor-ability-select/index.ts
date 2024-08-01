@@ -62,7 +62,16 @@ Component({
           list: this.data.abilityList[productId as sensorProductId],
         },
         () => {
-          this.data.top.value = this.data.checkedIndex * 96
+          //HACK:不用timing，不执行到位
+          this.data.top.value = timing(
+            this.data.checkedIndex * 96,
+            {
+              duration: 30,
+            },
+            () => {
+              'worklet'
+            },
+          )
         },
       )
     },

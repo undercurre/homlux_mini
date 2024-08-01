@@ -229,12 +229,18 @@ ComponentWithComputed({
       console.log('inviteHouseUserForMobile', res)
 
       if (res.success) {
-        Toast('邀请发送成功')
+        Toast({ message: '邀请发送成功', zIndex: 9999 })
         this.setData({
           isEnterMobile: false,
         })
       } else {
-        Toast(res.msg || '邀请发送失败')
+        let msg = res.msg || '邀请发送失败'
+
+        if (res.code === 9881) {
+          msg = '家庭成员已存在'
+        }
+
+        Toast({ message: msg, zIndex: 9999 })
       }
     },
 

@@ -1587,24 +1587,20 @@ export const deviceConfigV2: Record<string, Remoter.ConfigItem> = {
       },
     ],
   },
-  // '40': {
-  //   deviceName: '凉霸',
-  //   devicePic: '/assets/img/remoter/bathHeater.png',
-  //   actions: [
-  //     {
-  //       key: 'BATH_LAMP',
-  //       name: '照明',
-  //     },
-  //     {
-  //       key: 'BATH_ALL_OFF',
-  //       name: '待机',
-  //     },
-  //     {
-  //       key: 'BATH_VENTILATE',
-  //       name: '换气',
-  //     },
-  //   ],
-  // },
+  '40': {
+    deviceName: '凉霸',
+    devicePic: '/assets/img/remoter/bathHeater.png',
+    actions: [
+      {
+        key: 'BATH_LAMP',
+        name: '照明',
+      },
+      {
+        key: 'BATH_ALL_OFF',
+        name: '待机',
+      },
+    ],
+  },
   // '17': {
   //   deviceName: '晾衣机',
   //   devicePic: '/assets/img/remoter/clothes.png',
@@ -1674,7 +1670,7 @@ export const CMD: Record<string, number> = {
   BATH_DELAY_CLOSE: 0x41, // 延时关
   BATH_RADAR: 0x42, //人感
   BATH_ANION: 0x43, //负离子
-  BATH_TVOC: 0x44, //异味感应
+  BATH_SMELL: 0x44, //异味感应
 
   // 凉霸（其余指令同浴霸）
   KITCHEN_WIND_STRONG: 0x02, // 强吹风

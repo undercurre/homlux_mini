@@ -1,0 +1,46 @@
+<mz-popup
+  show="{{ show }}"
+  z-index="1002"
+  round
+  position="bottom"
+  bind:close="handleClose"
+  closeable
+  lock-scroll="{{true}}"
+>
+  <view class="w-750rpx relative flex flex-col">
+    <view class="mt-44rpx text-center">
+      <text class="h-50rpx text-36rpx text-black-2a font-medium">{{title}}</text>
+    </view>
+
+    <view class="w-full box-border mt-64rpx px-48rpx">
+      <text class="text-32rpx text-black-59">亮度 | {{levelShow}}%</text>
+      <view class="mt-28rpx">
+        <mz-slider
+          catch:slideEnd="handleLevelChange"
+          catch:slideChange="handleLevelDrag"
+          value="{{brightness}}"
+          btn-width="{{40}}"
+          btn-height="{{40}}"
+          min="{{1}}"
+          active-color="linear-gradient(90deg, rgba(80,127,255,0.8) 5%, rgba(116,153,255,0.18) 100%)"
+          key="brightness"
+        >
+        </mz-slider>
+      </view>
+    </view>
+    <view class="h-96rpx"></view>
+    <view class="flex justify-center w-750rpx">
+      <view class="flex w-656rpx mb-96rpx">
+        <mz-button
+          type="primary"
+          class="flex-1"
+          size="large"
+          bind:click="handleConfirm"
+          >确定</mz-button
+        >
+      </view>
+    </view>
+  </view>
+</mz-popup>
+
+<mz-toast id="mz-toast" />

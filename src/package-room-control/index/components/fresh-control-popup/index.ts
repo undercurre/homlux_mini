@@ -83,27 +83,26 @@ ComponentWithComputed({
     async handleBtnTap(e: { currentTarget: { dataset: { key: string } }; detail: number }) {
       let key = e.currentTarget.dataset.key as string
       let setValue = e.detail
-      const { windSpeed } = this.data.propView
+      const { windSpeed = 1 } = this.data.propView
       const property = {} as IAnyObject
 
-      // 温度加减逻辑处理，前端先计算实际温度值
+      // 风速加减逻辑处理 windSpeed 1: 高速；2: 中速；4: 低速
       if (key === 'minus') {
         if (this.data.disabledMinus) {
           return
         }
         key = 'windSpeed'
-        setValue = windSpeed * 2
+        setValue = Math.min(4, windSpeed * 2)
       } else if (key === 'plus') {
         if (this.data.disabledPlus) {
           return
         }
         key = 'windSpeed'
-        setValue = Math.round(windSpeed / 2)
+        setValue = Math.max(1, Math.round(windSpeed / 2))
       } else if (key === 'windSpeedSlider') {
         key = 'windSpeed'
         setValue = Math.pow(2, 3 - setValue)
       }
-      // TODO 风档转换
 
       property[key] = setValue
       this.setData({

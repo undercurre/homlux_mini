@@ -5,12 +5,20 @@
     "compileHotReLoad": false,
     "urlCheck": true,
     "bigPackageSizeSupport": true,
-    "skylineRenderEnable": true
+    "skylineRenderEnable": true,
+    "autoAudits": false
   },
-  "libVersion": "3.4.9",
+  "libVersion": "3.5.1",
   "condition": {
     "miniprogram": {
       "list": [
+        {
+          "name": "场景首页",
+          "pathName": "package-automation/automation/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
         {
           "name": "选择设备界面",
           "pathName": "package-distribution/pages/choose-device/index",

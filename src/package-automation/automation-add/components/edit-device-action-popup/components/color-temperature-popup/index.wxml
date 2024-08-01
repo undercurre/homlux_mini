@@ -1,0 +1,49 @@
+<mz-popup
+  show="{{ show }}"
+  z-index="1002"
+  round
+  position="bottom"
+  bind:close="handleClose"
+  closeable
+  lock-scroll="{{true}}"
+>
+  <view class="w-750rpx relative flex flex-col">
+    <view class="mt-44rpx text-center">
+      <text class="h-50rpx text-36rpx text-black-2a font-medium">{{title}}</text>
+    </view>
+
+    <view class="w-full box-border mt-64rpx px-48rpx">
+      <text class="block text-32rpx text-black-59 mt-48rpx">色温 | {{colorTempShow}}</text>
+      <view class="mt-28rpx">
+        <mz-slider
+          bind:slideEnd="handleColorTempChange"
+          bind:slideChange="handleColorTempDrag"
+          value="{{colorTemperature}}"
+          use-button-slot
+          custom-class="slider-color-temp-bar"
+          active-color="rgba(0,0,0,0)"
+          btn-height="{{52}}"
+          btn-width="{{80}}"
+          key="colorTemp"
+        >
+          <view
+            slot="button"
+            class="slider-button"
+          />
+        </mz-slider>
+      </view>
+    </view>
+    <view class="h-96rpx"></view>
+    <view class="flex justify-center w-750rpx">
+      <view class="flex w-656rpx mb-96rpx">
+        <mz-button
+          type="primary"
+          class="flex-1"
+          size="large"
+          bind:click="handleConfirm"
+          >确定</mz-button
+        >
+      </view>
+    </view>
+  </view>
+</mz-popup>

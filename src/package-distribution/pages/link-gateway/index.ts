@@ -436,7 +436,7 @@ ComponentWithComputed({
       // 强绑情况下，取旧命名
       const deviceName = existDevice ? existDevice.deviceName : params.deviceName + (gatewayNum > 0 ? ++gatewayNum : '')
 
-      Logger.log('requestBindDevice', 'existDevice', existDevice, 'params', params)
+      Logger.log('requestBindDevice', 'existDevice', existDevice, 'params', params, sn, deviceId)
 
       const res = await bindDevice({
         deviceId: deviceId,
@@ -445,6 +445,8 @@ ComponentWithComputed({
         sn,
         deviceName: deviceName,
       })
+
+      Logger.log('bindDevice', res)
 
       if (res.success && res.result.isBind) {
         this.setData({

@@ -305,13 +305,15 @@
   bind:confirm="handleSelectCardConfirm"
   bind:cancel="handleSelectCardReturn"
 ></select-card-popup>
+
 <edit-device-action-popup
-  show="{{showEditPopup === '0xAC' || showEditPopup === '0xCC' || showEditPopup === '0xCF' || showEditPopup === '0xCE'}}"
+  show="{{showEditPopup === '0x13' || showEditPopup === '0xAC' || showEditPopup === '0xCC' || showEditPopup === '0xCF' || showEditPopup === '0xCE'}}"
   title="{{sceneEditTitle}}"
   deviceActionInfo="{{sceneEditInfo}}"
   bind:confirm="handleSceneDeviceEditConfirm"
   bind:close="handleEditPopupClose"
 ></edit-device-action-popup>
+
 <edit-sensor-popup
   show="{{showEditSensorPopup}}"
   productId="{{editingSensorType}}"
@@ -324,13 +326,13 @@
 <!-- 
 TODO：未验证
  -->
-<light-control-popup
+<!-- <light-control-popup
   show="{{showEditPopup === '0x13'}}"
   title="{{sceneEditTitle}}"
   lightInfo="{{sceneEditInfo}}"
   bind:confirm="handleSceneEditConfirm"
   bind:close="handleEditPopupClose"
-></light-control-popup>
+></light-control-popup> -->
 <switch-control-popup
   show="{{showEditPopup === '0x21'}}"
   title="{{sceneEditTitle}}"

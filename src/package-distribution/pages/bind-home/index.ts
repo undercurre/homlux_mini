@@ -2,7 +2,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
-import { getCurrentPageParams, checkInputNameIllegal, Logger, strUtil } from '../../../utils/index'
+import { getCurrentPageParams, checkInputNameIllegal, Logger, goBackPage } from '../../../utils/index'
 import { queryDeviceInfoByDeviceId, editDeviceInfo, batchUpdate } from '../../../apis/index'
 import { homeBinding, homeStore, roomBinding, deviceStore } from '../../../store/index'
 import { PRO_TYPE, defaultImgDir } from '../../../config/index'
@@ -104,13 +104,16 @@ ComponentWithComputed({
         return
       }
 
-      const res = await editDeviceInfo({
-        deviceId,
-        deviceName,
-        roomId,
-        houseId: homeBinding.store.currentHomeId,
-        type: '2',
-      })
+      const res = await editDeviceInfo(
+        {
+          deviceId,
+          deviceName,
+          roomId,
+          houseId: homeBinding.store.currentHomeId,
+          type: '2',
+        },
+        { loading: true },
+      )
 
       if (this.data.deviceInfo.switchList.length > 1) {
         const deviceInfoUpdateVoList = this.data.deviceInfo.switchList.map((item) => {
@@ -123,27 +126,17 @@ ComponentWithComputed({
           }
         })
 
-        await batchUpdate({ deviceInfoUpdateVoList })
+        await batchUpdate({ deviceInfoUpdateVoList }, { loading: true })
       }
 
       if (res.success) {
-        await deviceStore.updateAllRoomDeviceList()
+        deviceStore.updateAllRoomDeviceList() // 刷新全屋设备列表，以免其他地方获取不到最新数据
 
         // 关闭扫描页面可能开启的蓝牙资源
         wx.closeBluetoothAdapter()
 
         Logger.console('cacheData', cacheData)
-        if (cacheData.pageEntry) {
-          wx.reLaunch({
-            url: strUtil.getUrlWithParams(cacheData.pageEntry, {
-              from: 'addDevice',
-            }),
-          })
-        } else {
-          wx.navigateBack({
-            delta: 3,
-          })
-        }
+        goBackPage(cacheData.pageEntry)
       } else {
         Toast('保存失败')
       }

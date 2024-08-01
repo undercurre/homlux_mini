@@ -27,9 +27,10 @@ ComponentWithComputed({
         }
 
         // 响应外部设值，改变滑动柄位置
-        const { isBtnInset, barWidth, min } = this.data
+        const { isBtnInset, barWidth, min, max } = this.data
         const availableBarWidth = isBtnInset ? barWidth - this.data.btnWidthPx : barWidth
-        const v2w = Math.round((availableBarWidth / this.data.valueSpan) * (v - min))
+        const delta = Math.min(max, Math.max(0, v - min))
+        const v2w = Math.round((availableBarWidth / this.data.valueSpan) * delta)
         const activedWidth = isBtnInset ? v2w + this.data.btnWidthPx : v2w
         const innerVal = this.widthToValue(activedWidth)
         console.log('[observer] value', this.data.innerVal, '->', v, {
@@ -132,6 +133,8 @@ ComponentWithComputed({
       const activedWidth = isBtnInset ? v2w + btnWidthPx : v2w
       const btnX = isBtnInset ? v2w : v2w - btnWidthPx / 2
       const toastX = activedWidth - toastWidth / 2
+      const left = isBtnInset ? btnWidthPx : 0
+      const right = barWidth
 
       this.setData({
         btnWidthPx,
@@ -141,6 +144,10 @@ ComponentWithComputed({
         activedWidth,
         btnX,
         toastX,
+        bound: {
+          left,
+          right,
+        },
       })
     },
   },
@@ -195,19 +202,13 @@ ComponentWithComputed({
         .select('#mz-slider')
         .boundingClientRect()
         .exec((res) => {
-          const { isBtnInset, btnWidthPx, value } = this.data
+          const { value } = this.data
           const barWidth = res[0]?.width ?? 300
-          const barLeft = res[0]?.left ?? 0
-          const left = isBtnInset ? btnWidthPx : 0
-          const right = barWidth
+          const barLeft = (res[0]?.left ?? 0) % wx.getSystemInfoSync().windowWidth // !! 兼容在swiper中的位置计算
           this.setData({
             innerVal: value,
             barWidth,
             barLeft,
-            bound: {
-              left,
-              right,
-            },
           })
 
           this.data._actived_x.value = this.data.activedWidth
@@ -275,6 +276,7 @@ ComponentWithComputed({
     widthToValue(w: number) {
       const { availableBarWidth, min, valueSpan, step, isBtnInset, btnWidthPx } = this.data
       const _w = isBtnInset ? w - btnWidthPx : w
+      console.log('widthToValue', { availableBarWidth, min, valueSpan, step, isBtnInset, btnWidthPx })
       return Math.round(((_w / availableBarWidth) * valueSpan) / step) * step + min
     },
   },

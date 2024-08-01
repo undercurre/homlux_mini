@@ -18,6 +18,9 @@ export const MAX_MOVE_CARDS = 20
 // 设备弹窗中，控制指令发送后屏蔽设备状态上报的时长（ms）
 export const NO_SYNC_DEVICE_STATUS = 2000
 
+// 房间设备列表中，房间灯组控制指令发送后屏蔽设备状态上报的时长（ms）
+export const NO_SYNC_DEVICE_STATUS_IN_ROOM = 10000
+
 /**
  * @name 设备卡片更新时间阈值
  * @description 等待时间小于这个值的，均不即时更新，与后面的更新合并，或到到队列清空时一起更新
@@ -60,9 +63,9 @@ export const SENSOR_MODEL_NAME = {
  * @param proType
  * @param productId
  */
-export const getModelName = (proType: string, productId: string) => {
+export const getModelName = (proType: string, productId?: string) => {
   if (proType === PRO_TYPE.sensor) {
-    return SENSOR_MODEL_NAME[productId]
+    return SENSOR_MODEL_NAME[productId ?? '']
   }
 
   return proName[proType]
@@ -94,7 +97,7 @@ export const PRODUCT_ID = {
   zhonghong_air: 'zhonghong.air.001', // 485新风
   zhonghong_cac: 'zhonghong.cac.002', // 485空调
   knob: 'midea.knob.001.003', // 一路旋钮面板
-  fan_basic: 'M0200005',
+  fan_basic: 'M0200005', // 基础款（sn8：M0200005）无亮度、色温功能
   fan_smart: '79010863',
   fan_smart_2: 'M0200008',
 }

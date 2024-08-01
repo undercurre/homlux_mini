@@ -1,23 +1,6 @@
 <template name="title">
   <text class="h-50rpx text-36rpx text-black-2a mt-48rpx font-medium">{{title}}</text>
 </template>
-<template name="bottom-btn">
-  <view class="h-96rpx"></view>
-
-  <view class="flex gap-46rpx justify-center w-686rpx">
-    <mz-button
-      type="primary"
-      class="grow"
-      size="large"
-      disabled="{{disabled}}"
-      bind:click="handleConfirm"
-      custom-class="btn-class-fix"
-      >{{ confirmText || '确定'}}</mz-button
-    >
-  </view>
-
-  <view class="h-96rpx"></view>
-</template>
 
 <mz-popup
   show="{{ editSelectMode }}"
@@ -152,7 +135,20 @@
       </mz-field>
     </view>
 
-    <template is="bottom-btn" />
+    <view class="h-96rpx"></view>
+
+    <view class="flex gap-46rpx justify-center w-686rpx">
+      <mz-button
+        type="primary"
+        class="grow"
+        size="large"
+        bind:click="handleConfirm"
+        custom-class="btn-class-fix"
+        >{{ confirmText || '确定'}}</mz-button
+      >
+    </view>
+
+    <view class="h-96rpx"></view>
   </view>
 </mz-popup>
 
@@ -183,10 +179,21 @@
       </view>
     </view>
 
-    <template
-      is="bottom-btn"
-      data="{{disabled: editRoomDisable}}"
-    />
+    <view class="h-96rpx"></view>
+
+    <view class="flex gap-46rpx justify-center w-686rpx">
+      <mz-button
+        type="primary"
+        class="grow"
+        size="large"
+        disabled="{{editRoomDisable}}"
+        bind:click="handleConfirm"
+        custom-class="btn-class-fix"
+        >{{ confirmText || '确定'}}</mz-button
+      >
+    </view>
+
+    <view class="h-96rpx"></view>
   </view>
 </mz-popup>
 

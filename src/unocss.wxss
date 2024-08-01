@@ -258,6 +258,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .border-b-1,
 .border-b-1rpx{border-bottom-width:1rpx;}
 .border-b-1px{border-bottom-width:1px;}
+.border-t-1px{border-top-width:1px;}
 .border-hex-488FFF{--un-border-opacity:1;border-color:rgba(72,143,255,var(--un-border-opacity));}
 .border-hex-d3d3d3{--un-border-opacity:1;border-color:rgba(211,211,211,var(--un-border-opacity));}
 .border-hex-ddd{--un-border-opacity:1;border-color:rgba(221,221,221,var(--un-border-opacity));}
@@ -267,6 +268,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .border-white{--un-border-opacity:1;border-color:rgba(255,255,255,var(--un-border-opacity));}
 .border-b-hex-EEF2F7{--un-border-opacity:1;--un-border-bottom-opacity:var(--un-border-opacity);border-bottom-color:rgba(238,242,247,var(--un-border-bottom-opacity));}
 .border-b-hex-fff{--un-border-opacity:1;--un-border-bottom-opacity:var(--un-border-opacity);border-bottom-color:rgba(255,255,255,var(--un-border-bottom-opacity));}
+.border-t-hex-EEF2F7{--un-border-opacity:1;--un-border-top-opacity:var(--un-border-opacity);border-top-color:rgba(238,242,247,var(--un-border-top-opacity));}
 .rounded-12rpx{border-radius:12rpx;}
 .rounded-14rpx{border-radius:14rpx;}
 .rounded-16rpx{border-radius:16rpx;}
@@ -280,6 +282,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .rounded-none{border-radius:0;}
 .border-solid{border-style:solid;}
 .border-b-solid{border-bottom-style:solid;}
+.border-t-solid{border-top-style:solid;}
 .text-124rpx{font-size:124rpx;}
 .text-18rpx{font-size:18rpx;}
 .text-20rpx{font-size:20rpx;}
@@ -473,6 +476,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-62rpx{height:62rpx;}
 .h-64,
 .h-64rpx{height:64rpx;}
+.h-650rpx{height:650rpx;}
 .h-6rpx{height:6rpx;}
 .h-72,
 .h-72rpx{height:72rpx;}
@@ -483,7 +487,8 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-80rpx{height:80rpx;}
 .h-842rpx{height:842rpx;}
 .h-85vh{height:85vh;}
-.h-88{height:88rpx;}
+.h-88,
+.h-88rpx{height:88rpx;}
 .h-90rpx{height:90rpx;}
 .h-92,
 .h-92rpx{height:92rpx;}

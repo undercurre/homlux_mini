@@ -264,6 +264,11 @@ async function checkBleDeviceList(list: IBleBaseInfo[]) {
   validDeviceList.forEach((item) => {
     const productInfo = productInfoMap[`${item.proType}${item.bluetoothPid}`]
 
+    if (!productInfo) {
+      console.warn(`${item.mac}产品品类${item.proType},${item.bluetoothPid}信息不存在`)
+      return
+    }
+
     handleBleDeviceInfo({
       ...item,
       productName: productInfo.productName,

@@ -1,4 +1,4 @@
-import { PRO_TYPE, AC_MODE, CAC_MODE, CAC_FA_WINDSPEED } from '../config/index'
+import { PRO_TYPE, AC_MODE, CAC_MODE, CAC_FA_WINDSPEED, WIND_SPEED_MAP, FAN_SCENE_MAP } from '../config/index'
 import { isNullOrUnDef } from './index'
 
 /**
@@ -85,6 +85,15 @@ export function toWifiProperty(proType: string, properties: IAnyObject) {
 }
 
 /**
+ * 获取转换后的色温显示值
+ * @param params
+ */
+export function getColorTempText(params: { colorTemp: number; maxColorTemp: number; minColorTemp: number }) {
+  const { colorTemp, maxColorTemp, minColorTemp } = params
+  const color = (colorTemp / 100) * (maxColorTemp - minColorTemp) + minColorTemp
+  return `${color}K`
+}
+/**
  * 转换成属性描述
  * @param proType
  * @param property 设备属性
@@ -94,16 +103,30 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
     console.warn('转换属性描述失败，属性集为空')
     return []
   }
-  const descList = [] as string[]
+  let descList = [] as string[]
   if (proType === PRO_TYPE.light) {
-    !isNullOrUnDef(property.power) && descList.push(property.power ? '打开' : '关闭')
+    !isNullOrUnDef(property.power) &&
+      descList.push(`${isNullOrUnDef(property.fan_power) ? '' : '照明:'}${property.power ? '打开' : '关闭'}`) // 风扇灯开关需要区分风扇和照明开关
+
+    !isNullOrUnDef(property.fan_power) && descList.push(`风扇:${property.fan_power === 'on' ? '打开' : '关闭'}`)
+
+    if (property.fan_power === 'on') {
+      // WIND_SPEED_MAP, FAN_SCENE_MAP
+      !isNullOrUnDef(property.fan_scene) && descList.push(`${FAN_SCENE_MAP[property.fan_scene]}`)
+
+      !isNullOrUnDef(property.fan_speed) && descList.push(`${WIND_SPEED_MAP[property.fan_speed]}档`)
+    }
     if (property.power === 1) {
       !isNullOrUnDef(property.brightness) && descList.push(`亮度${property.brightness}%`)
 
       if (!isNullOrUnDef(property.colorTemperature)) {
         const { maxColorTemp, minColorTemp } = property.colorTempRange || property
-        const color = (property.colorTemperature / 100) * (maxColorTemp - minColorTemp) + minColorTemp
-        descList.push(`色温${color}K`)
+        const color = getColorTempText({
+          colorTemp: property.colorTemperature,
+          maxColorTemp,
+          minColorTemp,
+        })
+        descList.push(`色温${color}`)
       }
     }
   }
@@ -205,6 +228,10 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
   if (proType === PRO_TYPE.floorHeating) {
     !isNullOrUnDef(property.power) && descList.push(property.power === 1 ? '开启' : '关闭')
     !isNullOrUnDef(property.targetTemperature) && descList.push(`${property.targetTemperature}℃`)
+  }
+
+  if (descList.length > 3) {
+    descList = [...descList.slice(0, 2), '...']
   }
 
   return descList

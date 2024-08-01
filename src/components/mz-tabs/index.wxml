@@ -15,6 +15,7 @@
         wx:key="title"
         class="tab-item {{selectedTab === index ? 'active' : ''}}"
         data-tab="{{index}}"
+        data-activeid="{{item.id}}"
         bindtap="onTapTab"
       >
         <view>{{ item.title }}</view>
