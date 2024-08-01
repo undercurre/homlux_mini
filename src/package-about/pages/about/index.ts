@@ -1,6 +1,7 @@
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { storage } from '../../../utils/index'
 import meta from '../../../meta'
+import { homluxOssUrl } from '../../../config/index'
 
 let isDebug = false
 let debugTimeId = 0
@@ -20,18 +21,27 @@ Component({
     list: [
       {
         title: '美的照明隐私协议',
+        url: 'downloadFile/%E7%BE%8E%E7%9A%84%E7%85%A7%E6%98%8EHomlux%E9%9A%90%E7%A7%81%E5%8D%8F%E8%AE%AE.docx',
+        value: 'privacyPolicy',
+      },
+      {
+        title: '美的智能门锁隐私协议',
+        url: 'downloadFile/%E7%BE%8E%E7%9A%84%E6%99%BA%E8%83%BD%E9%97%A8%E9%94%81%E9%9A%90%E7%A7%81%E5%8D%8F%E8%AE%AE.doc',
         value: 'privacyPolicy',
       },
       {
         title: '美的照明权限列表',
+        url: 'downloadFile/%E5%B7%B2%E6%94%B6%E9%9B%86%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF%E6%B8%85%E5%8D%95-%E7%BE%8E%E7%9A%84%E7%85%A7%E6%98%8E.xlsx',
         value: 'authList',
       },
       {
         title: '软件许可及用户服务协议',
+        url: 'downloadFile/%E5%B7%B2%E6%94%B6%E9%9B%86%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF%E6%B8%85%E5%8D%95-%E7%BE%8E%E7%9A%84%E7%85%A7%E6%98%8E.xlsx',
         value: 'userService',
       },
       {
         title: '已收集个人信息清单',
+        url: 'downloadFile/%E5%B7%B2%E6%94%B6%E9%9B%86%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF%E6%B8%85%E5%8D%95-%E7%BE%8E%E7%9A%84%E7%85%A7%E6%98%8E.xlsx',
         value: 'userInfoList',
       },
     ],
@@ -63,6 +73,21 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    showDoc(fileUrl: string) {
+      wx.downloadFile({
+        // 示例 url，并非真实存在
+        url: `${homluxOssUrl}/${fileUrl}`,
+        success: function (res) {
+          const filePath = res.tempFilePath
+          wx.openDocument({
+            filePath: filePath,
+            success: function (res) {
+              console.log('打开文档成功', res)
+            },
+          })
+        },
+      })
+    },
     toTestUtil() {
       wx.navigateTo({
         url: '/package-debug/pages/test-util/index',
@@ -86,9 +111,13 @@ Component({
     },
 
     handleTap(e: WechatMiniprogram.TouchEvent) {
-      wx.navigateTo({
-        url: '/package-about/pages/protocol-show/index?protocal=' + e.currentTarget.dataset.value,
-      })
+      const { url } = e.currentTarget.dataset
+
+      this.showDoc(url)
+
+      // wx.navigateTo({
+      //   url: '/package-about/pages/protocol-show/index?protocal=' + e.currentTarget.dataset.value,
+      // })
     },
 
     toDebugUtil() {

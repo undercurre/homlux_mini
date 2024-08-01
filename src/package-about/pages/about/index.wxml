@@ -10,13 +10,16 @@
   bind:leftTap="goBack"
   bind:longpress="titlePress"
 ></nav-bar>
+
 <view class="h-24rpx"> </view>
+
 <van-cell-group inset>
   <van-cell
     wx:for="{{list}}"
     wx:key="value"
     title="{{item.title}}"
     is-link
+    data-url="{{item.url}}"
     data-value="{{item.value}}"
     bind:click="handleTap"
   ></van-cell>
