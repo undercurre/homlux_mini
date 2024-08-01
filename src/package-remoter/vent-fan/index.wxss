@@ -154,6 +154,7 @@
   margin-bottom: 32rpx;
   margin-top: -24rpx;
   color: #666666;
+  margin-left: 8rpx;
 }
 .gear-block{
   width: 622rpx;
@@ -163,6 +164,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-left: 8rpx;
 }
 .gear-slider{
   width: 592rpx;
@@ -171,7 +173,7 @@
   width: 44rpx;
   height: 44rpx;
   margin-top: 14rpx;
-  margin-right: -18rpx;
+  margin-right: -16rpx;
 }
 .ind-block {
   width: 628rpx;
@@ -180,4 +182,5 @@
   flex-direction: row;
   justify-content: space-between;
   align-self: center;
+  margin-left: 8rpx;
 }

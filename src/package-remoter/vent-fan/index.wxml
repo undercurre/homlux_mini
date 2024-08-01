@@ -44,7 +44,7 @@
   <view class="ind-block">
     <view style="width: 64rpx; height: 64rpx; display: flex; justify-content: center;" wx:for="{{indArr}}" wx:key="key">
       <text class="text-24rpx font-normal"
-        style="color: #8A8A8F; line-height: 64rpx;"
+        style="color: #8A8A8F; line-height: 64rpx; margin-right: {{index === 1 ? 24 : 0}}rpx;"
         wx:key="item">{{item}}</text>
     </view>
   </view>
