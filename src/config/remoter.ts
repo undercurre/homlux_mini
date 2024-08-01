@@ -1613,7 +1613,7 @@ export const deviceConfigV2: Record<string, Remoter.ConfigItem> = {
   // }
   'a1': {
     deviceName: '换气扇',
-    devicePic: '/assets/img/remoter/fanLight.png',
+    devicePic: '/assets/img/remoter/ventFan.png',
     actions: [
       {
         key: 'FAN_SWITCH',

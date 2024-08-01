@@ -9,8 +9,10 @@ import { hideLoading, showLoading } from '../../utils/system'
 // import Toast from '@vant/weapp/toast/toast'
 
 const minuteArr = []
-for (let i = 0; i <= 24; i += 0.5) {
+let step = 0.5
+for (let i = 0; i <= 24; i += step) {
   minuteArr.push(i)
+  if (i >= 10) step = 1
 }
 
 ComponentWithComputed({
@@ -229,7 +231,6 @@ ComponentWithComputed({
       if (status.FAN_SWITCH != undefined) {
         bottom[0].isOn = status.FAN_SWITCH
       }
-      let timeIndex = this.data.curTimePickerIndex
       if (status.FAN_DELAY_OFF_MIN != undefined) {
         const hour = Math.floor(status.FAN_DELAY_OFF_MIN / 60)
         const min = status.FAN_DELAY_OFF_MIN % 60
@@ -246,14 +247,21 @@ ComponentWithComputed({
           }
         }
         if (!this.data.isShowTimePicker) {
-          timeIndex = [hour * 2 + (min >= 30 ? 1 : 0)]
+          let timeVal = hour
+          if (hour < 10 && min >= 30) timeVal += 0.5
+          const arrIndex = this.data.minuteArr.findIndex(item => item === timeVal)
+          if (arrIndex >= 0) {
+            this.setData({
+              curTimePickerIndex: [arrIndex],
+              pickerIndexTemp: [arrIndex],
+            })
+          }
         }
       }
       this.setData({
         gearSlicerConfig: gear,
         btnList: btns,
         bottomList: bottom,
-        curTimePickerIndex: timeIndex,
       })
       this.updateViewEn()
     },
