@@ -129,8 +129,8 @@ export const deviceStore = observable({
       deviceStore.allRoomDeviceTimestamp = res.timestamp
 
       if (currentRoomId && res.result?.length) {
-        deviceStore.deviceList = res.result.filter((device) => device.roomId === currentRoomId)
         deviceStore.deviceTimestamp = res.timestamp
+        deviceStore.deviceList = res.result.filter((device) => device.roomId === currentRoomId)
         emitter.emit('roomDeviceSync')
       }
 
@@ -153,8 +153,8 @@ export const deviceStore = observable({
     }
 
     runInAction(() => {
-      deviceStore.deviceList = res.result
       deviceStore.deviceTimestamp = res.timestamp
+      deviceStore.deviceList = res.result
       this.updateAllRoomDeviceListLanStatus()
     })
   },

@@ -775,31 +775,28 @@ ComponentWithStore({
 
         const oldListLength = this.data.deviceCardList.length
         const newListLength = _list.length
+        const diffData = {} as IAnyObject
 
         // 分批渲染
         for (let groupIndex = 0; _list.length > 0; ++groupIndex) {
           const group = _list.splice(0, LIST_PAGE)
-          const diffData = {} as IAnyObject
           for (let index = 0; index < group.length; ++index) {
             diffData[`deviceCardList[${index + groupIndex * LIST_PAGE}]`] = group[index]
           }
-          this.setData(diffData)
         }
 
         // 直接清空旧列表，再重新加载会引起闪烁，此处只清空‘旧列表比新列表多出的项’
         if (oldListLength > newListLength) {
-          const diffData = {} as IAnyObject
           for (let index = newListLength; index < oldListLength; ++index) {
             diffData[`deviceCardList[${index}]`] = { deleted: true }
           }
-          this.setData(diffData)
         }
 
         if (!this.data.deviceListInited) {
-          this.setData({
-            deviceListInited: true,
-          })
+          diffData.deviceListInited = true
         }
+
+        this.setData(diffData)
 
         Logger.setFilter('updateDeviceList')
         Logger.debug(
