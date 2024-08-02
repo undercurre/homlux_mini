@@ -245,6 +245,14 @@
   bind:lightStatusChange="refreshLightStatus"
 ></fan-light-popup>
 
+<door-lock-popup
+  show="{{controlType === '0x09'}}"
+  deviceInfo="{{checkedDeviceInfo}}"
+  checkedList="{{checkedList}}"
+  bind:close="cancelCheckAndPops"
+  bind:updateDevice="updateQueue"
+></door-lock-popup>
+
 <device-control-popup
   show="{{isShowCommonControl}}"
   deviceInfo="{{checkedDeviceInfo}}"

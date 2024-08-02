@@ -37,6 +37,7 @@ export const ROOM_CARD_TOP = 170 // 列表顶部距离
 
 // 设备 modelName -> 品类码
 export const PRO_TYPE = {
+  doorLock: '0x09',
   light: '0x13',
   switch: '0x21',
   curtain: '0x14',
@@ -73,6 +74,7 @@ export const getModelName = (proType: string, productId?: string) => {
 
 // 设备品类码 -> modelName
 export const proName: Record<string, string> = {
+  '0x09': 'doorLock',
   '0x13': 'light',
   '0x14': 'curtain',
   '0x16': 'gateway',

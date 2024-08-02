@@ -1,0 +1,10 @@
+{
+  "component": true,
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-popup": "/skyline-components/mz-popup/index",
+    "mz-icon-button": "/skyline-components/mz-icon-button/index",
+    "tips-box": "/components/tips-box/index"
+  }
+}

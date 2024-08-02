@@ -1,0 +1,82 @@
+<mz-popup
+  show="{{ show }}"
+  position="bottom"
+  round
+  closeable
+  bind:close="handleClose"
+>
+  <view class="w-750rpx bg-white flex-col flex items-center py-20rpx">
+    <!-- tab -->
+    <view class="flex justify-evenly w-686rpx mt-10rpx relative">
+      <view class="flex-col-center">
+        <text class="mx-24rpx mt-16rpx tab-title">{{deviceInfo.deviceName}}</text>
+      </view>
+      <!-- 设置、关闭按钮 -->
+      <view
+        class="absolute left-20rpx top-16rpx"
+        bind:tap="toDetail"
+      >
+        <image
+          class="w-48 h-48"
+          src="/assets/img/home-manage/setting.png"
+        ></image>
+      </view>
+    </view>
+
+    <view
+      class="offline-tips"
+      wx:if="{{isLanCtl}}"
+    >
+      <image
+        class="w-36 h-36 ml-48rpx"
+        src="/assets/img/base/info.png"
+      ></image>
+      <text class="text-hex-555659 text-24 ml-32rpx">当前设备仅支持局域网控制，请检查您的网络！</text>
+    </view>
+    <!-- tab内容 -->
+    <view class="flex flex-col items-center flex-1 pt-10rpx">
+      <view class="w-686rpx h-full flex-col-center relative">
+        <view>
+          <text class="text-26 text-hex-666666">设备日志</text>
+        </view>
+        <block wx:if="{{logListView.length}}">
+          <view class="log-step"></view>
+          <scroll-view
+            type="list"
+            scroll-y
+            enhanced
+            show-scrollbar="{{false}}"
+            style="height: 500rpx"
+          >
+            <view
+              class="log-item"
+              wx:for="{{logListView}}"
+              wx:key="index"
+            >
+              <view class="flex flex-col">
+                <text class="text-32 text-hex-666666">{{item.time}}</text>
+                <text class="text-24 text-hex-8a8a8f">{{item.date}}</text>
+              </view>
+              <text class="text-32 text-hex-000 ml-114rpx">{{item.content}}</text>
+              <view class="circle"></view>
+            </view>
+          </scroll-view>
+        </block>
+
+        <view
+          wx:else
+          class="flex flex-center"
+          style="height: 500rpx"
+        >
+          <tips-box
+            text="暂无记录"
+            icon="{{defaultImgDir}}/no-log.png"
+            size="240"
+          ></tips-box>
+        </view>
+      </view>
+    </view>
+  </view>
+</mz-popup>
+
+<mz-toast id="mz-toast" />
