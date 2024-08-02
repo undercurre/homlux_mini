@@ -213,6 +213,7 @@ ComponentWithComputed({
     hasControl(data) {
       return (
         data.cardInfo.proType !== PRO_TYPE.gateway &&
+        data.cardInfo.proType !== PRO_TYPE.doorLock &&
         data.cardInfo.proType !== PRO_TYPE.sensor &&
         data.cardInfo.proType !== PRO_TYPE.bathHeat &&
         data.cardInfo.proType !== PRO_TYPE.clothesDryingRack &&
