@@ -133,6 +133,8 @@ ComponentWithComputed({
       const activedWidth = isBtnInset ? v2w + btnWidthPx : v2w
       const btnX = isBtnInset ? v2w : v2w - btnWidthPx / 2
       const toastX = activedWidth - toastWidth / 2
+      const left = isBtnInset ? btnWidthPx : 0
+      const right = barWidth
 
       this.setData({
         btnWidthPx,
@@ -142,6 +144,10 @@ ComponentWithComputed({
         activedWidth,
         btnX,
         toastX,
+        bound: {
+          left,
+          right,
+        },
       })
     },
   },
@@ -196,19 +202,13 @@ ComponentWithComputed({
         .select('#mz-slider')
         .boundingClientRect()
         .exec((res) => {
-          const { isBtnInset, btnWidthPx, value } = this.data
+          const { value } = this.data
           const barWidth = res[0]?.width ?? 300
           const barLeft = (res[0]?.left ?? 0) % wx.getSystemInfoSync().windowWidth // !! 兼容在swiper中的位置计算
-          const left = isBtnInset ? btnWidthPx : 0
-          const right = barWidth
           this.setData({
             innerVal: value,
             barWidth,
             barLeft,
-            bound: {
-              left,
-              right,
-            },
           })
 
           this.data._actived_x.value = this.data.activedWidth
@@ -276,6 +276,7 @@ ComponentWithComputed({
     widthToValue(w: number) {
       const { availableBarWidth, min, valueSpan, step, isBtnInset, btnWidthPx } = this.data
       const _w = isBtnInset ? w - btnWidthPx : w
+      console.log('widthToValue', { availableBarWidth, min, valueSpan, step, isBtnInset, btnWidthPx })
       return Math.round(((_w / availableBarWidth) * valueSpan) / step) * step + min
     },
   },

@@ -171,7 +171,7 @@ ComponentWithStore({
     'roomList,lightSummary.**'(roomList: roomInfo[], lightSummary) {
       const roomCardList = roomList.map((room) => ({
         ...room,
-        ...lightSummary[room.roomId],
+        ...(lightSummary[room.roomId] ?? { lightCount: 0, lightOnCount: 0 }),
         id: room.roomId,
       }))
       this.setData({ roomCardList })
@@ -233,6 +233,7 @@ ComponentWithStore({
         await homeStore.updateHomeInfo({ isInit: false }, { isDefaultErrorTips: false })
         await homeStore.updateRoomCardList()
         this.updateLightCount()
+        await delay(0)
         this.setData({ isRefreshing: false })
       }
 
@@ -360,9 +361,10 @@ ComponentWithStore({
 
       if (res.success) {
         await homeStore.homeInit()
-        sceneStore.updateAllRoomSceneList()
+        await sceneStore.updateAllRoomSceneList()
         this.updateLightCount()
       }
+      await delay(0)
       hideLoading()
     },
     handleAddTap(e: { detail: string }) {
@@ -376,7 +378,7 @@ ComponentWithStore({
 
     // 更新灯总数、亮灯数统计
     updateLightCount() {
-      const { lightSummary } = this.data
+      const lightSummary = {} as IAnyObject
       deviceStore.allRoomDeviceFlattenList.forEach((device) => {
         if (!Object.prototype.hasOwnProperty.call(lightSummary, device.roomId)) {
           lightSummary[device.roomId] = {

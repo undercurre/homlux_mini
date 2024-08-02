@@ -53,6 +53,14 @@ HomLux小程序
 └── typings // 类型声明文件
 ```
 
+## 脚本命令
+
+`unocss:build`: 调用`unocss`命令，自动生成对应的原子类 wxss 文件
+
+`unocss`: 实时监听代码文件变化，调用`unocss`命令，自动生成对应的原子类 wxss 文件
+
+`vant`: 调用`vant-tree-shaking`命令，扫描项目中使用的 vant 组件，删减微信开发者工具【npm 构建】后的 miniprogram_npm 中没有使用到的 vant 组件
+
 ## 环境定义
 
 微信的环境名称，与代码中美智云的对应名称有所出入，映射关系如下：

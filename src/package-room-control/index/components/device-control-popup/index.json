@@ -8,6 +8,7 @@
     "select-card-popup": "../../../../components/select-card-popup/index",
     "mz-slider": "/skyline-components/mz-slider/index",
     "curtain-slider": "/components/curtain-slider/index",
+    "mz-icon-button": "/skyline-components/mz-icon-button/index",
     "tips-box": "/components/tips-box/index"
   }
 }

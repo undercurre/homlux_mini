@@ -165,24 +165,51 @@
           value="{{curtainInfo.position}}"
           catch:slideEnd="changeCurtain"
         ></curtain-slider>
-        <view class="flex flex-row justify-evenly rounded-24rpx bg-hex-eef2f7 w-686rpx h-80rpx items-center mt-56rpx">
-          <text
-            catch:tap="openCurtain"
-            class="text-32 text-hex-1e2c46 px-50rpx h-80rpx leading-80rpx rounded-24rpx btn-effect"
-            >全开</text
-          >
+        <view class="flex flex-row justify-evenly rounded-24rpx bg-hex-eef2f7 w-686rpx h-88rpx items-center mt-56rpx">
+          <mz-icon-button
+            text="全开"
+            wrapperWidth="{{228}}"
+            wrapperHeight="{{88}}"
+            textSize="{{32}}"
+            round="{{24}}"
+            bgColor="#eef2f7"
+            bgColorActive="rgba(0,0,0,0.06)"
+            textColor="#1E2C46"
+            textColorActive="#1E2C46"
+            bind:btnTouchStart="openCurtain"
+            rebound
+            textInset
+          ></mz-icon-button>
           <view class="w-2rpx h-40rpx bg-hex-ddd"></view>
-          <text
-            catch:tap="pauseCurtain"
-            class="text-32 text-hex-1e2c46 px-50rpx h-80rpx leading-80rpx rounded-24rpx btn-effect"
-            >暂停</text
-          >
+          <mz-icon-button
+            text="暂停"
+            wrapperWidth="{{228}}"
+            wrapperHeight="{{88}}"
+            textSize="{{32}}"
+            round="{{24}}"
+            bgColor="#eef2f7"
+            bgColorActive="rgba(0,0,0,0.06)"
+            textColor="#1E2C46"
+            textColorActive="#1E2C46"
+            bind:btnTouchStart="pauseCurtain"
+            rebound
+            textInset
+          ></mz-icon-button>
           <view class="w-2rpx h-40rpx bg-hex-ddd"></view>
-          <text
-            catch:tap="closeCurtain"
-            class="text-32 text-hex-1e2c46 px-50rpx h-80rpx leading-80rpx rounded-24rpx btn-effect"
-            >全关</text
-          >
+          <mz-icon-button
+            text="全关"
+            wrapperWidth="{{228}}"
+            wrapperHeight="{{88}}"
+            textSize="{{32}}"
+            round="{{24}}"
+            bgColor="#eef2f7"
+            bgColorActive="rgba(0,0,0,0.06)"
+            textColor="#1E2C46"
+            textColorActive="#1E2C46"
+            bind:btnTouchStart="closeCurtain"
+            rebound
+            textInset
+          ></mz-icon-button>
         </view>
       </view>
       <!-- 传感器日志 -->

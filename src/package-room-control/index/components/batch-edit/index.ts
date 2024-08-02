@@ -305,7 +305,7 @@ ComponentWithComputed({
     handleBatchMove() {
       const actionFn = async () => {
         // 可能存在未重新开始移动，目标已被移动成功的情况
-        if (!this.data.moveWaitlist.length) {
+        if (!this.data.moveWaitlist.length && !this.data.moveFailCount) {
           this.triggerEvent('updateList')
           Dialog.close() // 关闭【前端超时】提示窗口
           emitter.off('group_device_result_status') // 取消监听

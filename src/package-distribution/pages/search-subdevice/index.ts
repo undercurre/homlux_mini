@@ -888,6 +888,7 @@ ComponentWithComputed({
     },
 
     finish() {
+      deviceStore.updateAllRoomDeviceList() // 刷新全屋设备列表，以免其他地方获取不到最新数据
       bleDevicesStore.reset()
       wx.closeBluetoothAdapter()
 

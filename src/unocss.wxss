@@ -487,7 +487,8 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-80rpx{height:80rpx;}
 .h-842rpx{height:842rpx;}
 .h-85vh{height:85vh;}
-.h-88{height:88rpx;}
+.h-88,
+.h-88rpx{height:88rpx;}
 .h-90rpx{height:90rpx;}
 .h-92,
 .h-92rpx{height:92rpx;}

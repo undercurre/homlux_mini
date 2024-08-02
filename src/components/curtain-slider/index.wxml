@@ -17,9 +17,9 @@
         <view class="left-curtain w-140rpx h-332rpx absolute top-0 left-112rpx"></view>
         <view class="left-curtain w-140rpx h-332rpx absolute top-0 left-140rpx">
           <image
+            id="left-indicator"
             src="../../assets/img/base/arrow-left-curtain.png"
             class="curtain-handle right-7rpx"
-            style="transform:{{value === 100 ? 'scaleX(-1)':unset}}"
           ></image>
         </view>
       </view>
@@ -34,9 +34,9 @@
         <view class="right-curtain w-140rpx h-332rpx absolute top-0 right-112rpx"></view>
         <view class="right-curtain w-140rpx h-332rpx absolute top-0 right-140rpx">
           <image
+            id="right-indicator"
             src="../../assets/img/base/arrow-right-curtain.png"
             class="curtain-handle left-7rpx"
-            style="transform:{{value === 100 ? 'scaleX(-1)':unset}}"
           ></image>
         </view>
       </view>

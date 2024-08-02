@@ -482,11 +482,11 @@ ComponentWithComputed({
           sceneProperty[e.detail.key] = e.detail.value
         }
       }
-      //如果电源为关闭，不能调节其他属性
+      //如果电源为关闭，不能调节其他属性,风扇灯风扇属性（以fan_power作为电源开关）除外
       if (e.detail.propertyKey === 'power' && e.detail.value === 0) {
-        const allProps = Object.keys(sceneProperty)
         for (const prop in sceneProperty) {
-          if (prop !== 'modelName' && prop !== 'power' && allProps.includes(prop)) {
+          // 排除风扇灯属性，以fan_开头
+          if (prop !== 'modelName' && prop !== 'power' && prop.indexOf('fan_') >= 0) {
             delete sceneProperty[prop]
           }
         }
@@ -505,6 +505,25 @@ ComponentWithComputed({
         // 如果风扇电源为开启，风扇灯设备自动添加模式、风速属性
         sceneProperty['fan_scene'] = 'fanmanual'
         sceneProperty['fan_speed'] = 1
+      }
+
+      // 如果风扇电源为关闭，不能调节其他风扇属性
+      if (e.detail.propertyKey === 'fan_power' && e.detail.value === 'off') {
+        for (const prop in sceneProperty) {
+          // 排除风扇灯属性，以fan_开头
+          if (prop.indexOf('fan_') >= 0) {
+            delete sceneProperty[prop]
+          }
+        }
+      }
+
+      if (e.detail.propertyKey === 'fan_scene') {
+        if (e.detail.value === 'breathing_wind') {
+          // 如果风扇模式为自然风，风扇灯设备删除风速属性
+          delete sceneProperty['fan_speed']
+        } else {
+          sceneProperty['fan_speed'] = 1
+        }
       }
 
       //WIFI空调模式为不设置时,不可设置温度和风速
