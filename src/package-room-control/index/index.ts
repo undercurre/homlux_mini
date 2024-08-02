@@ -4,6 +4,7 @@ import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { sendDevice, execScene, saveDeviceOrder, queryGroup, queryAuthGetStatus } from '../../apis/index'
 import Toast from '../../skyline-components/mz-toast/toast'
+import Dialog from '../../skyline-components/mz-dialog/dialog'
 import {
   storage,
   emitter,
@@ -1004,6 +1005,29 @@ ComponentWithStore({
       // 如果在编辑状态，则选择或取消选择卡片
       if (this.data.editMode) {
         this.handleCardEditSelect(e)
+        return
+      }
+      // 不在编辑状态，如果是门锁
+      else if (e.detail.proType === PRO_TYPE.doorLock) {
+        const isAgree = storage.get('AGREE_PRIVACY_POLICY_OF_DOORLOCK') as boolean
+        if (isAgree) {
+          this.handleCardCommonTap(e)
+          return
+        }
+
+        Dialog.confirm({
+          selector: '#mz-dialog-privacy',
+          title: '用户隐私授权',
+          message: '我已阅读',
+          confirmButtonText: '同意并继续',
+        })
+          .then(() => {
+            storage.set('AGREE_PRIVACY_POLICY_OF_DOORLOCK', true)
+            this.handleCardCommonTap(e)
+          })
+          .catch(() => {
+            storage.set('AGREE_PRIVACY_POLICY_OF_DOORLOCK', false)
+          })
         return
       }
       // 不在编辑状态，如果是WIFI设备

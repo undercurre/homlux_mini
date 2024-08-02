@@ -83,3 +83,10 @@
   height: 210rpx !important;
   transform: translateX(-28rpx);
 }
+
+.link-text {
+  color: #267aff;
+  font-weight: 400;
+  margin-left: 20rpx;
+  text-decoration: underline;
+}
