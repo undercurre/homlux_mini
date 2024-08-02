@@ -27,6 +27,8 @@ const _searchDeviceCallBack = (device: WechatMiniprogram.BlueToothDevice) => {
   let deviceType
   if (isV2) {
     const advertisDataArr = Array.from(new Uint8Array(device.advertisData))
+    const adVersion = advertisDataArr[2]
+    if (adVersion !== 0x81) return
     const typeVal = advertisDataArr[3] & 0x0f
     if (typeVal === 0) deviceType = '26'
     else if (typeVal === 1) deviceType = '40'

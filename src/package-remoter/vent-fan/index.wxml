@@ -145,7 +145,7 @@
             <view wx:for="{{ minuteArr }}" 
               wx:key="key"
               class="picker-cloumn-text"
-              style="font-size: {{item == 0 ? '32rpx' : '40rpx'}};">{{item == 0 ? '取消' : item}}</view>
+              style="font-size: {{item == 0 ? '32rpx' : '40rpx'}}; line-height: 64rpx;">{{item == 0 ? '取消' : item}}</view>
           </picker-view-column>
         </picker-view>
       </view>

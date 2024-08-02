@@ -236,7 +236,7 @@ ComponentWithComputed({
         const min = status.FAN_DELAY_OFF_MIN % 60
         for (let i = 0; i < btns.length; i++) {
           if (btns[i].key === 'DELAY') {
-            const isRunning = status.FAN_DELAY_OFF_MIN > 0 && status.FAN_DELAY_OFF_RUNNING
+            const isRunning = status.FAN_DELAY_OFF_MIN > 0 && status.FAN_DELAY_OFF_MIN <= 1440  && status.FAN_DELAY_OFF_RUNNING
             btns[i].isOn = isRunning
             if (isRunning) {
               btns[i].name = `剩余${hour >= 10 ? '' : '0'}${hour}:${min >= 10 ? '' : '0'}${min}`
@@ -246,7 +246,7 @@ ComponentWithComputed({
             break
           }
         }
-        if (!this.data.isShowTimePicker) {
+        if (!this.data.isShowTimePicker && hour <= 24) {
           let timeVal = hour
           if (hour < 10 && min >= 30) timeVal += 0.5
           const arrIndex = this.data.minuteArr.findIndex(item => item === timeVal)

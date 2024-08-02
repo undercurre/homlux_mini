@@ -452,7 +452,7 @@ ComponentWithComputed({
             }
           }
           const deviceName = devSuffix ? nameKey + devSuffix : nameKey
-          console.log(`lmn>>>发现新设备::mac=${item!.addr}/品类=${deviceType}/型号=${deviceModel},命名=>${deviceName}`)
+          console.log(`lmn>>>发现新设备::mac=${item!.addr}/品类=${deviceType}/型号=${deviceModel}/信号=${item!.RSSI}/阈值=${cusRSSI},命名=>${deviceName}`)
 
           // 更新发现设备列表
           newFoundList.push({
