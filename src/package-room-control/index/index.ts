@@ -1,5 +1,5 @@
 import { ComponentWithStore } from 'mobx-miniprogram-bindings'
-import { deviceStore, sceneStore, roomStore, homeStore } from '../../store/index'
+import { deviceStore, sceneStore, roomStore, homeStore, userStore } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { sendDevice, execScene, saveDeviceOrder, queryGroup, queryAuthGetStatus } from '../../apis/index'
@@ -1009,7 +1009,8 @@ ComponentWithStore({
       }
       // 不在编辑状态，如果是门锁
       else if (e.detail.proType === PRO_TYPE.doorLock) {
-        const isAgree = storage.get('AGREE_PRIVACY_POLICY_OF_DOORLOCK') as boolean
+        const storageKey = `AGREE_PRIVACY_POLICY_OF_DOORLOCK_${userStore.userInfo.userId}`
+        const isAgree = storage.get(storageKey) as boolean
         if (isAgree) {
           this.handleCardCommonTap(e)
           return
@@ -1022,11 +1023,11 @@ ComponentWithStore({
           confirmButtonText: '同意并继续',
         })
           .then(() => {
-            storage.set('AGREE_PRIVACY_POLICY_OF_DOORLOCK', true)
+            storage.set(storageKey, true)
             this.handleCardCommonTap(e)
           })
           .catch(() => {
-            storage.set('AGREE_PRIVACY_POLICY_OF_DOORLOCK', false)
+            storage.set(storageKey, false)
           })
         return
       }
