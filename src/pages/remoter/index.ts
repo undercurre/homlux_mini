@@ -217,6 +217,8 @@ ComponentWithComputed({
             page = 'bath'
           } else if (deviceType === '40') {
             page = 'cool-bath'
+          } else if (deviceType === 'a1') {
+            page = 'vent-fan'
           }
           if (!page) return
           wx.navigateTo({
@@ -341,8 +343,9 @@ ComponentWithComputed({
 
     // 处理搜索到的设备
     resolveFoundDevices(res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) {
+      const sortList = res.devices.sort((a, b) => b.RSSI - a.RSSI)
       const recoveredListSrc =
-        unique(res.devices, 'deviceId') // 过滤重复设备
+        unique(sortList, 'deviceId') // 过滤重复设备
           .map((item) => remoterProtocol.searchDeviceCallBack(item)) // 过滤不支持的设备
           .filter((item) => !!item) || []
 
@@ -371,9 +374,11 @@ ComponentWithComputed({
       if (!isUserControlled) {
         return
       }
+      console.log('lmn>>>------------搜索更新------------')
 
       // 用户主动搜索，刷新发现列表
-      const foundList = [] as Remoter.DeviceDetail[]
+      const newFoundList = [] as Remoter.DeviceDetail[]
+      const curFoundList = this.data.foundList
       const suffixArr = {} as Record<string, number[]>
       const deviceInfo = wx.getDeviceInfo()
       const isIOS = deviceInfo.platform === 'ios'
@@ -403,10 +408,11 @@ ComponentWithComputed({
             }
           }
         }
-        if (
-          item!.RSSI >= cusRSSI && // 过滤弱信号设备
-          !isSavedDevice // 排除已在我的设备列表的设备
-        ) {
+        let isExist = false
+        if (curFoundList.length > 0) {
+          isExist = curFoundList.findIndex(oldItem => oldItem.addr === item?.addr) >= 0
+        }
+        if (isExist || (item!.RSSI >= cusRSSI && !isSavedDevice)) {
           let config = null
           if (item!.isV2) {
             config = deviceConfigV2[deviceType] || null
@@ -446,10 +452,10 @@ ComponentWithComputed({
             }
           }
           const deviceName = devSuffix ? nameKey + devSuffix : nameKey
-          console.log(`lmn>>>发现新设备::mac=${item!.addr}/品类=${deviceType}/型号=${deviceModel},命名=>${deviceName}`)
+          console.log(`lmn>>>发现新设备::mac=${item!.addr}/品类=${deviceType}/型号=${deviceModel}/信号=${item!.RSSI}/阈值=${cusRSSI},命名=>${deviceName}`)
 
           // 更新发现设备列表
-          foundList.push({
+          newFoundList.push({
             deviceId: item!.deviceId,
             addr: item!.addr,
             version: item!.version,
@@ -471,7 +477,7 @@ ComponentWithComputed({
         }
       }
 
-      this.setData({ foundList })
+      this.setData({ foundList: newFoundList })
     },
 
     // 获取已建立连接的设备 暂时用不着

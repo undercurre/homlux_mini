@@ -1,0 +1,14 @@
+{
+  "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
+    "van-picker": "@vant/weapp/picker/index",
+    "mz-button": "../components/mz-button/index",
+    "mz-button-bottom": "../components/mz-button-bottom/index",
+    "mz-slider": "/components/mz-slider/index",
+    "mx-slider": "/miniprogram_npm/m-ui/mx-slider/index",
+    "mx-scroll-list": "/miniprogram_npm/m-ui/mx-scroll-list/index",
+    "mx-button": "/miniprogram_npm/m-ui/mx-button/index",
+    "mx-tabbar": "/miniprogram_npm/m-ui/mx-tabbar/index",
+    "mx-popup": "/miniprogram_npm/m-ui/mx-popup/index"
+  }
+}
