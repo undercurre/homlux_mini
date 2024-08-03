@@ -119,3 +119,5 @@ export const ZHONGHONG_PID: readonly string[] = [
   PRODUCT_ID.zhonghong_air,
   PRODUCT_ID.zhonghong_cac,
 ]
+// 门锁pid集合 //798777B9因为是非标协议,所以暂时不接 (郭工)
+export const DOORLOCK_PID: readonly string[] = ['798777C7', '798777C8', '798777C9', '798777CT', '798777AT', 'M0900012']
