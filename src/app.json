@@ -51,6 +51,7 @@
         "setting/index",
         "device-manage/index",
         "device-manage/device-detail/index",
+        "device-manage/abnormal/index",
         "device-manage/group-detail/index",
         "voice-control/index",
         "guideline/index",

@@ -100,10 +100,14 @@
       </view>
 
       <!-- 下半部分 -->
+      <setting-doorlock
+        device-info="{{deviceInfo}}"
+        wx:if="{{proType === 'doorLock'}}"
+      />
       <setting-light
         can-edit-device="{{canEditDevice}}"
         device-info="{{deviceInfo}}"
-        wx:if="{{prodType === 'light'}}"
+        wx:if="{{proType === 'light'}}"
         bind:update="updateDeviceInfo"
       />
       <setting-switch
@@ -115,7 +119,7 @@
       <setting-gateway
         isManager="{{canEditDevice}}"
         device-info="{{deviceInfo}}"
-        wx:if="{{prodType === 'gateway'}}"
+        wx:if="{{proType === 'gateway'}}"
         bind:update="updateDeviceInfo"
       />
     </scroll-view>
