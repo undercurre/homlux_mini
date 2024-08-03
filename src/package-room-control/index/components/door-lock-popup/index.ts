@@ -1,9 +1,10 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { homeBinding, homeStore } from '../../../../store/index'
+import { homeBinding } from '../../../../store/index'
 import { getModelName, PRO_TYPE, SCREEN_PID, defaultImgDir } from '../../../../config/index'
-import { getSensorLogs } from '../../../../apis/index'
+import { deviceTransmit } from '../../../../apis/index'
 import pageBehavior from '../../../../behaviors/pageBehaviors'
+import dayjs from 'dayjs'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehavior],
@@ -38,7 +39,7 @@ ComponentWithComputed({
       value: false,
       observer(value) {
         if (value) {
-          this.updateSensorLogs()
+          this.updateLogs()
         }
       },
     },
@@ -55,9 +56,10 @@ ComponentWithComputed({
     defaultImgDir,
     show: false,
     deviceProp: {} as Device.mzgdPropertyDTO,
-    logList: [] as Device.Log[], // 设备（传感器）日志列表
-    /** 提供给关联选择的列表 */
+    logList: [] as IAnyObject[], // 日志列表
     list: [] as (Device.DeviceItem | Scene.SceneItem)[],
+    todayStr: dayjs().format('YYYY年M月D日'),
+    weekday: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][Number(dayjs().format('d'))],
   },
 
   computed: {
@@ -65,10 +67,13 @@ ComponentWithComputed({
     isLanCtl(data) {
       return !data.deviceInfo.onLineStatus && data.deviceInfo.canLanCtrl
     },
+    batteryView(data) {
+      return `${data.deviceInfo?.property?.batteryPower ?? 0}%`
+    },
     logListView(data) {
       return data.logList.map((log) => {
-        const { reportAt } = log
-        const [date, time] = reportAt.split(' ')
+        const { createTime } = log
+        const [date, time] = createTime.split(' ')
         return {
           content: log.content,
           date,
@@ -82,15 +87,27 @@ ComponentWithComputed({
    * 组件的方法列表
    */
   methods: {
-    async updateSensorLogs() {
+    async updateLogs() {
       const { deviceId, proType } = this.data.deviceInfo
-      if (proType !== PRO_TYPE.sensor) {
+      if (proType !== PRO_TYPE.doorLock) {
         return
       }
-      const res = await getSensorLogs({ deviceId, houseId: homeStore.currentHomeId })
-      console.log(res)
+      // const startTime = '2022-05-26 00:00:00',
+      // const endTime = '2024-09-25 23:59:59',
+      const startTime = dayjs().format('YYYY-MM-DD 00:00:00')
+      const endTime = dayjs().format('YYYY-MM-DD 23:59:59')
+      const res = (await deviceTransmit('GET_DOOR_LOCK_DYNAMIC', {
+        deviceId,
+        startTime,
+        endTime,
+        pageNo: 1,
+        pageSize: 3,
+        homeId: '67213056',
+        userId: '63868780',
+        messageId: '8537',
+      })) as IAnyObject
       this.setData({
-        logList: res.result,
+        logList: res.result.list,
       })
     },
     handleClose() {

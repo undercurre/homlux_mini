@@ -167,6 +167,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .mr-44rpx{margin-right:44rpx;}
 .mr-46rpx{margin-right:46rpx;}
 .mr-48rpx{margin-right:48rpx;}
+.mr-4rpx{margin-right:4rpx;}
 .mr-60rpx{margin-right:60rpx;}
 .mt-0_el_{margin-top:0rpx !important;}
 .mt-10rpx{margin-top:10rpx;}
@@ -321,7 +322,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .leading-56rpx{line-height:56rpx;}
 .leading-72rpx{line-height:72rpx;}
 .leading-74rpx{line-height:74rpx;}
-.leading-80rpx{line-height:80rpx;}
 .leading-92rpx{line-height:92rpx;}
 .leading-96rpx{line-height:96rpx;}
 .leading-none{line-height:1;}

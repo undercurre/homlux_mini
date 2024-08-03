@@ -1023,3 +1023,18 @@ export async function verifySn(sn: string, options?: { loading?: boolean }) {
     },
   })
 }
+
+/**
+ * 门锁相关查控接口，一堆杂七杂八的功能
+ */
+export async function deviceTransmit(handleType: string, data: IAnyObject, options?: { loading?: boolean }) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/transmit',
+    data: {
+      handleType,
+      data,
+    },
+  })
+}
