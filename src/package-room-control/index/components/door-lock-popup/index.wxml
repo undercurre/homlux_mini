@@ -57,6 +57,7 @@
         round="{{32}}"
         direction="row"
         bind:btnTouchStart="toPage"
+        data-url="/package-mine/device-manage/door-lock-psw/index"
         textInset
       ></mz-icon-button>
       <mz-icon-button
@@ -73,8 +74,8 @@
         round="{{32}}"
         direction="row"
         bind:btnTouchStart="toPage"
-        textInset
         data-url="/package-mine/device-manage/door-lock-users/index"
+        textInset
       ></mz-icon-button>
     </view>
 

@@ -1,0 +1,42 @@
+<!-- 标题 -->
+<nav-bar
+  title="临时密码"
+  left-arrow
+  show-go-home
+  bind:leftTap="goBack"
+></nav-bar>
+
+<view
+  class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7"
+  style="z-index: -1"
+></view>
+
+<view class="h-100vh flex flex-col items-center">
+  <view
+    class="flex-1"
+    id="content"
+  >
+    <view class="w-686rpx h-1030rpx rounded-32rpx box-border bgStyle mt-40rpx flex-col-center">
+      <image
+        src="/package-mine/assets/img/icon-lock.png"
+        class="w-268rpx h-280rpx mt-50rpx"
+      />
+
+      <text class="text-44 font-semibold mt-10rpx">未生成密码</text>
+      <text class="text-28 mt-48rpx">密码有效期：10分钟</text>
+
+      <view class="flex-center valid-period">
+        <image
+          src="/assets/img/base/edit-blue.png"
+          class="w-24 h-28"
+        />
+        <text class="text-28 font-medium ml-32rpx">修改有效期</text>
+      </view>
+
+      <view class="text-28 text-hex-a2a2a2 w-600 mt-140rpx">
+        <text>1. 生成新密码后，原临时密码失效。</text>
+        <text class="mt-32rpx">2. 输入密码前请重新唤醒门锁。</text>
+      </view>
+    </view>
+  </view>
+</view>
