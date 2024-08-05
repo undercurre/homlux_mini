@@ -18,7 +18,6 @@ swiper-item {
   flex-direction: row;
   position: relative;
   padding: 0 16rpx;
-  height: 100rpx;
 }
 
 .tab-item {

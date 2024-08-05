@@ -2,6 +2,7 @@
 <view class="tab-container">
   <scroll-view
     class="tab-list"
+    style="{{wrapperStyle}}"
     type="list"
     scroll-x
     scroll-left="{{ scrollLeft }}"

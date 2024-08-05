@@ -28,20 +28,19 @@ Component({
     _tabBorderWidth: 0,
     scrollLeft: 0,
     itemStyle: '',
-    wrapperStyle: '',
+    wrapperStyle: 'height: 100rpx;',
   },
 
   observers: {
     'itemWidth,itemHeight'(w, h) {
-      let style = ''
-      if (w) style += `width: ${w}rpx;`
-      if (h) style += `height: ${h}rpx;`
-      this.setData({ itemStyle: style })
-    },
-    itemHeight(h) {
-      let style = ''
-      if (h) style += `height: ${h}rpx;`
-      this.setData({ wrapperStyle: style })
+      let itemStyle = '',
+        wrapperStyle = ''
+      if (w) itemStyle += `width: ${w}rpx;`
+      if (h) {
+        itemStyle += `height: ${h}rpx;`
+        wrapperStyle += `height: ${h}rpx;`
+      }
+      this.setData({ itemStyle, wrapperStyle })
     },
   },
 
