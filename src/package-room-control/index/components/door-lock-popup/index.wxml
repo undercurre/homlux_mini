@@ -56,7 +56,7 @@
         wrapperHeight="{{112}}"
         round="{{32}}"
         direction="row"
-        bind:btnTouchStart="handleBtnTap"
+        bind:btnTouchStart="toPage"
         textInset
       ></mz-icon-button>
       <mz-icon-button
@@ -72,8 +72,9 @@
         wrapperHeight="{{112}}"
         round="{{32}}"
         direction="row"
-        bind:btnTouchStart="handleBtnTap"
+        bind:btnTouchStart="toPage"
         textInset
+        data-url="/package-mine/device-manage/door-lock-users/index"
       ></mz-icon-button>
     </view>
 

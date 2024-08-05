@@ -1,0 +1,9 @@
+.tabs-wrapper {
+  position: relative;
+  height: 88rpx;
+  padding-top: 8rpx;
+  width: 686rpx;
+  border-radius: 24rpx;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}

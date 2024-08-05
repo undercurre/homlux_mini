@@ -125,6 +125,11 @@ ComponentWithComputed({
         url: `/package-mine/device-manage/${pageName}/index?deviceId=${_deviceId}`,
       })
     },
-    handleCardTap() {},
+    toPage(e: WechatMiniprogram.TouchEvent<never, never, { url: string }>) {
+      console.log('toPage', e.currentTarget.dataset.url)
+      wx.navigateTo({
+        url: e.currentTarget.dataset.url,
+      })
+    },
   },
 })
