@@ -1,0 +1,53 @@
+<!-- 标题 -->
+<nav-bar
+  title="设备日志"
+  left-arrow
+  show-go-home
+  bind:leftTap="goBack"
+></nav-bar>
+
+<view
+  class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7"
+  style="z-index: -1"
+></view>
+
+<view class="h-100vh flex flex-col items-center">
+  <view class="flex justify-between py-32rpx w-656rpx">
+    <view class="relative flex flex-row items-center shrink">
+      <text class="text-32 text-hex-555659">近一周</text>
+      <image
+        class="w-32rpx h-32rpx"
+        src="/assets/img/base/arrow-down.png"
+      ></image>
+    </view>
+    <image
+      src="/package-mine/assets/img/icon-calendar.png"
+      class="w-64 h-64"
+    />
+  </view>
+
+  <view
+    wx:for="{{logListView}}"
+    wx:for-item="date"
+    wx:key="index"
+    class="w-686rpx flex-col-center relative log-bg"
+  >
+    <view class="flex w-full justify-between pt-32rpx pl-48rpx">
+      <text class="text-28 text-hex-555659 font-medium">{{date.dateStr}} {{date.weekday}}</text>
+    </view>
+
+    <view class="log-step"></view>
+
+    <view
+      class="log-item"
+      wx:for="{{date.list}}"
+      wx:key="time"
+    >
+      <view class="flex flex-col">
+        <text class="text-24 text-hex-a2a2a2">{{item.time}}</text>
+      </view>
+      <text class="text-24 text-hex-000 ml-90rpx">{{item.content}}</text>
+      <view class="circle"></view>
+    </view>
+  </view>
+</view>

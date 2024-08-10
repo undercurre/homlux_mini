@@ -6,6 +6,8 @@ import { deviceTransmit } from '../../../../apis/index'
 import pageBehavior from '../../../../behaviors/pageBehaviors'
 import dayjs from 'dayjs'
 
+const WEEKDAY_ARRAY = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [homeBinding] }), pageBehavior],
   options: {
@@ -59,7 +61,7 @@ ComponentWithComputed({
     logList: [] as IAnyObject[], // 日志列表
     list: [] as (Device.DeviceItem | Scene.SceneItem)[],
     todayStr: dayjs().format('YYYY年M月D日'),
-    weekday: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][Number(dayjs().format('d'))],
+    weekday: WEEKDAY_ARRAY[Number(dayjs().format('d'))],
   },
 
   computed: {
@@ -92,10 +94,10 @@ ComponentWithComputed({
       if (proType !== PRO_TYPE.doorLock) {
         return
       }
-      // const startTime = '2022-05-26 00:00:00',
-      // const endTime = '2024-09-25 23:59:59',
-      const startTime = dayjs().format('YYYY-MM-DD 00:00:00')
-      const endTime = dayjs().format('YYYY-MM-DD 23:59:59')
+      const startTime = '2022-05-26 00:00:00'
+      const endTime = '2024-09-25 23:59:59'
+      // const startTime = dayjs().format('YYYY-MM-DD 00:00:00')
+      // const endTime = dayjs().format('YYYY-MM-DD 23:59:59')
       const res = (await deviceTransmit('GET_DOOR_LOCK_DYNAMIC', {
         deviceId,
         startTime,
@@ -107,7 +109,7 @@ ComponentWithComputed({
         messageId: '8537',
       })) as IAnyObject
       this.setData({
-        logList: res.result.list,
+        logList: [...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list],
       })
     },
     handleClose() {
