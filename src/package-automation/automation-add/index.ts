@@ -166,7 +166,7 @@ ComponentWithComputed({
   },
   lifetimes: {
     async ready() {
-      await deviceStore.updateAllRoomDeviceList()
+      deviceStore.updateAllRoomDeviceList()
 
       this.setData({
         deviceList: deviceStore.allRoomDeviceFlattenList.filter(
