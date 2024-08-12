@@ -351,7 +351,8 @@ export class BleService {
           const hexStrArr = decodeArr.map((item) => {
             return ('00' + item.toString(16)).slice(-2)
           })
-          console.log('lmn>>>rece data=', JSON.stringify(hexStrArr))
+          const time = new Date().toLocaleString()
+          console.log('lmn>>>rece data=', JSON.stringify(hexStrArr), `@${time}`)
           if (that.receCallback && hexStrArr.length > 0) that.receCallback(hexStrArr.join(''))
         })
       },
