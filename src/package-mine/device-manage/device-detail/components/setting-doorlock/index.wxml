@@ -10,7 +10,7 @@
       >
         <van-switch
           slot="right-icon"
-          checked="{{electronicLock}}"
+          checked="{{electronicLockSetVal}}"
           bind:change="changeElectronicLock"
         />
       </van-cell>

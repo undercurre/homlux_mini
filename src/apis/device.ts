@@ -151,8 +151,9 @@ export async function controlDevice(
   data: {
     customJson?: IAnyObject
     deviceId: string
-    method: string
+    method?: string
     deviceType?: number // 设备类型（1:网关 2:子设备 3:wifi
+    proType?: string // 个别设备（门锁）需要回传类型
     topic?: string
     inputData: IAnyObject[]
   },
@@ -207,16 +208,17 @@ export async function sendDevice(
     deviceId: string
     gatewayId?: string
     modelName?: string
-    property: IAnyObject
+    property?: IAnyObject
+    customJson?: IAnyObject
   },
   option?: { loading?: boolean },
 ) {
-  const property = data.property
+  const property = data.property ?? {}
   let params
   let promise
 
   // 灯类控制，全局加上灯光渐变时间（ms）
-  if (data.proType === PRO_TYPE.light) {
+  if (data.proType === PRO_TYPE.light && property) {
     property.time = 500
   }
 
@@ -250,20 +252,33 @@ export async function sendDevice(
     }
 
     case 3: {
-      const method =
-        {
-          [PRO_TYPE.light]: 'wifiLampControl',
-          [PRO_TYPE.curtain]: 'wifiCurtainControl',
-          [PRO_TYPE.bathHeat]: 'wifiBathHeatControl',
-          [PRO_TYPE.clothesDryingRack]: 'wifiClothesDryingRackControl',
-          [PRO_TYPE.airConditioner]: 'wifiAirControl',
-        }[data.proType] ?? ''
+      // 门锁特别处理
+      if (data.proType === PRO_TYPE.doorLock) {
+        params = {
+          customJson: data.customJson,
+          deviceId: data.deviceId,
+          deviceType: data.deviceType,
+          inputData: [property],
+          proType: PRO_TYPE.doorLock,
+        }
+      }
+      // 其他非门锁WIFI设备
+      else {
+        const method =
+          {
+            [PRO_TYPE.light]: 'wifiLampControl',
+            [PRO_TYPE.curtain]: 'wifiCurtainControl',
+            [PRO_TYPE.bathHeat]: 'wifiBathHeatControl',
+            [PRO_TYPE.clothesDryingRack]: 'wifiClothesDryingRackControl',
+            [PRO_TYPE.airConditioner]: 'wifiAirControl',
+          }[data.proType] ?? ''
 
-      params = {
-        deviceId: data.deviceId,
-        deviceType: data.deviceType,
-        method,
-        inputData: [property],
+        params = {
+          deviceId: data.deviceId,
+          deviceType: data.deviceType,
+          method,
+          inputData: [property],
+        }
       }
 
       promise = controlDevice(params, option)
@@ -275,7 +290,7 @@ export async function sendDevice(
       promise = groupControl(
         {
           groupId: data.deviceId,
-          controlAction: [data.property],
+          controlAction: [property],
         },
         option,
       )
