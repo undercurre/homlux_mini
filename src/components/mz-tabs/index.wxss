@@ -8,16 +8,16 @@ swiper-item {
   flex-direction: column;
   width: 100vw;
 }
+
 .tab-list {
   width: 100vw;
-  height: 100rpx;
 }
+
 .tab-list-container {
   display: flex;
   flex-direction: row;
   position: relative;
   padding: 0 16rpx;
-  height: 100rpx;
 }
 
 .tab-item {
@@ -32,10 +32,6 @@ swiper-item {
   font-size: 28rpx;
   color: #555659;
   min-width: 48rpx;
-}
-
-.tab-item.active {
-  color: #27282a;
 }
 
 .tab-border {

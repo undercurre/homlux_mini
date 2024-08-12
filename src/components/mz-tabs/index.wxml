@@ -2,6 +2,7 @@
 <view class="tab-container">
   <scroll-view
     class="tab-list"
+    style="{{wrapperStyle}}"
     type="list"
     scroll-x
     scroll-left="{{ scrollLeft }}"
@@ -9,16 +10,20 @@
     bounces="{{false}}"
     scroll-with-animation="{{true}}"
   >
-    <view class="tab-list-container">
+    <view
+      class="tab-list-container"
+      style="{{wrapperStyle}}"
+    >
       <view
         wx:for="{{tabs}}"
         wx:key="title"
         class="tab-item {{selectedTab === index ? 'active' : ''}}"
+        style="{{itemStyle}}"
         data-tab="{{index}}"
         data-activeid="{{item.id}}"
         bindtap="onTapTab"
       >
-        <view>{{ item.title }}</view>
+        <text style="color: {{selectedTab === index ? textColorActive : ''}}; font-weight: {{selectedTab === index ? 500 : 400}}">{{ item.title }}</text>
       </view>
       <view
         class="tab-border"

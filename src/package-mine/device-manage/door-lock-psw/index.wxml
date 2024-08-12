@@ -1,0 +1,132 @@
+<view
+  class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7"
+  style="z-index: -1"
+></view>
+
+<view class="flex flex-col w-100vw h-100vh">
+  <!-- 标题 -->
+  <nav-bar
+    title="临时密码"
+    left-arrow
+    show-go-home
+    bind:leftTap="goBack"
+  ></nav-bar>
+
+  <view class="flex flex-1 flex-col items-center relative">
+    <view class="flex flex-1 flex-col">
+      <view class="w-686rpx h-1036rpx relative rounded-32rpx bgStyle mt-40rpx flex-col-center">
+        <block wx:if="{{status === 'init'}}">
+          <image
+            src="/package-mine/assets/img/icon-lock.png"
+            class="w-268rpx h-280rpx"
+          />
+
+          <text class="text-44 font-semibold mt-10rpx">未生成密码</text>
+          <text class="text-28 mt-48rpx">密码有效期：{{expired}}分钟</text>
+
+          <view
+            class="flex-center valid-period"
+            bind:tap="showPicker"
+          >
+            <image
+              src="/assets/img/base/edit-blue.png"
+              class="w-24 h-28"
+            />
+            <text class="text-28 font-medium ml-32rpx">修改有效期</text>
+          </view>
+
+          <view class="text-28 text-hex-a2a2a2 w-560rpx mt-140rpx">
+            <text>1. 生成新密码后，原临时密码失效。</text>
+            <text class="mt-32rpx">2. 输入密码前请重新唤醒门锁。</text>
+          </view>
+        </block>
+
+        <block wx:elif="{{status === 'generated'}}">
+          <text class="text-40 font-semibold mt-10rpx">美的智能门锁</text>
+          <text class="text-28 text-hex-a2a2a2 mt-48rpx">密码有效期：{{expired}}分钟</text>
+          <text class="text-112 text-hex-267aff font-medium mt-120rpx text-psw">14371322</text>
+          <view class="mt-240rpx w-560rpx">
+            <text class="text-26 text-hex-1e2c46">在门锁输入“ 8位数密码 + #键 ”结束</text>
+            <view class="flex flex-row items-center mt-40rpx">
+              <text class="text-26 text-hex-1e2c46">临时密码有效期：</text>
+              <text class="text-36 text-hex-fff ml-50rpx block show-time">09:58</text>
+            </view>
+          </view>
+
+          <image
+            src="/package-mine/assets/img/logo.png"
+            class="absolute w-64 h-64 right-56rpx bottom-56rpx"
+          />
+        </block>
+      </view>
+    </view>
+
+    <!-- 隔开一点距离 -->
+    <view class="h-24rpx"></view>
+    <view class="w-686rpx flex flex-row bottom-btn-wrapper">
+      <!-- 底部按钮 -->
+      <block wx:if="{{status === 'init'}}">
+        <mz-button
+          class="flex-1"
+          size="large"
+          type="primary"
+          custom-class="bottom-btn"
+          bind:click="generatePsw"
+          >生成临时密码
+        </mz-button>
+      </block>
+      <block wx:elif="{{status === 'generated'}}">
+        <mz-button
+          class="flex-1 mr-16rpx"
+          size="large"
+          bind:click="handlePickerConfirm"
+          >复制密码
+        </mz-button>
+        <mz-button
+          type="primary"
+          class="flex-1 ml-16rpx"
+          size="large"
+          bind:click="handlePickerConfirm"
+          >微信分享
+        </mz-button>
+      </block>
+    </view>
+  </view>
+</view>
+
+<mz-popup
+  show="{{ isShowPicker }}"
+  z-index="1002"
+  round
+  position="bottom"
+  catch:touchmove="blank"
+  bind:close="handleClose"
+  closeable
+>
+  <view class="w-750rpx h-650rpx relative flex flex-col items-center">
+    <view class="flex flex-row">
+      <text class="h-50rpx text-36rpx text-black-2a mt-44rpx font-medium">{{pickerTitle}}</text>
+    </view>
+
+    <view class="h-52rpx"></view>
+    <view class="w-750rpx">
+      <mz-picker
+        columns="{{pickerColumns}}"
+        unit="{{['分钟']}}"
+        visible-item-count="{{3}}"
+        bind:change="timeChange"
+      ></mz-picker>
+    </view>
+    <view class="h-52rpx"></view>
+
+    <view class="flex w-686rpx mt-32rpx mb-48rpx">
+      <mz-button
+        type="primary"
+        class="flex-1"
+        size="large"
+        bind:click="handlePickerConfirm"
+        >确定
+      </mz-button>
+    </view>
+  </view>
+</mz-popup>

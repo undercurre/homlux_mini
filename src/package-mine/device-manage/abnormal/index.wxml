@@ -1,0 +1,77 @@
+<view
+  class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7"
+  style="z-index: -1"
+></view>
+
+<view class="h-100vh flex flex-col items-center">
+  <!-- 标题 -->
+  <nav-bar
+    title="异常提醒"
+    left-arrow
+    show-go-home
+    bind:leftTap="goBack"
+  ></nav-bar>
+
+  <view
+    class="flex-1"
+    id="content"
+  >
+    <view class="mt-24rpx w-750rpx">
+      <van-cell-group inset>
+        <van-cell
+          bind:click="handleDeviceNameEditPopup"
+          title="门锁被撬提醒"
+          label="在门锁被撬时，微信消息推送通知"
+        >
+          <van-switch
+            slot="right-icon"
+            checked="{{false}}"
+            bind:change=""
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group inset>
+        <van-cell
+          bind:click="handleDeviceRoomEditPopup"
+          title="开锁失败5次后锁定提醒"
+          label="在门锁失败5次后，微信消息推送通知"
+        >
+          <van-switch
+            slot="right-icon"
+            checked="{{false}}"
+            bind:change=""
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group inset>
+        <van-cell
+          bind:click="handleDeviceRoomEditPopup"
+          title="门铃响提醒"
+          label="在门锁响铃时，微信消息推送通知"
+        >
+          <van-switch
+            slot="right-icon"
+            checked="{{true}}"
+            bind:change=""
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group inset>
+        <van-cell
+          bind:click="handleDeviceRoomEditPopup"
+          title="门锁低电量提醒"
+          label="在门锁电量不足时，微信消息推送通知"
+        >
+          <van-switch
+            slot="right-icon"
+            checked="{{false}}"
+            bind:change=""
+          />
+        </van-cell>
+      </van-cell-group>
+    </view>
+  </view>
+</view>
