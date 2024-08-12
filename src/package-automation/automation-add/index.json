@@ -27,6 +27,7 @@
     "cell-default": "./components/cell-default/index",
     "mz-drag-list": "../../skyline-components/mz-drag-list/index",
     "edit-room-popup": "./components/edit-room-popup/index",
-    "edit-device-action-popup": "./components/edit-device-action-popup/index"
+    "edit-device-action-popup": "./components/edit-device-action-popup/index",
+    "picker-view-popup": "./components/picker-view-popup/index"
   }
 }

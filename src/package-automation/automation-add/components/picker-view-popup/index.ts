@@ -1,4 +1,7 @@
 import { scenePropertyOptions } from '../../../../config/index'
+import _ from 'lodash'
+import { autosceneStore } from '../../../../store/index'
+
 Component({
   options: {},
   /**
@@ -13,13 +16,12 @@ Component({
       type: Object,
     },
   },
-
   observers: {
     show: function (show) {
       if (!show) {
         return
       }
-
+      this.data._deviceConditionPropertyList = JSON.parse(JSON.stringify(autosceneStore.deviceConditionPropertyList))
       const value = this.data.dataInfo
 
       if (typeof value === 'object') {
@@ -29,14 +31,14 @@ Component({
             pickerColumns: [],
           })
         } else {
-          const tempValue = scenePropertyOptions[value.propertyKey as keyof typeof scenePropertyOptions].findIndex(
-            (item) => item.value === value.value,
-          )
+          const tempValue = { ...scenePropertyOptions, ...this.data._deviceConditionPropertyList }[
+            value.propertyKey as keyof typeof scenePropertyOptions
+          ].findIndex((item) => item.value === value.value || _.isEqual(item.value, value.value))
           this.setData({
             value: tempValue < 0 ? 0 : tempValue,
-            pickerColumns: scenePropertyOptions[value.propertyKey as keyof typeof scenePropertyOptions].map(
-              (item) => item.title,
-            ),
+            pickerColumns: { ...scenePropertyOptions, ...this.data._deviceConditionPropertyList }[
+              value.propertyKey as keyof typeof scenePropertyOptions
+            ].map((item: { title: string }) => item.title),
           })
         }
       }
@@ -49,6 +51,7 @@ Component({
   data: {
     value: 0,
     pickerColumns: [] as IAnyObject,
+    _deviceConditionPropertyList: {} as { [key: string]: { title: string; key: string; value: IAnyObject }[] },
   },
   /**
    * 组件的方法列表
@@ -64,8 +67,9 @@ Component({
       this.triggerEvent('cancel')
     },
     valueChange(e: { detail: { index: number } }) {
-      const valueInfo =
-        scenePropertyOptions[this.data.dataInfo.propertyKey as keyof typeof scenePropertyOptions][e.detail.index]
+      const valueInfo = { ...scenePropertyOptions, ...this.data._deviceConditionPropertyList }[
+        this.data.dataInfo.propertyKey as keyof typeof scenePropertyOptions
+      ][e.detail.index]
 
       this.setData({
         'dataInfo.value': valueInfo.value,

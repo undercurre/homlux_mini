@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { queryAllDevice, querySubDeviceList } from '../apis/device'
-import { PRO_TYPE, PRODUCT_ID } from '../config/index'
+import { autoSceneConditionPropertyOptions, PRO_TYPE, PRODUCT_ID } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
@@ -95,6 +95,19 @@ export const deviceStore = observable({
       })
     })
     return map
+  },
+
+  // 全屋可作为条件的设备列表
+  get allRoomCanSetSceneConditionDeviceList(): Device.DeviceItem[] {
+    const supportDeviceMap = Object.keys(autoSceneConditionPropertyOptions).reduce((result, key) => {
+      result.set(key, autoSceneConditionPropertyOptions[key])
+      return result
+    }, new Map())
+    const supportDeviceList = deviceStore.allRoomDeviceList.filter((item) => supportDeviceMap.get(item.productId))
+    supportDeviceList.forEach((item) => {
+      item.uniId = item.deviceId
+    })
+    return supportDeviceList
   },
 
   get allRoomSensorList(): Device.DeviceItem[] {

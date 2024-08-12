@@ -2,9 +2,10 @@ import { observable, runInAction } from 'mobx-miniprogram'
 import { queryAutoSceneListByHouseId, setAutoSceneEnabled } from '../apis/scene'
 import { homeStore } from './home'
 import { strUtil } from '../utils/index'
-import { PRO_TYPE } from '../config/index'
+import { autoSceneConditionPropertyOptions, PRO_TYPE, pwdType } from '../config/index'
 import { deviceStore } from './device'
 import { formLimitString } from '../utils/index'
+import { deviceTransmit } from '../apis/device'
 
 export const autosceneStore = observable({
   /**
@@ -51,6 +52,7 @@ export const autosceneStore = observable({
     }
   },
 
+  deviceConditionPropertyList: {} as { [key: string]: { title: string; key: string; value: IAnyObject }[] },
   async changeAutoSceneEnabled(data: { sceneId: string; isEnabled: '1' | '0' }) {
     const res = await setAutoSceneEnabled(data)
     if (res.success) {
@@ -78,10 +80,39 @@ export const autosceneStore = observable({
       this.allRoomAutoSceneList = []
     }
   },
+  async updateDeviceConditionPropertyList(productId: string) {
+    const propertyList = this.deviceConditionPropertyList[productId] || autoSceneConditionPropertyOptions[productId]
+    const index = propertyList.findIndex((item) => item.title === 'XX权限名XX方式开门')
+
+    if (index >= 0) {
+      propertyList.splice(index, 1)
+
+      const {
+        result: { list },
+      } = (await deviceTransmit('PWD_LIST', { deviceId: '177021372098906', pwdType: '0' })) as IAnyObject
+      const userList = list.map((item: { pwdName: string; pwdType: number; pwdId: number }) => {
+        return {
+          title: item.pwdName + pwdType[item.pwdType] + '开锁',
+          key: 'pwd',
+          value: {
+            modelName: 'doorLock',
+            cmdType: 141,
+            doorEvent: 'triggerOpenDoor',
+            usrType: item.pwdType,
+            userId: item.pwdId,
+          },
+        }
+      })
+      propertyList.push(...userList)
+    }
+    runInAction(() => {
+      this.deviceConditionPropertyList[productId] = propertyList
+    })
+  },
 })
 
 export const autosceneBinding = {
   store: autosceneStore,
-  fields: ['allRoomAutoSceneList', 'allRoomAutoSceneListComputed'],
-  actions: ['updateAllRoomAutoSceneList'],
+  fields: ['allRoomAutoSceneList', 'allRoomAutoSceneListComputed', 'deviceConditionPropertyList'],
+  actions: ['updateAllRoomAutoSceneList', 'updateDeviceConditionPropertyList'],
 }
