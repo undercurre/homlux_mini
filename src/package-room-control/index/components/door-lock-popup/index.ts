@@ -128,9 +128,10 @@ ComponentWithComputed({
       })
     },
     toPage(e: WechatMiniprogram.TouchEvent<never, never, { url: string }>) {
+      const deviceId = this.data.checkedList[0].split(':')[0]
       console.log('toPage', e.currentTarget.dataset.url)
       wx.navigateTo({
-        url: e.currentTarget.dataset.url,
+        url: `${e.currentTarget.dataset.url}?deviceId=${deviceId}`,
       })
     },
   },

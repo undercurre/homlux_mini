@@ -1,6 +1,6 @@
 .bgStyle {
   border: 4rpx solid #fff;
-  background-image: linear-gradient(180deg, #f2f5fc 10%, #ffffff 74%);
+  background-image: linear-gradient(180deg, #d1e3fd 0%, #f5f9fe 42%, #ffffff 100%);
 }
 
 .valid-period {

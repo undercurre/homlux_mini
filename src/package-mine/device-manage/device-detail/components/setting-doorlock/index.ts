@@ -14,7 +14,7 @@ ComponentWithComputed({
         const modelName = 'doorLock'
         this.setData({
           electronicLockSetVal: !!device?.mzgdPropertyDTOList[modelName]?.electronicLock,
-          intelligentSceneSetVal: !!device?.mzgdPropertyDTOList[modelName]?.intelligentScene,
+          intelligentSceneSetVal: !device?.mzgdPropertyDTOList[modelName]?.intelligentScene, // HACK 省电模式与intelligentScene相反
         })
       },
     },

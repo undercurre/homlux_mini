@@ -286,7 +286,6 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .border-solid{border-style:solid;}
 .border-b-solid{border-bottom-style:solid;}
 .border-t-solid{border-top-style:solid;}
-.text-112{font-size:112rpx;}
 .text-124rpx{font-size:124rpx;}
 .text-18rpx{font-size:18rpx;}
 .text-20rpx{font-size:20rpx;}
@@ -488,6 +487,7 @@ page,::before,::after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-
 .h-6rpx{height:6rpx;}
 .h-72,
 .h-72rpx{height:72rpx;}
+.h-760rpx{height:760rpx;}
 .h-796rpx{height:796rpx;}
 .h-8,
 .h-8rpx{height:8rpx;}
