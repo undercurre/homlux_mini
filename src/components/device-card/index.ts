@@ -117,7 +117,7 @@ ComponentWithComputed({
       return ''
     },
     controlBtnPic(data) {
-      if (data.cardInfo.proType === PRO_TYPE.gateway) {
+      if (!data.hasControl || !data.hasControl || !data.canCtrl) {
         return ''
       }
       // 窗帘，位置大于0即为开启
