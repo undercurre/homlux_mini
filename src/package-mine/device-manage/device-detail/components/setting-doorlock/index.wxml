@@ -4,10 +4,7 @@
   </view>
   <view>
     <van-cell-group inset>
-      <van-cell
-        title="电子反锁"
-        bind:click="toChangeWifi"
-      >
+      <van-cell title="电子反锁">
         <van-switch
           slot="right-icon"
           checked="{{electronicLockSetVal}}"
@@ -15,14 +12,11 @@
         />
       </van-cell>
 
-      <van-cell
-        title="省电模式"
-        bind:click="toggleActionSheet"
-      >
+      <van-cell title="省电模式">
         <van-switch
           slot="right-icon"
-          checked="{{powerSaving}}"
-          bind:change="changePowerSaving"
+          checked="{{intelligentSceneSetVal}}"
+          bind:change="changeIntelligentScene"
         />
       </van-cell>
       <van-cell
@@ -46,3 +40,8 @@
 </view>
 
 <van-toast id="van-toast" />
+
+<door-lock-resume
+  show="{{isShowResume}}"
+  deviceInfo="{{deviceInfo}}"
+></door-lock-resume>
