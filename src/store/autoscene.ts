@@ -80,16 +80,17 @@ export const autosceneStore = observable({
       this.allRoomAutoSceneList = []
     }
   },
-  async updateDeviceConditionPropertyList(productId: string) {
-    const propertyList = this.deviceConditionPropertyList[productId] || autoSceneConditionPropertyOptions[productId]
+  async updateDeviceConditionPropertyList({ productId, deviceId }: { productId: string; deviceId: string }) {
+    const propertyList: { title: string; key: string; value: IAnyObject }[] = JSON.parse(
+      JSON.stringify(autoSceneConditionPropertyOptions[productId]),
+    )
     const index = propertyList.findIndex((item) => item.title === 'XX权限名XX方式开门')
-
     if (index >= 0) {
       propertyList.splice(index, 1)
 
       const {
         result: { list },
-      } = (await deviceTransmit('PWD_LIST', { deviceId: '177021372098906', pwdType: '0' })) as IAnyObject
+      } = (await deviceTransmit('PWD_LIST', { deviceId, pwdType: '0' })) as IAnyObject
       const userList = list.map((item: { pwdName: string; pwdType: number; pwdId: number }) => {
         return {
           title: item.pwdName + pwdType[item.pwdType] + '开锁',
@@ -106,7 +107,8 @@ export const autosceneStore = observable({
       propertyList.push(...userList)
     }
     runInAction(() => {
-      this.deviceConditionPropertyList[productId] = propertyList
+      //deviceId是用来区分相同型号不同设备存在不同用户权限
+      this.deviceConditionPropertyList[productId + '|' + deviceId] = propertyList
     })
   },
 })

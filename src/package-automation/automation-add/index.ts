@@ -962,7 +962,7 @@ ComponentWithComputed({
 
       for (const item of conditionDeviceSelected) {
         console.log('item', item)
-        await autosceneStore.updateDeviceConditionPropertyList(item.productId)
+        await autosceneStore.updateDeviceConditionPropertyList({ productId: item.productId, deviceId: item.deviceId })
 
         if (item.property === undefined) {
           item.property = autoSceneConditionPropertyOptions[item.productId][0]['value']
@@ -970,7 +970,12 @@ ComponentWithComputed({
         sceneDeviceConditionsFlatten.push({
           uniId: item.deviceId,
           name: item.deviceName,
-          desc: toPropertyDesc({ proType: item.proType, property: item.property, productId: item.productId }),
+          desc: toPropertyDesc({
+            proType: item.proType,
+            property: item.property,
+            productId: item.productId,
+            deviceId: item.deviceId,
+          }),
           pic: item.pic,
           productId: item.productId,
           property: item.property,
@@ -1061,7 +1066,7 @@ ComponentWithComputed({
           editingUniId: action.uniId,
           editingPropertyInfo: {
             title: action.name,
-            propertyKey: action.productId,
+            propertyKey: action.productId + '|' + action.uniId,
             value: action.property,
           },
           showEditDeviceConditionPopup: true,

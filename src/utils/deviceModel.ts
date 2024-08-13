@@ -1,14 +1,7 @@
-import {
-  PRO_TYPE,
-  AC_MODE,
-  CAC_MODE,
-  CAC_FA_WINDSPEED,
-  WIND_SPEED_MAP,
-  FAN_SCENE_MAP,
-  autoSceneConditionPropertyOptions,
-} from '../config/index'
+import { PRO_TYPE, AC_MODE, CAC_MODE, CAC_FA_WINDSPEED, WIND_SPEED_MAP, FAN_SCENE_MAP } from '../config/index'
 import { isNullOrUnDef } from './index'
 import _ from 'lodash'
+import { autosceneStore } from '../store/index'
 /**
  * Deserted 此方法已不必使用，暂时保留代码
  *  子设备和wifi设备属性不一致,以子设备属性为标准转换
@@ -110,10 +103,12 @@ export function toPropertyDesc({
   proType,
   property,
   productId,
+  deviceId,
 }: {
   proType: string
   property: IAnyObject
   productId?: string
+  deviceId?: string
 }) {
   if (isNullOrUnDef(property)) {
     console.warn('转换属性描述失败，属性集为空')
@@ -247,7 +242,7 @@ export function toPropertyDesc({
   }
   if (proType === PRO_TYPE.doorLock) {
     if (isNullOrUnDef(productId)) return []
-    autoSceneConditionPropertyOptions[productId].forEach((item) => {
+    autosceneStore.deviceConditionPropertyList[productId + '|' + deviceId].forEach((item) => {
       if (_.isEqual(item.value, property)) {
         descList.push(item.title)
       }
