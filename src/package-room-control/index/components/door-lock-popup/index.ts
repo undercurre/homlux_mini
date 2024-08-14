@@ -72,6 +72,12 @@ ComponentWithComputed({
     batteryView(data) {
       return `${data.deviceInfo?.property?.batteryPower ?? 0}%`
     },
+    batteryIcon(data) {
+      return data.deviceInfo?.property?.batteryPower <= 1 ? 'battery2.png' : 'battery.png'
+    },
+    batteryTextColor(data) {
+      return data.deviceInfo?.property?.batteryPower <= 1 ? 'text-hex-ff3849' : 'text-hex-666'
+    },
     logListView(data) {
       return data.logList.map((log) => {
         const { createTime } = log
@@ -109,7 +115,8 @@ ComponentWithComputed({
         messageId: '8537',
       })) as IAnyObject
       this.setData({
-        logList: [...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list],
+        // logList: [...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list],
+        logList: res.result.list,
       })
     },
     handleClose() {
