@@ -12,6 +12,7 @@ ComponentWithComputed({
    */
   data: {
     logList: [] as IAnyObject[], // 日志列表
+    deviceId: '',
   },
 
   computed: {
@@ -21,15 +22,14 @@ ComponentWithComputed({
       data.logList.forEach((log, index) => {
         const { createTime } = log
         const [date, time] = createTime.split(' ')
-        const key = String(data)
-        if (!Object.prototype.hasOwnProperty.call(result, key)) {
-          result[key] = {
+        if (!Object.prototype.hasOwnProperty.call(result, date)) {
+          result[date] = {
             dateStr: dayjs(date).format('YYYY年M月D日'),
             weekday: WEEKDAY_ARRAY[Number(dayjs(date).format('d'))],
             list: [],
           }
         }
-        result[key].list.push({
+        result[date].list.push({
           index,
           content: log.content,
           date,
@@ -45,8 +45,12 @@ ComponentWithComputed({
     /**
      * 生命周期函数--监听页面加载
      */
-    onLoad() {},
-
+    onLoad({ deviceId }: { deviceId: string }) {
+      console.log('onLoad', deviceId)
+      this.setData({
+        deviceId,
+      })
+    },
     onShow() {
       this.updateLogs()
     },
@@ -57,17 +61,14 @@ ComponentWithComputed({
       // const startTime = dayjs().format('YYYY-MM-DD 00:00:00')
       // const endTime = dayjs().format('YYYY-MM-DD 23:59:59')
       const res = (await deviceTransmit('GET_DOOR_LOCK_DYNAMIC', {
-        deviceId: '177021372098906',
+        deviceId: this.data.deviceId,
         startTime,
         endTime,
         pageNo: 1,
-        pageSize: 3,
-        homeId: '67213056',
-        userId: '63868780',
-        messageId: '8537',
+        pageSize: 100,
       })) as IAnyObject
       this.setData({
-        logList: [...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list],
+        logList: res.result.list,
       })
     },
   },

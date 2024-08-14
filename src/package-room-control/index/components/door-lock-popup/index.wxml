@@ -95,7 +95,6 @@
         </view>
 
         <block wx:if="{{logListView.length}}">
-          <view class="log-step"></view>
           <scroll-view
             type="list"
             scroll-y
@@ -108,11 +107,13 @@
               wx:for="{{logListView}}"
               wx:key="index"
             >
-              <view class="flex flex-col">
-                <text class="text-24 text-hex-a2a2a2">{{item.time}}</text>
-              </view>
-              <text class="text-24 text-hex-000 ml-90rpx">{{item.content}}</text>
+              <text class="block w-92rpx text-24 text-hex-a2a2a2">{{item.time}}</text>
               <view class="circle"></view>
+              <view
+                wx:if="{{index !== logListView.length-1}}"
+                class="log-step"
+              ></view>
+              <text class="text-24 text-hex-000 ml-90rpx flex-1">{{item.content}}</text>
             </view>
           </scroll-view>
         </block>

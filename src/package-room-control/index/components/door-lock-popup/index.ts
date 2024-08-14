@@ -100,19 +100,14 @@ ComponentWithComputed({
       if (proType !== PRO_TYPE.doorLock) {
         return
       }
-      const startTime = '2022-05-26 00:00:00'
-      const endTime = '2024-09-25 23:59:59'
-      // const startTime = dayjs().format('YYYY-MM-DD 00:00:00')
-      // const endTime = dayjs().format('YYYY-MM-DD 23:59:59')
+      const startTime = dayjs().format('YYYY-MM-DD 00:00:00')
+      const endTime = dayjs().format('YYYY-MM-DD 23:59:59')
       const res = (await deviceTransmit('GET_DOOR_LOCK_DYNAMIC', {
         deviceId,
         startTime,
         endTime,
         pageNo: 1,
-        pageSize: 3,
-        homeId: '67213056',
-        userId: '63868780',
-        messageId: '8537',
+        pageSize: 100,
       })) as IAnyObject
       this.setData({
         // logList: [...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list],
