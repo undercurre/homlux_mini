@@ -1,9 +1,17 @@
 .tabs-wrapper {
   position: relative;
   height: 88rpx;
-  padding-top: 8rpx;
   width: 686rpx;
+  padding-top: 8rpx;
+  margin-left: 32rpx;
   border-radius: 24rpx;
   background-color: #ffffff;
   box-sizing: border-box;
+}
+
+.swiper-list {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
