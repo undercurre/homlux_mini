@@ -309,14 +309,23 @@ ComponentWithComputed({
       if (this.data._isDiscoverying) {
         console.log('lmn>>>已在搜索设备中...')
       } else {
-        this.data._isDiscoverying = true
-
+        this.setData({
+          _isDiscoverying: true
+        })
         // 开始搜寻附近的蓝牙外围设备
         wx.startBluetoothDevicesDiscovery({
           allowDuplicatesKey: true,
           powerLevel: 'high',
           interval: SEEK_INTERVAL,
-          fail: (err) => console.log('lmn>>>开始搜索设备失败', JSON.stringify(err)),
+          fail: (err) => {
+            console.log('lmn>>>开始搜索设备失败', JSON.stringify(err))
+            this.setData({
+              _isDiscoverying: false
+            })
+            setTimeout(() => {
+              this.toSeek()
+            }, 1000)
+          },
           success: () => console.log('lmn>>>开始搜索设备成功'),
         })
       }
@@ -382,6 +391,11 @@ ComponentWithComputed({
       const suffixArr = {} as Record<string, number[]>
       const deviceInfo = wx.getDeviceInfo()
       const isIOS = deviceInfo.platform === 'ios'
+      let addRSSI = 0
+      if (deviceInfo.brand.toLowerCase() === 'honor') {
+        addRSSI = 5
+      }
+      console.log(`lmn>>>品牌:${deviceInfo.brand.toLowerCase()}=>阈值加${addRSSI}`)
       for (let j = 0; j < recoveredList.length; j++) {
         const item = recoveredList[j]
         const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
@@ -408,6 +422,7 @@ ComponentWithComputed({
             }
           }
         }
+        cusRSSI += addRSSI
         let isExist = false
         if (curFoundList.length > 0) {
           isExist = curFoundList.findIndex(oldItem => oldItem.addr === item?.addr) >= 0
