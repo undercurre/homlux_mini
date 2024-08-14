@@ -1,0 +1,162 @@
+<image
+  class="bg-img"
+  src="/package-remoter/assets/newUI/bg.png"
+></image>
+<view class="container-pg">
+  <nav-bar
+    background="#E6EBFD"
+    leftArrow="{{true}}"
+    bind:leftTap="goBack"
+  >
+    <view class="title-block flex-center">
+      <view
+        class="dot-block"
+        style="background-color: {{connectedColor}};"
+      ></view>
+      <text class="text-36rpx font-medium">{{curRemoter.deviceName || '换气扇'}}</text>
+    </view>
+  </nav-bar>
+
+  <view class="connect-block flex-center" style="opacity: {{isNeedConnectBLE ? 1 : 0}};">
+    <text class="text-28rpx font-normal">{{connectedText}}</text>
+  </view>
+
+  <image class="fan-img" src="/package-remoter/assets/newUI/ventFan.png"></image>
+
+  <text class="gear-text text-26rpx font-normal">换气</text>
+  <view class="gear-block">
+    <mx-slider
+      class="gear-slider"
+      min="{{gearSlicerConfig.min}}"
+      max="{{gearSlicerConfig.max}}"
+      step="{{gearSlicerConfig.step}}"
+      value="{{gearSlicerConfig.value}}"
+      disabled="{{gearSlicerConfig.disable}}"
+      bar-height="8"
+      active-color="#488FFF"
+      inactive-color="#F3F5FE"
+      useButtonSlot="true"
+      bind:change="onSliderChange">
+      <image slot="button" src="/package-remoter/assets/newUI/sliderBtn.png" class="slider-btn"/>
+    </mx-slider>
+  </view>
+
+  <view class="ind-block">
+    <view style="width: 64rpx; height: 64rpx; display: flex; justify-content: center;" wx:for="{{indArr}}" wx:key="key">
+      <text class="text-24rpx font-normal"
+        style="color: #8A8A8F; line-height: 64rpx; margin-right: {{index === 1 ? 24 : 0}}rpx;"
+        wx:key="item">{{item}}</text>
+    </view>
+  </view>
+
+  <view class="btn-block">
+    <mx-scroll-list
+      scroll-x="true"
+      indicatorColor="#D6DCE4"
+      indicatorActiveColor="#A5A8AF"
+      indicator="{{btnList.length > 4}}"
+    >
+      <view style="width: {{btnList.length >= 4 ? btnList.length * 170 : 715}}rpx; display: flex; flex-direction: row; margin-left: 30rpx;">
+        <view
+          class="btn-item flex-center"
+          style="margin-left: {{btnList.length >= 4 ? 0 : (700 - btnList.length * 170) / btnList.length / 2}}rpx; margin-right: {{btnList.length >= 4 ? 0 : (700 - btnList.length * 170) / btnList.length / 2}}rpx;"
+          wx:for="{{btnList}}"
+          wx:key="key"
+          data-index="{{index}}"
+          bind:tap="onBtnListClick"
+        >
+          <view
+            class="btn-con flex-center"
+            hover-class="{{item.isEnable ? 'high-select' : ''}}"
+            style="background-color: {{item.isOn ? '#488FFF' : '#ffffff'}}; opacity: {{item.isEnable ? 1 : 0.4}};"
+          >
+            <image
+              style="width: 64rpx; height: 64rpx"
+              src="{{item.isOn ? item.iconOn : item.iconOff}}"
+            ></image>
+          </view>
+          <text
+            class="text-26rpx font-normal"
+            style="color: #666666"
+            >{{item.name}}</text
+          >
+        </view>
+      </view>
+    </mx-scroll-list>
+  </view>
+
+  <mx-button
+    color="#ffffff"
+    custom-style="width: 240rpx; height: 84rpx; border-radius: 42rpx; color: #333333; font-size: 28rpx; font-weight: 400;"
+    bind:click="goToDevManage"
+    >设备管理</mx-button
+  >
+
+  <view style="width: 750rpx; height: 200rpx"></view>
+
+  <mx-tabbar
+    class="bm-block"
+    border-radius
+    box-shadow
+  >
+    <view class="inner-block">
+      <view
+        class="flex-center"
+        style="flex-direction: column"
+        wx:for="{{bottomList}}"
+        wx:key="key"
+        data-index="{{index}}"
+        bind:tap="onBottomClick"
+      >
+        <view
+          class="bottom-btn flex-center"
+          hover-class="{{item.isEnable ? 'high-select' : ''}}"
+          style="background-color: {{item.isOn ? '#488FFF' : '#F1F5FA'}}; opacity: {{item.isEnable ? 1 : 0.4}};"
+        >
+          <image
+            style="width: 64rpx; height: 64rpx"
+            src="{{item.isOn ? item.iconOn : item.iconOff}}"
+          ></image>
+        </view>
+        <text
+          class="text-24rpx font-normal"
+          style="color: #232323"
+          >{{item.name}}</text
+        >
+      </view>
+    </view>
+  </mx-tabbar>
+
+  <mx-popup round show="{{isShowTimePicker}}" position="bottom" bind:close="closePopup">
+    <view class="pup-block" style="height: 700rpx;">
+      <text class="text-36rpx font-semibold" style="margin-top: 42rpx; margin-bottom: 42rpx;">定时关</text>
+      <view class="popup-close" bind:tap="closePopup">
+        <image style="height: 48rpx; width: 48rpx;" src="/package-remoter/assets/newUI/close.png"></image>
+      </view>
+
+      <text class="unit-h text-28rpx font-normal" style="left: 430rpx; opacity: {{pickerIndexTemp[0] == 0 ? 0 : 1}};">小时</text>
+      <view class="pick-block flex-center">
+        <picker-view indicator-style="height: 56rpx;"
+          style="width: 500rpx; height: 360rpx;"
+          value="{{ curTimePickerIndex }}"
+          bindchange="onTimePickChange"
+          bindpickend='onTimePickEnd'>
+          <picker-view-column>
+            <view wx:for="{{ minuteArr }}" 
+              wx:key="key"
+              class="picker-cloumn-text"
+              style="font-size: {{item == 0 ? '32rpx' : '40rpx'}}; line-height: 64rpx;">{{item == 0 ? '取消' : item}}</view>
+          </picker-view-column>
+        </picker-view>
+      </view>
+
+      <mx-button 
+        custom-style="width: 686rpx; margin-top: 40rpx"
+        color="linear-gradient(90deg, #468CFB 0%, #6BA3FC 100%)"
+        type="default" bind:click="onPickTimeConfirm">确定</mx-button>
+    </view>
+  </mx-popup>
+
+</view>
+
+<van-toast id="van-toast" />
