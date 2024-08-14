@@ -12,6 +12,10 @@ export const deviceImgMap = {
     onlineIcon: 'blue_bc',
     offlineIcon: 'blue_bc',
   },
+  '09': {
+    title: '智能门锁',
+    deviceType: '09',
+  },
   '0F': {
     title: '体脂秤',
     deviceType: '0F',

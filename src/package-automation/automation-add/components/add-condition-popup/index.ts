@@ -36,9 +36,9 @@ Component({
       {
         id: 2,
         icon: '/package-automation/assets/imgs/automation/sensor.png',
-        title: '传感器触发时',
+        title: '设备触发时',
         desc: '如“有人经过时，自动打开过道灯光”',
-        key: 'sensor',
+        key: 'device',
       },
     ],
     conditionListEditing: [
@@ -52,9 +52,9 @@ Component({
       {
         id: 1,
         icon: '/package-automation/assets/imgs/automation/sensor.png',
-        title: '传感器触发时',
+        title: '设备触发时',
         desc: '如“有人经过时，自动打开过道灯光”',
-        key: 'sensor',
+        key: 'device',
       },
     ],
   },

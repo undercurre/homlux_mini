@@ -48,6 +48,7 @@ ComponentWithComputed({
     _holdBleScan: false, // onHide时保持蓝牙扫描的标志
     debugStr: '[rx]',
     isDebugMode: false,
+    curShareAddr: ''
   },
 
   computed: {},
@@ -87,9 +88,7 @@ ComponentWithComputed({
 
     async onShow() {
       this.data._holdBleScan = false
-
       await initBleCapacity()
-
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
         // console.log('onBluetoothDeviceFound', res)
@@ -97,16 +96,65 @@ ComponentWithComputed({
       })
 
       await delay(0)
-
       // 如果未在发现模式，则搜索设备
-      console.log('lmn>>>onShow')
       if (!this.data._isDiscoverying) {
         this.toSeek()
       }
-      // 获取已连接的设备
-      // this.getConnectedDevices()
-    },
 
+      setTimeout(() => {
+        this.saveShareDev()
+      }, 500)
+    },
+    async saveShareDev() {
+      const enterOption = wx.getEnterOptionsSync()
+      if (enterOption.scene != 1007 && enterOption.scene != 1008) return
+      const enterQuery = enterOption.query
+      console.log('lmn>>>enterQuery=', JSON.stringify(enterQuery))
+      const addr = enterQuery.addr
+      if (this.data.curShareAddr === addr) return
+      this.setData({
+        curShareAddr: addr
+      })
+      const list = remoterStore.remoterList
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].addr === addr) {
+          Toast('该遥控已存在')
+          return
+        }
+      }
+      const isV2 = enterQuery.functionDes != undefined && enterQuery.functionDes.length > 1
+      let config = null
+      if (isV2) {
+        config = deviceConfigV2[enterQuery.deviceType] || null
+      } else {
+        config = deviceConfig[enterQuery.deviceType][enterQuery.deviceModel] || null
+      }
+      if (!config) return
+      const shareDev = {
+        deviceId: `${new Date().valueOf()}`,
+        addr: addr,
+        version: parseInt(enterQuery.version),
+        devicePic: config.devicePic,
+        actions: config.actions,
+        deviceName: enterQuery.deviceName,
+        deviceType: enterQuery.deviceType,
+        deviceModel: enterQuery.deviceModel,
+        actionStatus: false,
+        saved: false,
+        defaultAction: 0,
+        DISCOVERED: 0,
+        isV2,
+        functionDes: enterQuery.functionDes,
+      }
+      const orderNum = remoterStore.remoterList.length
+      remoterStore.addRemoter({
+        ...shareDev,
+        orderNum,
+        defaultAction: 0,
+      } as Remoter.DeviceRx)
+      await this.initDrag()
+      Toast('添加分享设备成功')
+    },
     onHide() {
       console.log('onHide on Index')
 

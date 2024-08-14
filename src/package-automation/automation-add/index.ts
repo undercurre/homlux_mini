@@ -4,7 +4,7 @@ import { addScene, deleteScene, findDevice, updateScene } from '../../apis/index
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { autosceneStore, deviceStore, homeStore, roomStore, sceneStore } from '../../store/index'
-import { getModelName, PRO_TYPE, sceneImgDir, SCREEN_PID } from '../../config/index'
+import { autoSceneConditionPropertyOptions, getModelName, PRO_TYPE, sceneImgDir, SCREEN_PID } from '../../config/index'
 import {
   checkInputNameIllegal,
   emitter,
@@ -49,21 +49,22 @@ ComponentWithComputed({
     showEditConditionPopup: false, //展示添加条件popup
     showEditActionPopup: false, //展示添加执行动作popup
     showTimeConditionPopup: false, //展示时间条件popup
+    showEditDeviceConditionPopup: false, // 展示编辑场景条件属性popup
     showDelayPopup: false, //展示延时popup
     showEffectiveTimePopup: false, //设置场景生效时间段
     showEditPopup: '', // 要展示的编辑弹窗类型
     sceneEditTitle: '',
     sceneEditInfo: {} as IAnyObject,
 
-    //设备列表 //除网关智慧屏和传感器
+    //设备列表 //除网关智慧屏和传感器和门锁
     deviceList: [] as Device.DeviceItem[],
-    //传感器列表
-    sensorList: [] as Device.DeviceItem[],
+    //可作为条件的设备列表
+    conditionDeviceList: [] as Device.DeviceItem[],
     /** 已选中设备或场景 TODO */
     sceneDevicelinkSelectList: [] as string[],
-    /** 已选中的传感器 */
-    sensorlinkSelectList: [] as string[],
-    selectCardType: 'device', //设备卡片：'device'  场景卡片： 'scene'  传感器卡片：'sensor'
+    /** 已选中的可作为条件的设备 */
+    conditionDevicelinkSelectList: [] as string[],
+    selectCardType: 'device', //设备卡片：'device'  场景卡片： 'scene'  可作为条件的设备卡片：'conditionDevice'
     showSelectCardPopup: false,
     /** 将当前场景里多路的action拍扁 */
     sceneDeviceActionsFlatten: [] as AutoScene.AutoSceneFlattenAction[],
@@ -88,6 +89,9 @@ ComponentWithComputed({
     editingSensorType: 'midea.ir.201',
     editingSensorAbility: ['有人移动'],
     editingSensorProperty: { occupancy: 1, modelName: 'irDetector' } as IAnyObject,
+    // 正在控制的场景条件
+    editingPropertyInfo: {} as IAnyObject,
+
     editingUniId: '',
     editingDelayId: '',
     scrollInfo: {
@@ -101,14 +105,14 @@ ComponentWithComputed({
     list(data) {
       if (data.selectCardType === 'scene') {
         return JSON.parse(JSON.stringify(sceneStore.allRoomSceneList))
-      } else if (data.selectCardType === 'sensor') {
-        return data.sensorList
+      } else if (data.selectCardType === 'conditionDevice') {
+        return data.conditionDeviceList
       } else {
         return data.deviceList.filter((item) => !data.sceneDevicelinkSelectList.includes(item.uniId))
       }
     },
     cardType(data) {
-      return data.selectCardType === 'device' || data.selectCardType === 'sensor' ? 'device' : 'scene'
+      return data.selectCardType === 'device' || data.selectCardType === 'conditionDevice' ? 'device' : 'scene'
     },
 
     isAllday(data) {
@@ -146,8 +150,8 @@ ComponentWithComputed({
       }
     },
     linkSelectList(data) {
-      if (data.selectCardType === 'sensor') {
-        return data.sensorlinkSelectList
+      if (data.selectCardType === 'conditionDevice') {
+        return data.conditionDevicelinkSelectList
       } else {
         return data.sceneDevicelinkSelectList
       }
@@ -162,13 +166,14 @@ ComponentWithComputed({
   },
   lifetimes: {
     async ready() {
-      await deviceStore.updateAllRoomDeviceList()
+      deviceStore.updateAllRoomDeviceList()
 
       this.setData({
         deviceList: deviceStore.allRoomDeviceFlattenList.filter(
-          (item) => item.proType !== PRO_TYPE.gateway && item.proType !== PRO_TYPE.sensor,
+          (item) =>
+            item.proType !== PRO_TYPE.gateway && item.proType !== PRO_TYPE.sensor && item.proType !== PRO_TYPE.doorLock,
         ),
-        sensorList: JSON.parse(JSON.stringify(deviceStore.allRoomSensorList)),
+        conditionDeviceList: JSON.parse(JSON.stringify(deviceStore.allRoomCanSetSceneConditionDeviceList)),
       })
       const { roomid, sceneInfo } = getCurrentPageParams()
 
@@ -199,7 +204,7 @@ ComponentWithComputed({
       const currentSceneInfo = JSON.parse(sceneInfo) as AutoScene.AutoSceneItem | Scene.SceneItem
       if (currentSceneInfo.sceneCategory === '1') {
         console.log('自动场景')
-        const sensorlinkSelectList = [] as string[]
+        const conditionDevicelinkSelectList = [] as string[]
         const autoSceneInfo = currentSceneInfo as AutoScene.AutoSceneItem
         this.data._autosceneInfo = autoSceneInfo
         this.setData({
@@ -215,14 +220,13 @@ ComponentWithComputed({
         })
         //处理执行条件
         if (autoSceneInfo.deviceConditions.length) {
-          //暂时设备只有传感器条件
           autoSceneInfo.deviceConditions.forEach((action) => {
-            sensorlinkSelectList.push(action.deviceId)
+            conditionDevicelinkSelectList.push(action.deviceId)
             try {
-              const sensor = this.data.sensorList.find((item) => item.uniId === action.deviceId)
-              sensor!.property = action.controlEvent[0]
+              const device = this.data.conditionDeviceList.find((item) => item.uniId === action.deviceId)
+              device!.property = action.controlEvent[0]
               this.setData({
-                sensorList: [...this.data.sensorList],
+                conditionDeviceList: [...this.data.conditionDeviceList],
               })
             } catch (error) {
               console.error(error)
@@ -277,7 +281,7 @@ ComponentWithComputed({
             if (device.proType === PRO_TYPE.switch) {
               //是开关面板
               const power = action.controlAction[0].power
-              const desc = toPropertyDesc(device.proType, action.controlAction[0])
+              const desc = toPropertyDesc({ proType: device.proType, property: action.controlAction[0] })
               tempSceneDeviceActionsFlatten.push({
                 uniId: device.uniId,
                 name: `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`,
@@ -302,7 +306,7 @@ ComponentWithComputed({
                 property.colorTempRange = device.mzgdPropertyDTOList[modelName].colorTempRange
               }
 
-              const desc = toPropertyDesc(device.proType, property)
+              const desc = toPropertyDesc({ proType: device.proType, property: property })
               tempSceneDeviceActionsFlatten.push({
                 uniId: device.uniId,
                 name: device.deviceName,
@@ -326,7 +330,7 @@ ComponentWithComputed({
 
         this.setData(
           {
-            sensorlinkSelectList,
+            conditionDevicelinkSelectList,
             sceneDeviceActionsFlatten: tempSceneDeviceActionsFlatten,
           },
           () => {
@@ -368,7 +372,7 @@ ComponentWithComputed({
               device = this.data.deviceList.find((item) => item.uniId === deviceUniId)
               if (!device) return
               const power = action.controlAction[switchIndex].power
-              const desc = toPropertyDesc(device.proType, action.controlAction[switchIndex])
+              const desc = toPropertyDesc({ proType: device.proType, property: action.controlAction[switchIndex] })
               tempSceneDevicelinkSelectList.push(device.uniId)
               tempSceneDeviceActionsFlatten.push({
                 uniId: device.uniId,
@@ -396,7 +400,7 @@ ComponentWithComputed({
               property.colorTempRange = device.mzgdPropertyDTOList[modelName].colorTempRange
             }
 
-            const desc = toPropertyDesc(device.proType, property)
+            const desc = toPropertyDesc({ proType: device.proType, property })
 
             tempSceneDevicelinkSelectList.push(device.uniId)
             tempSceneDeviceActionsFlatten.push({
@@ -519,10 +523,10 @@ ComponentWithComputed({
         this.setData({
           opearationType: 'auto',
         })
-        if (deviceStore.allRoomSensorList.length) {
+        if (deviceStore.allRoomCanSetSceneConditionDeviceList.length) {
           this.addSensorPopup()
         } else {
-          Toast({ message: '尚未添加传感器', zIndex: 9999 })
+          Toast({ message: '尚未添加传感器和门锁', zIndex: 9999 })
           return
         }
       }
@@ -566,7 +570,7 @@ ComponentWithComputed({
      */
     addSensorPopup() {
       this.setData({
-        selectCardType: 'sensor',
+        selectCardType: 'conditionDevice',
       })
       this.handleSelectCardShow()
     },
@@ -736,7 +740,7 @@ ComponentWithComputed({
     },
     handleSelectCardReturn() {
       this.handleSelectCardClose()
-      if (this.data.selectCardType === 'sensor') {
+      if (this.data.selectCardType === 'conditionDevice') {
         this.handleConditionShow()
       } else {
         this.handleActionShow()
@@ -747,11 +751,11 @@ ComponentWithComputed({
       this.setData({
         showSelectCardPopup: false,
       })
-      if (this.data.selectCardType === 'sensor') {
+      if (this.data.selectCardType === 'conditionDevice') {
         this.setData(
           {
             _isEditCondition: true,
-            sensorlinkSelectList: e.detail.selectList,
+            conditionDevicelinkSelectList: e.detail.selectList,
           },
           () => {
             this.updateSceneDeviceConditionsFlatten()
@@ -811,7 +815,7 @@ ComponentWithComputed({
             name = `${device.switchInfoDTOList[0].switchName} | ${device.deviceName}`
             modelName = device.uniId.split(':')[1]
             pic = device.switchInfoDTOList[0].pic
-            desc = toPropertyDesc(device.proType, device.property!)
+            desc = toPropertyDesc({ proType: device.proType, property: device.property! })
           } else {
             name = device.deviceName
             modelName = getModelName(device.proType, device.productId)
@@ -824,9 +828,9 @@ ComponentWithComputed({
               if (FAN_PID.includes(device.productId)) {
                 device.sceneProperty.fan_power = 'off'
               }
-              desc = toPropertyDesc(device.proType, device.sceneProperty)
+              desc = toPropertyDesc({ proType: device.proType, property: device.sceneProperty })
             } else {
-              desc = toPropertyDesc(device.proType, device.property!)
+              desc = toPropertyDesc({ proType: device.proType, property: device.property! })
             }
           }
 
@@ -913,7 +917,7 @@ ComponentWithComputed({
       )
     },
     /* 条件方法 start */
-    updateSceneDeviceConditionsFlatten() {
+    async updateSceneDeviceConditionsFlatten() {
       const sceneDeviceConditionsFlatten = [] as AutoScene.AutoSceneFlattenCondition[]
       console.log('this.data.roomId', this.data.roomId, this.data.opearationType)
 
@@ -951,22 +955,34 @@ ComponentWithComputed({
           type: 6,
         })
       }
-      //已选中的传感器
-      const sensorSelected = this.data.sensorlinkSelectList
-        .map((id) => this.data.sensorList.find((item) => item.deviceId === id))
+      //已选中的条件设备
+      const conditionDeviceSelected = this.data.conditionDevicelinkSelectList
+        .map((id) => this.data.conditionDeviceList.find((item) => item.deviceId === id))
         .filter((obj) => obj !== undefined) as Device.DeviceItem[]
-      sensorSelected.forEach((item) => {
+
+      for (const item of conditionDeviceSelected) {
+        console.log('item', item)
+        await autosceneStore.updateDeviceConditionPropertyList({ productId: item.productId, deviceId: item.deviceId })
+
+        if (item.property === undefined) {
+          item.property = autoSceneConditionPropertyOptions[item.productId][0]['value']
+        }
         sceneDeviceConditionsFlatten.push({
           uniId: item.deviceId,
           name: item.deviceName,
-          desc: toPropertyDesc(item.proType, item.property!),
+          desc: toPropertyDesc({
+            proType: item.proType,
+            property: item.property,
+            productId: item.productId,
+            deviceId: item.deviceId,
+          }),
           pic: item.pic,
           productId: item.productId,
-          property: item.property!,
+          property: item.property,
           proType: item.proType,
           type: item.deviceType as 1 | 2 | 3 | 4 | 5 | 6,
         })
-      })
+      }
 
       this.setData({
         sceneDeviceConditionsFlatten,
@@ -979,11 +995,11 @@ ComponentWithComputed({
       })
       const uniId = e.currentTarget.dataset.info.uniId
       console.log('删除条件', uniId)
-      if (this.data.sensorlinkSelectList.includes(uniId)) {
-        const index = this.data.sensorlinkSelectList.findIndex((id) => id === uniId)
-        this.data.sensorlinkSelectList.splice(index, 1)
+      if (this.data.conditionDevicelinkSelectList.includes(uniId)) {
+        const index = this.data.conditionDevicelinkSelectList.findIndex((id) => id === uniId)
+        this.data.conditionDevicelinkSelectList.splice(index, 1)
         this.setData({
-          sensorlinkSelectList: [...this.data.sensorlinkSelectList],
+          conditionDevicelinkSelectList: [...this.data.conditionDevicelinkSelectList],
         })
       }
       if (uniId === 'time') {
@@ -1002,33 +1018,28 @@ ComponentWithComputed({
     /* 条件方法 end */
 
     /* 传感器条件编辑 start */
-    handleEditSensorClose() {
+    onDeviceConditionPropertyPopupClose() {
       this.setData({
-        showEditSensorPopup: false,
+        showEditDeviceConditionPopup: false,
       })
     },
-    handleEditSensorConfirm(e: { detail: IAnyObject }) {
-      const listEditIndex = this.data.sensorList.findIndex((item) => item.uniId === this.data.editingUniId)
-      const flattenEditIndex = this.data.sceneDeviceConditionsFlatten.findIndex(
-        (item) => item.uniId === this.data.editingUniId,
+    onDeviceConditionPropertyPopupConfirm(e: { detail: IAnyObject }) {
+      console.log(e)
+
+      const listEditIndex = this.data.conditionDeviceList.findIndex((item) => item.uniId === this.data.editingUniId)
+
+      const listItem = this.data.conditionDeviceList[listEditIndex]
+      listItem.property = e.detail.value
+      this.setData(
+        {
+          _isEditCondition: true,
+          showEditDeviceConditionPopup: false,
+          conditionDeviceList: [...this.data.conditionDeviceList],
+        },
+        () => {
+          this.updateSceneDeviceConditionsFlatten()
+        },
       )
-      const listItem = this.data.sensorList[listEditIndex]
-
-      const conditionItem = this.data.sceneDeviceConditionsFlatten[flattenEditIndex]
-
-      conditionItem.property = {
-        ...e.detail,
-      }
-      conditionItem.desc = toPropertyDesc(conditionItem.proType!, conditionItem.property)
-      listItem.property = {
-        ...e.detail,
-      }
-      this.setData({
-        _isEditCondition: true,
-        showEditSensorPopup: false,
-        sceneDeviceConditionsFlatten: [...this.data.sceneDeviceConditionsFlatten],
-        sensorList: [...this.data.sensorList],
-      })
     },
     /* 传感器条件编辑 end */
 
@@ -1053,7 +1064,12 @@ ComponentWithComputed({
           editingSensorAbility: action.desc,
           editingSensorProperty: action.property,
           editingUniId: action.uniId,
-          showEditSensorPopup: true,
+          editingPropertyInfo: {
+            title: action.name,
+            propertyKey: action.productId + '|' + action.uniId,
+            value: action.property,
+          },
+          showEditDeviceConditionPopup: true,
         })
       }
     },
@@ -1118,7 +1134,7 @@ ComponentWithComputed({
       )
       const actionItem = this.data.sceneDeviceActionsFlatten[flattenEditIndex]
       actionItem.sceneProperty = e.detail
-      actionItem.desc = toPropertyDesc(actionItem.proType as string, actionItem.sceneProperty)
+      actionItem.desc = toPropertyDesc({ proType: actionItem.proType as string, property: actionItem.sceneProperty })
       this.setData(
         {
           showEditPopup: '',
@@ -1174,7 +1190,7 @@ ComponentWithComputed({
             ...e.detail,
           }
 
-      actionItem.desc = toPropertyDesc(actionItem.proType as string, actionItem.value)
+      actionItem.desc = toPropertyDesc({ proType: actionItem.proType as string, property: actionItem.value })
 
       this.setData(
         {

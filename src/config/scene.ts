@@ -135,3 +135,153 @@ export const scenePropertyOptions = {
     value: parseInt(item),
   })),
 }
+
+/**
+ * 配置自动化场景条件属性选项。
+ * @type {Object} - 一个对象，键代表该型号支持作为自动化设备条件，值用来配置条件属性选项。
+ * @property {string[]} keys - 对象的所有键。
+ * @property {{ title: string; key: string; value: IAnyObject }[]} values - 对应于每个键的配置项数组，key暂为保留字段
+ */
+export const autoSceneConditionPropertyOptions: { [key: string]: { title: string; key: string; value: IAnyObject }[] } =
+  {
+    // 门锁
+    '798777C7': [
+      { title: '门铃响', key: 'mode', value: { modelName: 'doorLock', cmdType: 132, doorBell: 1 } },
+      { title: '门锁被撬', key: 'mode', value: { modelName: 'doorLock', cmdType: 134, antiPryingAlarm: 1 } },
+      {
+        title: '门内按键开门',
+        key: 'mode',
+        value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor', usrType: 255, userId: 0 },
+      },
+      { title: '门外开门', key: 'mode', value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor' } },
+      { title: '门内反锁', key: 'mode', value: { modelName: 'doorLock', cmdType: 153, elecLock: 1 } },
+      { title: '连续5次开锁失败锁定', key: 'mode', value: { modelName: 'doorLock', cmdType: 133, lockKey: 1 } },
+      { title: '门锁电量低', key: 'mode', value: { modelName: 'doorLock', cmdType: 135, lowPower: 1 } },
+      { title: '开门失败', key: 'mode', value: { modelName: 'doorLock', cmdType: 136, openDoorFail: 1 } },
+      { title: '关门失败', key: 'mode', value: { modelName: 'doorLock', cmdType: 137, closeDoorFail: 1 } },
+      {
+        title: 'XX权限名XX方式开门',
+        key: 'mode',
+        value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor', usrType: 'xx', userId: 'yy' }, //xx-代表门锁开门类型，yy-代表用户编号
+      },
+    ],
+    '798777C8': [
+      { title: '门铃响', key: 'mode', value: { modelName: 'doorLock', cmdType: 132, doorBell: 1 } },
+      { title: '门锁被撬', key: 'mode', value: { modelName: 'doorLock', cmdType: 134, antiPryingAlarm: 1 } },
+      {
+        title: '门内按键开门',
+        key: 'mode',
+        value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor', usrType: 255, userId: 0 },
+      },
+      { title: '门外开门', key: 'mode', value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor' } },
+      { title: '门内反锁', key: 'mode', value: { modelName: 'doorLock', cmdType: 153, elecLock: 1 } },
+      { title: '连续5次开锁失败锁定', key: 'mode', value: { modelName: 'doorLock', cmdType: 133, lockKey: 1 } },
+      { title: '门锁电量低', key: 'mode', value: { modelName: 'doorLock', cmdType: 135, lowPower: 1 } },
+      { title: '开门失败', key: 'mode', value: { modelName: 'doorLock', cmdType: 136, openDoorFail: 1 } },
+      { title: '关门失败', key: 'mode', value: { modelName: 'doorLock', cmdType: 137, closeDoorFail: 1 } },
+      {
+        title: 'XX权限名XX方式开门',
+        key: 'mode',
+        value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor', usrType: 'xx', userId: 'yy' }, //xx-代表门锁开门类型，yy-代表用户编号
+      },
+    ],
+    '798777C9': [
+      { title: '门铃响', key: 'mode', value: { modelName: 'doorLock', cmdType: 132, doorBell: 1 } },
+      { title: '门锁被撬', key: 'mode', value: { modelName: 'doorLock', cmdType: 134, antiPryingAlarm: 1 } },
+      {
+        title: '门内按键开门',
+        key: 'mode',
+        value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor', usrType: 255, userId: 0 },
+      },
+      { title: '门外开门', key: 'mode', value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor' } },
+      { title: '门内反锁', key: 'mode', value: { modelName: 'doorLock', cmdType: 153, elecLock: 1 } },
+      { title: '连续5次开锁失败锁定', key: 'mode', value: { modelName: 'doorLock', cmdType: 133, lockKey: 1 } },
+      { title: '门锁电量低', key: 'mode', value: { modelName: 'doorLock', cmdType: 135, lowPower: 1 } },
+      { title: '开门失败', key: 'mode', value: { modelName: 'doorLock', cmdType: 136, openDoorFail: 1 } },
+      { title: '关门失败', key: 'mode', value: { modelName: 'doorLock', cmdType: 137, closeDoorFail: 1 } },
+      {
+        title: 'XX权限名XX方式开门',
+        key: 'mode',
+        value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor', usrType: 'xx', userId: 'yy' }, //xx-代表门锁开门类型，yy-代表用户编号
+      },
+    ],
+    '798777CT': [
+      { title: '门铃响', key: 'mode', value: { modelName: 'doorLock', cmdType: 132, doorBell: 1 } },
+      { title: '门锁被撬', key: 'mode', value: { modelName: 'doorLock', cmdType: 134, antiPryingAlarm: 1 } },
+      {
+        title: '门内按键开门',
+        key: 'mode',
+        value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor', usrType: 255, userId: 0 },
+      },
+      { title: '门外开门', key: 'mode', value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor' } },
+      { title: '门内反锁', key: 'mode', value: { modelName: 'doorLock', cmdType: 153, elecLock: 1 } },
+      { title: '连续5次开锁失败锁定', key: 'mode', value: { modelName: 'doorLock', cmdType: 133, lockKey: 1 } },
+      { title: '门锁电量低', key: 'mode', value: { modelName: 'doorLock', cmdType: 135, lowPower: 1 } },
+      { title: '开门失败', key: 'mode', value: { modelName: 'doorLock', cmdType: 136, openDoorFail: 1 } },
+      { title: '关门失败', key: 'mode', value: { modelName: 'doorLock', cmdType: 137, closeDoorFail: 1 } },
+      {
+        title: 'XX权限名XX方式开门',
+        key: 'mode',
+        value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor', usrType: 'xx', userId: 'yy' }, //xx-代表门锁开门类型，yy-代表用户编号
+      },
+    ],
+    '798777AT': [
+      { title: '门铃响', key: 'mode', value: { modelName: 'doorLock', cmdType: 132, doorBell: 1 } },
+      { title: '门锁被撬', key: 'mode', value: { modelName: 'doorLock', cmdType: 134, antiPryingAlarm: 1 } },
+      {
+        title: '门内按键开门',
+        key: 'mode',
+        value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor', usrType: 255, userId: 0 },
+      },
+      { title: '门外开门', key: 'mode', value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor' } },
+      { title: '门内反锁', key: 'mode', value: { modelName: 'doorLock', cmdType: 153, elecLock: 1 } },
+      { title: '连续5次开锁失败锁定', key: 'mode', value: { modelName: 'doorLock', cmdType: 133, lockKey: 1 } },
+      { title: '门锁电量低', key: 'mode', value: { modelName: 'doorLock', cmdType: 135, lowPower: 1 } },
+      { title: '开门失败', key: 'mode', value: { modelName: 'doorLock', cmdType: 136, openDoorFail: 1 } },
+      { title: '关门失败', key: 'mode', value: { modelName: 'doorLock', cmdType: 137, closeDoorFail: 1 } },
+      {
+        title: 'XX权限名XX方式开门',
+        key: 'mode',
+        value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor', usrType: 'xx', userId: 'yy' }, //xx-代表门锁开门类型，yy-代表用户编号
+      },
+    ],
+    M0900012: [
+      { title: '门铃响', key: 'mode', value: { modelName: 'doorLock', cmdType: 132, doorBell: 1 } },
+      { title: '门锁被撬', key: 'mode', value: { modelName: 'doorLock', cmdType: 134, antiPryingAlarm: 1 } },
+      {
+        title: '门内按键开门',
+        key: 'mode',
+        value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor', usrType: 255, userId: 0 },
+      },
+      { title: '门外开门', key: 'mode', value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor' } },
+      { title: '门内反锁', key: 'mode', value: { modelName: 'doorLock', cmdType: 153, elecLock: 1 } },
+      { title: '连续5次开锁失败锁定', key: 'mode', value: { modelName: 'doorLock', cmdType: 133, lockKey: 1 } },
+      { title: '门锁电量低', key: 'mode', value: { modelName: 'doorLock', cmdType: 135, lowPower: 1 } },
+      { title: '开门失败', key: 'mode', value: { modelName: 'doorLock', cmdType: 136, openDoorFail: 1 } },
+      { title: '关门失败', key: 'mode', value: { modelName: 'doorLock', cmdType: 137, closeDoorFail: 1 } },
+      {
+        title: 'XX权限名XX方式开门',
+        key: 'mode',
+        value: { modelName: 'doorLock', cmdType: 141, doorEvent: 'triggerOpenDoor', usrType: 'xx', userId: 'yy' }, //xx-代表门锁开门类型，yy-代表用户编号
+      },
+    ],
+    // 传感器
+    'midea.ir.201': [
+      { title: '有人移动', key: 'power', value: { occupancy: 1, modelName: 'irDetector' } },
+      {
+        title: '超时无人移动',
+        key: 'power',
+        value: { occupancy: 0, PIRToUnoccupiedDelay: 10, modelName: 'irDetector' },
+      },
+    ],
+    'midea.magnet.001.201': [
+      { title: '打开', key: 'power', value: { doorStatus: 1, modelName: 'magnet' } },
+      { title: '关闭', key: 'power', value: { doorStatus: 0, modelName: 'magnet' } },
+      { title: '超时未关闭', key: 'power', value: { doorStatus: 1, PIRToUnoccupiedDelay: 10, modelName: 'magnet' } },
+    ],
+    'midea.freepad.001.201': [
+      { title: '单击', key: 'power', value: { buttonClicked: 1, modelName: 'freepad' } },
+      { title: '双击', key: 'power', value: { buttonClicked: 2, modelName: 'freepad' } },
+      { title: '长按', key: 'power', value: { buttonClicked: 3, modelName: 'freepad' } },
+    ],
+  }

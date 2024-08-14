@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx-miniprogram'
 import { queryAllDevice, querySubDeviceList } from '../apis/device'
-import { PRO_TYPE, PRODUCT_ID } from '../config/index'
+import { autoSceneConditionPropertyOptions, PRO_TYPE, PRODUCT_ID } from '../config/index'
 import { homeStore } from './home'
 import { roomStore } from './room'
 import { sceneStore } from './scene'
@@ -97,6 +97,19 @@ export const deviceStore = observable({
     return map
   },
 
+  // 全屋可作为条件的设备列表
+  get allRoomCanSetSceneConditionDeviceList(): Device.DeviceItem[] {
+    const supportDeviceMap = Object.keys(autoSceneConditionPropertyOptions).reduce((result, key) => {
+      result.set(key, autoSceneConditionPropertyOptions[key])
+      return result
+    }, new Map())
+    const supportDeviceList = deviceStore.allRoomDeviceList.filter((item) => supportDeviceMap.get(item.productId))
+    supportDeviceList.forEach((item) => {
+      item.uniId = item.deviceId
+    })
+    return supportDeviceList
+  },
+
   get allRoomSensorList(): Device.DeviceItem[] {
     const sensorList = deviceStore.allRoomDeviceList.filter((item) => item.proType === PRO_TYPE.sensor)
     sensorList.forEach((item) => {
@@ -129,8 +142,8 @@ export const deviceStore = observable({
       deviceStore.allRoomDeviceTimestamp = res.timestamp
 
       if (currentRoomId && res.result?.length) {
-        deviceStore.deviceList = res.result.filter((device) => device.roomId === currentRoomId)
         deviceStore.deviceTimestamp = res.timestamp
+        deviceStore.deviceList = res.result.filter((device) => device.roomId === currentRoomId)
         emitter.emit('roomDeviceSync')
       }
 
@@ -153,8 +166,8 @@ export const deviceStore = observable({
     }
 
     runInAction(() => {
-      deviceStore.deviceList = res.result
       deviceStore.deviceTimestamp = res.timestamp
+      deviceStore.deviceList = res.result
       this.updateAllRoomDeviceListLanStatus()
     })
   },

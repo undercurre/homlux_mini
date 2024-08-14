@@ -229,3 +229,10 @@ export const deviceFlatten = function (originList: Device.DeviceItem[]) {
     }
   })
 }
+
+/**
+ * 生成随机数
+ */
+export const getRandomNum = function (min: number, max: number) {
+  return Math.floor(Math.random() * (max - min)) + min
+}

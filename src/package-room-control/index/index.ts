@@ -1,9 +1,10 @@
 import { ComponentWithStore } from 'mobx-miniprogram-bindings'
-import { deviceStore, sceneStore, roomStore, homeStore } from '../../store/index'
+import { deviceStore, sceneStore, roomStore, homeStore, userStore } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { sendDevice, execScene, saveDeviceOrder, queryGroup, queryAuthGetStatus } from '../../apis/index'
 import Toast from '../../skyline-components/mz-toast/toast'
+import Dialog from '../../skyline-components/mz-dialog/dialog'
 import {
   storage,
   emitter,
@@ -775,31 +776,28 @@ ComponentWithStore({
 
         const oldListLength = this.data.deviceCardList.length
         const newListLength = _list.length
+        const diffData = {} as IAnyObject
 
         // 分批渲染
         for (let groupIndex = 0; _list.length > 0; ++groupIndex) {
           const group = _list.splice(0, LIST_PAGE)
-          const diffData = {} as IAnyObject
           for (let index = 0; index < group.length; ++index) {
             diffData[`deviceCardList[${index + groupIndex * LIST_PAGE}]`] = group[index]
           }
-          this.setData(diffData)
         }
 
         // 直接清空旧列表，再重新加载会引起闪烁，此处只清空‘旧列表比新列表多出的项’
         if (oldListLength > newListLength) {
-          const diffData = {} as IAnyObject
           for (let index = newListLength; index < oldListLength; ++index) {
             diffData[`deviceCardList[${index}]`] = { deleted: true }
           }
-          this.setData(diffData)
         }
 
         if (!this.data.deviceListInited) {
-          this.setData({
-            deviceListInited: true,
-          })
+          diffData.deviceListInited = true
         }
+
+        this.setData(diffData)
 
         Logger.setFilter('updateDeviceList')
         Logger.debug(
@@ -1007,6 +1005,30 @@ ComponentWithStore({
       // 如果在编辑状态，则选择或取消选择卡片
       if (this.data.editMode) {
         this.handleCardEditSelect(e)
+        return
+      }
+      // 不在编辑状态，如果是门锁
+      else if (e.detail.proType === PRO_TYPE.doorLock) {
+        const storageKey = `AGREE_PRIVACY_POLICY_OF_DOORLOCK_${userStore.userInfo.userId}`
+        const isAgree = storage.get(storageKey) as boolean
+        if (isAgree) {
+          this.handleCardCommonTap(e)
+          return
+        }
+
+        Dialog.confirm({
+          selector: '#mz-dialog-privacy',
+          title: '用户隐私授权',
+          message: '我已阅读',
+          confirmButtonText: '同意并继续',
+        })
+          .then(() => {
+            storage.set(storageKey, true)
+            this.handleCardCommonTap(e)
+          })
+          .catch(() => {
+            storage.set(storageKey, false)
+          })
         return
       }
       // 不在编辑状态，如果是WIFI设备

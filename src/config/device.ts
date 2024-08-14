@@ -37,6 +37,7 @@ export const ROOM_CARD_TOP = 170 // 列表顶部距离
 
 // 设备 modelName -> 品类码
 export const PRO_TYPE = {
+  doorLock: '0x09',
   light: '0x13',
   switch: '0x21',
   curtain: '0x14',
@@ -73,6 +74,7 @@ export const getModelName = (proType: string, productId?: string) => {
 
 // 设备品类码 -> modelName
 export const proName: Record<string, string> = {
+  '0x09': 'doorLock',
   '0x13': 'light',
   '0x14': 'curtain',
   '0x16': 'gateway',
@@ -117,3 +119,17 @@ export const ZHONGHONG_PID: readonly string[] = [
   PRODUCT_ID.zhonghong_air,
   PRODUCT_ID.zhonghong_cac,
 ]
+// 门锁pid集合 //798777B9因为是非标协议,所以暂时不接 (郭工)
+export const DOORLOCK_PID: readonly string[] = ['798777C7', '798777C8', '798777C9', '798777CT', '798777AT', 'M0900012']
+
+// pwdType -> 权限类型
+export const pwdType: Record<number, string> = {
+  1: '密码',
+  2: '指纹',
+  3: '门卡',
+  10: '人脸识别',
+  17: '管理员密码',
+  18: '管理员指纹',
+  19: '管理员门卡',
+  20: '管理员人脸识别',
+} as const

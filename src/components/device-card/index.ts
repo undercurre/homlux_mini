@@ -117,7 +117,7 @@ ComponentWithComputed({
       return ''
     },
     controlBtnPic(data) {
-      if (data.cardInfo.proType === PRO_TYPE.gateway) {
+      if (!data.hasControl || !data.hasControl || !data.canCtrl) {
         return ''
       }
       // 窗帘，位置大于0即为开启
@@ -174,22 +174,38 @@ ComponentWithComputed({
       return data.cardInfo.deviceName?.slice(0, 5)
     },
 
+    /**
+     * 设备在离线状态
+     */
+    isOnline(data) {
+      // 门锁需要复合判断
+      if (data.cardInfo.proType === PRO_TYPE.doorLock) {
+        const prop = data.cardInfo?.mzgdPropertyDTOList['doorLock']
+        // 如果开启省电模式，则直接显示在线
+        if (!prop.intelligentScene) return true
+      }
+      return data.cardInfo.onLineStatus
+    },
+
     // 设备是否可控
     // !! 需要使用双否定将undefined null值转换为boolean，以免视图显示中判断异常
     canCtrl(data) {
-      return !!(data.cardInfo.onLineStatus || data.cardInfo.canLanCtrl)
+      return !!(data.isOnline || data.cardInfo.canLanCtrl)
     },
 
     // 设备是灯组
     isGroup(data) {
       return data.cardInfo.deviceType === 4
     },
-    // 设备是传感器，显示电量状态
+    // 设备是传感器、门锁，显示电量状态
     lowBattery(data) {
       if (data.cardInfo.proType === PRO_TYPE.sensor) {
         const modelName = getModelName(PRO_TYPE.sensor, data.cardInfo.productId)
         const prop = data.cardInfo.mzgdPropertyDTOList[modelName]
         return !!prop?.batteryAlarmState
+      } else if (data.cardInfo.proType === PRO_TYPE.doorLock) {
+        const prop = data.cardInfo.mzgdPropertyDTOList['doorLock']
+        return prop?.batteryPower <= 1
       }
       return false
     },
@@ -213,6 +229,7 @@ ComponentWithComputed({
     hasControl(data) {
       return (
         data.cardInfo.proType !== PRO_TYPE.gateway &&
+        data.cardInfo.proType !== PRO_TYPE.doorLock &&
         data.cardInfo.proType !== PRO_TYPE.sensor &&
         data.cardInfo.proType !== PRO_TYPE.bathHeat &&
         data.cardInfo.proType !== PRO_TYPE.clothesDryingRack &&

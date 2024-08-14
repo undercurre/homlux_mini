@@ -7,6 +7,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 import dataBus from '../utils/dataBus'
 import { CMD } from '../../config/remoter'
+import { ShareImgUrl } from '../../config/index'
 
 const heightArr = []
 for (let i = 10; i <= 120; i += 10) {
@@ -196,6 +197,41 @@ ComponentWithComputed({
       if (key === 'SLOWUP') {
         this.sendBluetoothCMD([CMD['CLOTHES_SLOW_UP']])
       }
+    },
+    updateShareSetting() {
+      wx.updateShareMenu({
+        withShareTicket: true,
+        isPrivateMessage: false,
+        success() {
+          wx.showShareMenu({
+            withShareTicket: true,
+            menus: ['shareAppMessage'],
+          })
+        },
+      })
+    },
+    onShareAppMessage() {
+      const curDev = remoterStore.curRemoter
+      const promise = new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            title: '分享我的数字遥控器',
+            path: `/pages/remoter/index?addr=${curDev.addr}&deviceType=${curDev.deviceType}&deviceModel=${curDev.deviceModel}&functionDes=${curDev.functionDes}&deviceName=${curDev.deviceName}&version=${curDev.version}`,
+            imageUrl: ShareImgUrl,
+          })
+        }, 500)
+      })
+      return {
+        title: '分享我的数字遥控器',
+        path: `/pages/remoter/index?addr=${curDev.addr}&deviceType=${curDev.deviceType}&deviceModel=${curDev.deviceModel}&functionDes=${curDev.functionDes}&deviceName=${curDev.deviceName}&version=${curDev.version}`,
+        imageUrl: ShareImgUrl,
+        promise,
+      }
+    },
+  },
+  lifetimes: {
+    attached: function () {
+      this.updateShareSetting()
     },
   },
 })

@@ -1,0 +1,36 @@
+.log-bg {
+  border-radius: 32rpx;
+  background-color: #f7f8f9;
+}
+
+.log-item {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 18rpx 64rpx;
+  width: 564rpx;
+  height: 88rpx;
+  margin-top: 32rpx;
+}
+
+.log-step {
+  position: absolute;
+  top: 145rpx;
+  left: 200rpx;
+  height: 355rpx;
+  width: 2rpx;
+  background-color: #e5e5e8;
+}
+
+.circle {
+  position: absolute;
+  left: 200rpx;
+  margin-left: -5rpx;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 12rpx;
+  box-sizing: border-box;
+  background-color: #c7c7cc;
+}
