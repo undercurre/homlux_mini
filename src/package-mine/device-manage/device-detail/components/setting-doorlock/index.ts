@@ -36,7 +36,8 @@ ComponentWithComputed({
   computed: {
     // 复合判断门锁在离线状态
     isDoorOnline(data) {
-      const { doorOnline } = data
+      const { doorOnline, deviceInfo } = data
+      if (!deviceInfo.onLineStatus) return false
       return doorOnline === '1' || doorOnline === '2'
     },
   },
@@ -68,12 +69,8 @@ ComponentWithComputed({
 
     async changeElectronicLock() {
       this.updateReport()
+      if (!this.data.isDoorOnline) return
 
-      if (!this.data.isDoorOnline) {
-        this.setData({ isShowResume: true })
-
-        return
-      }
       const result = await this.doorLockControl({
         data: {
           electronicLock: this.data.electronicLockSetVal ? 0 : 1, // 1-打开电子反锁 0-取消电子反锁
@@ -88,6 +85,9 @@ ComponentWithComputed({
     },
 
     async changeIntelligentScene() {
+      this.updateReport()
+      if (!this.data.isDoorOnline) return
+
       const result = await this.doorLockControl({
         data: {
           intelligentScene: this.data.intelligentSceneSetVal ? 1 : 0, // 1-打开智能模式关闭省电模式 0-取消智能模式开启省电模式
@@ -103,7 +103,7 @@ ComponentWithComputed({
     },
 
     /**
-     * 主动更新门锁信息
+     * 主动更新门锁信息，若离线则主动提示唤醒
      */
     async updateReport() {
       const res = (await deviceTransmit('GET_REPORT_JSON', {
@@ -117,6 +117,7 @@ ComponentWithComputed({
 
       this.setData({
         doorOnline: res.result.doorOnline,
+        isShowResume: !this.data.isDoorOnline,
       })
     },
   },
