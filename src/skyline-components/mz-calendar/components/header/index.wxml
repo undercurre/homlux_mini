@@ -1,0 +1,24 @@
+<view class="mz-calendar__header">
+  <block wx:if="{{ showTitle }}">
+    <view class="mz-calendar__header-title"><slot name="title"></slot></view>
+    <view class="mz-calendar__header-title">{{ title }}</view>
+  </block>
+
+  <view
+    wx:if="{{ showSubtitle }}"
+    class="mz-calendar__header-subtitle"
+    bind:tap="onClickSubtitle"
+  >
+    {{ subtitle }}
+  </view>
+
+  <view class="mz-calendar__weekdays">
+    <view
+      wx:for="{{ weekdays }}"
+      wx:key="index"
+      class="mz-calendar__weekday"
+    >
+      {{ item }}
+    </view>
+  </view>
+</view>

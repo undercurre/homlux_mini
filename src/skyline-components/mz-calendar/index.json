@@ -1,0 +1,10 @@
+{
+  "component": true,
+  "usingComponents": {
+    "header": "./components/header/index",
+    "month": "./components/month/index",
+    "mz-button": "../mz-button/index",
+    "mz-popup": "../mz-popup/index",
+    "mz-toast": "../mz-toast/index"
+  }
+}
