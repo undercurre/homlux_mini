@@ -3,6 +3,7 @@ import pageBehavior from '../../../behaviors/pageBehaviors'
 import { deviceTransmit } from '../../../apis/index'
 import dayjs from 'dayjs'
 import storage from '../../../utils/storage'
+import { defaultImgDir } from '../../../config/index'
 
 const WEEKDAY_ARRAY = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 
@@ -12,6 +13,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    defaultImgDir,
     logList: [] as IAnyObject[], // 日志列表
     deviceId: '',
     currentPeriod: 'weekly',
@@ -42,6 +44,9 @@ ComponentWithComputed({
       ],
     },
     startTime: dayjs().subtract(1, 'week').format('YYYY-MM-DD 00:00:00'),
+    endTime: dayjs().format('YYYY-MM-DD 23:59:59'),
+    minDate: dayjs().subtract(2, 'month').valueOf(), // 日历显示范围
+    maxDate: dayjs().valueOf(),
     showCalendar: false,
   },
 
@@ -69,6 +74,9 @@ ComponentWithComputed({
 
       return result
     },
+    hasLog(data) {
+      return !!Object.keys(data.logListView).length
+    },
   },
 
   methods: {
@@ -85,15 +93,13 @@ ComponentWithComputed({
       this.updateLogs()
     },
 
-    async updateLogs() {
-      // const startTime = dayjs().format('YYYY-MM-DD 00:00:00')
-      const endTime = dayjs().format('YYYY-MM-DD 23:59:59')
+    async updateLogs(startTime?: string, endTime?: string) {
       const res = (await deviceTransmit('GET_DOOR_LOCK_DYNAMIC', {
         deviceId: this.data.deviceId,
-        startTime: this.data.startTime,
-        endTime,
+        startTime: startTime ?? this.data.startTime,
+        endTime: endTime ?? this.data.endTime,
         pageNo: 1,
-        pageSize: 100,
+        pageSize: 300, // TODO
       })) as IAnyObject
       this.setData({
         logList: res.result.list,
@@ -137,6 +143,16 @@ ComponentWithComputed({
 
     handleCalendar() {
       this.setData({ showCalendar: true })
+    },
+
+    handleCalendarClose() {
+      this.setData({ showCalendar: false })
+    },
+
+    handleCalendarConfirm(e: { detail: Date }) {
+      const day = dayjs(e.detail)
+      this.updateLogs(day.format('YYYY-MM-DD 00:00:00'), day.format('YYYY-MM-DD 23:59:59'))
+      this.setData({ showCalendar: false })
     },
   },
 })

@@ -32,6 +32,7 @@
     </view>
 
     <scroll-view
+      wx:if="{{hasLog}}"
       type="list"
       scroll-y
       enhanced
@@ -67,6 +68,17 @@
       </view>
     </scroll-view>
 
+    <view
+      wx:else
+      class="flex-1 flex-col-center"
+    >
+      <tips-box
+        text="暂无动态"
+        icon="{{defaultImgDir}}/no-log.png"
+        size="240"
+      ></tips-box>
+    </view>
+
     <view class="h-48rpx"></view>
   </view>
 </view>
@@ -84,3 +96,17 @@
   bind:menuTap="handleMenuTap"
   bind:overlayClick="handlePeriodMenu"
 ></mz-pop-menu>
+
+<mz-calendar
+  show="{{ showCalendar }}"
+  min-date="{{ minDate }}"
+  max-date="{{ maxDate }}"
+  show-title="{{ false }}"
+  show-subtitle="{{ false }}"
+  show-confirm="{{ false }}"
+  color="#488fff"
+  row-height="{{ 54 }}"
+  bind:close="handleCalendarClose"
+  bind:confirm="handleCalendarConfirm"
+>
+</mz-calendar>
