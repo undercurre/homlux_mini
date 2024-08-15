@@ -135,7 +135,7 @@
 }
 .unit-h{
   position: absolute;
-  top: 290rpx;
+  top: 292rpx;
   color: #666666;
 }
 .picker-cloumn-text{
@@ -173,7 +173,7 @@
   width: 44rpx;
   height: 44rpx;
   margin-top: 14rpx;
-  margin-right: -16rpx;
+  margin-right: -14rpx;
 }
 .ind-block {
   width: 628rpx;
