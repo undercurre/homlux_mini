@@ -1,6 +1,5 @@
 import { PRO_TYPE, AC_MODE, CAC_MODE, CAC_FA_WINDSPEED, WIND_SPEED_MAP, FAN_SCENE_MAP } from '../config/index'
-import { isNullOrUnDef } from './index'
-import _ from 'lodash'
+import { isEqual, isNullOrUnDef } from './index'
 import { autosceneStore } from '../store/index'
 /**
  * Deserted 此方法已不必使用，暂时保留代码
@@ -243,7 +242,7 @@ export function toPropertyDesc({
   if (proType === PRO_TYPE.doorLock) {
     if (isNullOrUnDef(productId)) return []
     autosceneStore.deviceConditionPropertyList[productId + '|' + deviceId].forEach((item) => {
-      if (_.isEqual(item.value, property)) {
+      if (isEqual(item.value, property)) {
         descList.push(item.title)
       }
     })
