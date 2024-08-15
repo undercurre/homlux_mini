@@ -14,14 +14,18 @@
 
   <view class="flex flex-1 flex-col items-center">
     <view class="flex justify-between py-32rpx w-656rpx">
-      <view class="relative flex flex-row items-center shrink">
-        <text class="text-32 text-hex-555659">近一周</text>
+      <view
+        class="relative flex flex-row items-center shrink"
+        bind:tap="handlePeriodMenu"
+      >
+        <text class="text-32 text-hex-555659">{{currentPeriodName}}</text>
         <image
           class="w-32rpx h-32rpx"
           src="/assets/img/base/arrow-down.png"
         ></image>
       </view>
       <image
+        bind:tap="handleCalendar"
         src="/package-mine/assets/img/icon-calendar.png"
         class="w-64 h-64"
       />
@@ -66,3 +70,17 @@
     <view class="h-48rpx"></view>
   </view>
 </view>
+
+<mz-pop-menu
+  is-show="{{periodMenu.isShow}}"
+  class="z-120"
+  x="{{periodMenu.x}}"
+  y="{{periodMenu.y}}"
+  arrowX="{{periodMenu.arrowX}}"
+  height="{{periodMenu.height}}"
+  width="{{periodMenu.width}}"
+  menu-list="{{periodMenu.list}}"
+  transform-origin="left top"
+  bind:menuTap="handleMenuTap"
+  bind:overlayClick="handlePeriodMenu"
+></mz-pop-menu>
