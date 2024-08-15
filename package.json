@@ -17,7 +17,7 @@
     "vant": "vant-tree-shaking --vantPath=src/miniprogram_npm/@vant/weapp"
   },
   "dependencies": {
-    "@vant/weapp": "^1.11.4",
+    "@vant/weapp": "^1.11.6",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.7",
     "fast-deep-equal": "^2.0.1",
