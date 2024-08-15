@@ -1,0 +1,75 @@
+<wxs
+  src="./index.wxs"
+  module="computed"
+></wxs>
+<wxs
+  src="../../../wxs/utils.wxs"
+  module="utils"
+/>
+
+<view
+  class="mz-calendar__month"
+  style="{{ computed.getMonthStyle(visible, date, rowHeight) }}"
+>
+  <view
+    wx:if="{{ showMonthTitle }}"
+    class="mz-calendar__month-title"
+  >
+    {{ computed.formatMonthTitle(date) }}
+  </view>
+
+  <view
+    wx:if="{{ visible }}"
+    class="mz-calendar__days"
+  >
+    <view
+      wx:if="{{ showMark }}"
+      class="mz-calendar__month-mark"
+    >
+      {{ computed.getMark(date) }}
+    </view>
+
+    <view
+      wx:for="{{ days }}"
+      wx:key="index"
+      style="{{ computed.getDayStyle(item.type, index, date, rowHeight, color, firstDayOfWeek) }}"
+      class="{{ utils.bem('calendar__day', [item.type]) }} {{ item.className }}"
+      data-index="{{ index }}"
+      bindtap="onClick"
+    >
+      <view
+        wx:if="{{ item.type === 'selected' }}"
+        class="mz-calendar__selected-day"
+        style="width: {{ rowHeight }}px; height: {{ rowHeight }}px; background: {{ color }}"
+      >
+        <view
+          wx:if="{{ item.topInfo }}"
+          class="mz-calendar__top-info"
+          >{{ item.topInfo }}</view
+        >
+        {{ item.text }}
+        <view
+          wx:if="{{ item.bottomInfo }}"
+          class="mz-calendar__bottom-info"
+        >
+          {{ item.bottomInfo }}
+        </view>
+      </view>
+
+      <view wx:else>
+        <view
+          wx:if="{{ item.topInfo }}"
+          class="mz-calendar__top-info"
+          >{{ item.topInfo }}</view
+        >
+        {{ item.text }}
+        <view
+          wx:if="{{ item.bottomInfo }}"
+          class="mz-calendar__bottom-info"
+        >
+          {{ item.bottomInfo }}
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -18,24 +18,24 @@
   flex-direction: row;
   align-items: center;
   box-sizing: border-box;
-  padding: 18rpx 64rpx;
-  width: 564rpx;
+  padding: 18rpx 48rpx;
+  width: 100%;
   height: 88rpx;
   margin-top: 32rpx;
 }
 
 .log-step {
   position: absolute;
-  top: 145rpx;
-  left: 200rpx;
-  height: 355rpx;
+  top: 50rpx;
+  left: 180rpx;
+  height: 110rpx;
   width: 2rpx;
   background-color: #e5e5e8;
 }
 
 .circle {
   position: absolute;
-  left: 200rpx;
+  left: 180rpx;
   margin-left: -5rpx;
   width: 12rpx;
   height: 12rpx;

@@ -48,6 +48,7 @@ ComponentWithComputed({
     _holdBleScan: false, // onHide时保持蓝牙扫描的标志
     debugStr: '[rx]',
     isDebugMode: false,
+    curShareAddr: ''
   },
 
   computed: {},
@@ -87,9 +88,7 @@ ComponentWithComputed({
 
     async onShow() {
       this.data._holdBleScan = false
-
       await initBleCapacity()
-
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
         // console.log('onBluetoothDeviceFound', res)
@@ -97,16 +96,65 @@ ComponentWithComputed({
       })
 
       await delay(0)
-
       // 如果未在发现模式，则搜索设备
-      console.log('lmn>>>onShow')
       if (!this.data._isDiscoverying) {
         this.toSeek()
       }
-      // 获取已连接的设备
-      // this.getConnectedDevices()
-    },
 
+      setTimeout(() => {
+        this.saveShareDev()
+      }, 500)
+    },
+    async saveShareDev() {
+      const enterOption = wx.getEnterOptionsSync()
+      if (enterOption.scene != 1007 && enterOption.scene != 1008) return
+      const enterQuery = enterOption.query
+      console.log('lmn>>>enterQuery=', JSON.stringify(enterQuery))
+      const addr = enterQuery.addr
+      if (this.data.curShareAddr === addr) return
+      this.setData({
+        curShareAddr: addr
+      })
+      const list = remoterStore.remoterList
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].addr === addr) {
+          Toast('该遥控已存在')
+          return
+        }
+      }
+      const isV2 = enterQuery.functionDes != undefined && enterQuery.functionDes.length > 1
+      let config = null
+      if (isV2) {
+        config = deviceConfigV2[enterQuery.deviceType] || null
+      } else {
+        config = deviceConfig[enterQuery.deviceType][enterQuery.deviceModel] || null
+      }
+      if (!config) return
+      const shareDev = {
+        deviceId: `${new Date().valueOf()}`,
+        addr: addr,
+        version: parseInt(enterQuery.version),
+        devicePic: config.devicePic,
+        actions: config.actions,
+        deviceName: enterQuery.deviceName,
+        deviceType: enterQuery.deviceType,
+        deviceModel: enterQuery.deviceModel,
+        actionStatus: false,
+        saved: false,
+        defaultAction: 0,
+        DISCOVERED: 0,
+        isV2,
+        functionDes: enterQuery.functionDes,
+      }
+      const orderNum = remoterStore.remoterList.length
+      remoterStore.addRemoter({
+        ...shareDev,
+        orderNum,
+        defaultAction: 0,
+      } as Remoter.DeviceRx)
+      await this.initDrag()
+      Toast('添加分享设备成功')
+    },
     onHide() {
       console.log('onHide on Index')
 
@@ -199,13 +247,14 @@ ComponentWithComputed({
 
     // 点击设备卡片
     async handleCardTap(e: WechatMiniprogram.TouchEvent) {
-      const { deviceType, deviceModel, saved, addr, isV2, functionDes } = e.detail
+      const { deviceType, deviceModel, saved, addr, isV2, functionDes, isRSSIOK } = e.detail
       if (isNullOrUnDef(deviceType) || isNullOrUnDef(deviceModel)) {
         return
       }
 
       if (!saved) {
-        this.saveDevice(e.detail as Remoter.DeviceItem)
+        if (isRSSIOK) this.saveDevice(e.detail as Remoter.DeviceItem)
+        else Toast('请靠近设备再添加')
       }
       // 跳转到控制页
       else {
@@ -217,6 +266,8 @@ ComponentWithComputed({
             page = 'bath'
           } else if (deviceType === '40') {
             page = 'cool-bath'
+          } else if (deviceType === 'a1') {
+            page = 'vent-fan'
           }
           if (!page) return
           wx.navigateTo({
@@ -243,11 +294,15 @@ ComponentWithComputed({
     },
     // 点击设备按钮
     async handleControlTap(e: WechatMiniprogram.TouchEvent) {
-      console.log('handleControlTap', e.detail)
+      const { isRSSIOK } = e.detail
 
       // 先触发本地保存，提高响应体验
       if (!e.detail.saved) {
-        this.saveDevice(e.detail as Remoter.DeviceItem)
+        if (isRSSIOK) this.saveDevice(e.detail as Remoter.DeviceItem)
+        else {
+          Toast('请靠近设备再尝试')
+          return
+        }
       }
 
       const now = new Date().getTime()
@@ -307,14 +362,23 @@ ComponentWithComputed({
       if (this.data._isDiscoverying) {
         console.log('lmn>>>已在搜索设备中...')
       } else {
-        this.data._isDiscoverying = true
-
+        this.setData({
+          _isDiscoverying: true
+        })
         // 开始搜寻附近的蓝牙外围设备
         wx.startBluetoothDevicesDiscovery({
           allowDuplicatesKey: true,
           powerLevel: 'high',
           interval: SEEK_INTERVAL,
-          fail: (err) => console.log('lmn>>>开始搜索设备失败', JSON.stringify(err)),
+          fail: (err) => {
+            console.log('lmn>>>开始搜索设备失败', JSON.stringify(err))
+            this.setData({
+              _isDiscoverying: false
+            })
+            setTimeout(() => {
+              this.toSeek()
+            }, 1000)
+          },
           success: () => console.log('lmn>>>开始搜索设备成功'),
         })
       }
@@ -341,8 +405,9 @@ ComponentWithComputed({
 
     // 处理搜索到的设备
     resolveFoundDevices(res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) {
+      const sortList = res.devices.sort((a, b) => b.RSSI - a.RSSI)
       const recoveredListSrc =
-        unique(res.devices, 'deviceId') // 过滤重复设备
+        unique(sortList, 'deviceId') // 过滤重复设备
           .map((item) => remoterProtocol.searchDeviceCallBack(item)) // 过滤不支持的设备
           .filter((item) => !!item) || []
 
@@ -371,12 +436,19 @@ ComponentWithComputed({
       if (!isUserControlled) {
         return
       }
+      console.log('lmn>>>------------搜索更新------------')
 
       // 用户主动搜索，刷新发现列表
-      const foundList = [] as Remoter.DeviceDetail[]
+      const newFoundList = [] as Remoter.DeviceDetail[]
+      const curFoundList = this.data.foundList
       const suffixArr = {} as Record<string, number[]>
       const deviceInfo = wx.getDeviceInfo()
       const isIOS = deviceInfo.platform === 'ios'
+      let addRSSI = 0
+      if (deviceInfo.brand.toLowerCase() === 'honor') {
+        addRSSI = 5
+      }
+      console.log(`lmn>>>品牌:${deviceInfo.brand.toLowerCase()}=>阈值加${addRSSI}`)
       for (let j = 0; j < recoveredList.length; j++) {
         const item = recoveredList[j]
         const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
@@ -403,10 +475,13 @@ ComponentWithComputed({
             }
           }
         }
-        if (
-          item!.RSSI >= cusRSSI && // 过滤弱信号设备
-          !isSavedDevice // 排除已在我的设备列表的设备
-        ) {
+        cusRSSI += addRSSI
+        let isExist = false
+        if (curFoundList.length > 0) {
+          isExist = curFoundList.findIndex(oldItem => oldItem.addr === item?.addr) >= 0
+        }
+        const isRSSIOK = item!.RSSI >= cusRSSI
+        if (isExist || !isSavedDevice) {
           let config = null
           if (item!.isV2) {
             config = deviceConfigV2[deviceType] || null
@@ -414,7 +489,7 @@ ComponentWithComputed({
             config = deviceConfig[deviceType][deviceModel] || null
           }
           if (!config) {
-            console.log('config NOT EXISTED in onBluetoothDeviceFound')
+            // console.log(`lmn>>>不支持的设备:品类:${deviceType}/型号=${deviceModel}`)
             continue
           }
 
@@ -446,10 +521,14 @@ ComponentWithComputed({
             }
           }
           const deviceName = devSuffix ? nameKey + devSuffix : nameKey
-          console.log(`lmn>>>发现新设备::mac=${item!.addr}/品类=${deviceType}/型号=${deviceModel},命名=>${deviceName}`)
+          if (isRSSIOK) {
+            console.log(`lmn>>>发现可添加设备::mac=${item!.addr}/品类=${deviceType}/型号=${deviceModel}/信号=${item!.RSSI}/阈值=${cusRSSI},命名=>${deviceName}`)
+          } else {
+            console.warn(`lmn>>>发现弱信号设备::mac=${item!.addr}/品类=${deviceType}/型号=${deviceModel}/信号=${item!.RSSI}小于阈值=${cusRSSI},命名=>${deviceName}`)
+          }
 
           // 更新发现设备列表
-          foundList.push({
+          newFoundList.push({
             deviceId: item!.deviceId,
             addr: item!.addr,
             version: item!.version,
@@ -464,6 +543,7 @@ ComponentWithComputed({
             DISCOVERED: 1,
             isV2: item!.isV2,
             functionDes: item!.functionDes,
+            isRSSIOK,
           })
         } else {
           if (!isSavedDevice)
@@ -471,7 +551,7 @@ ComponentWithComputed({
         }
       }
 
-      this.setData({ foundList })
+      this.setData({ foundList: newFoundList })
     },
 
     // 获取已建立连接的设备 暂时用不着

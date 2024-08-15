@@ -2,6 +2,8 @@ import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { deviceTransmit } from '../../../apis/index'
 import dayjs from 'dayjs'
+import storage from '../../../utils/storage'
+import { defaultImgDir } from '../../../config/index'
 
 const WEEKDAY_ARRAY = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 
@@ -11,7 +13,41 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
+    defaultImgDir,
     logList: [] as IAnyObject[], // 日志列表
+    deviceId: '',
+    currentPeriod: 'weekly',
+    currentPeriodName: '近一周',
+    periodMenu: {
+      x: '30rpx',
+      y: (storage.get('statusBarHeight') as number) + (storage.get('navigationBarHeight') as number) + 60 + 'px',
+      arrowX: 60,
+      width: 280,
+      height: 300,
+      isShow: false,
+      list: [
+        {
+          name: '近一周',
+          value: 'weekly',
+          checked: true,
+        },
+        {
+          name: '近一个月',
+          value: 'monthly',
+          checked: false,
+        },
+        {
+          name: '近两个月',
+          value: 'bimonthly',
+          checked: false,
+        },
+      ],
+    },
+    startTime: dayjs().subtract(1, 'week').format('YYYY-MM-DD 00:00:00'),
+    endTime: dayjs().format('YYYY-MM-DD 23:59:59'),
+    minDate: dayjs().subtract(2, 'month').valueOf(), // 日历显示范围
+    maxDate: dayjs().valueOf(),
+    showCalendar: false,
   },
 
   computed: {
@@ -21,15 +57,14 @@ ComponentWithComputed({
       data.logList.forEach((log, index) => {
         const { createTime } = log
         const [date, time] = createTime.split(' ')
-        const key = String(data)
-        if (!Object.prototype.hasOwnProperty.call(result, key)) {
-          result[key] = {
+        if (!Object.prototype.hasOwnProperty.call(result, date)) {
+          result[date] = {
             dateStr: dayjs(date).format('YYYY年M月D日'),
             weekday: WEEKDAY_ARRAY[Number(dayjs(date).format('d'))],
             list: [],
           }
         }
-        result[key].list.push({
+        result[date].list.push({
           index,
           content: log.content,
           date,
@@ -39,36 +74,85 @@ ComponentWithComputed({
 
       return result
     },
+    hasLog(data) {
+      return !!Object.keys(data.logListView).length
+    },
   },
 
   methods: {
     /**
      * 生命周期函数--监听页面加载
      */
-    onLoad() {},
-
+    onLoad({ deviceId }: { deviceId: string }) {
+      console.log('onLoad', deviceId)
+      this.setData({
+        deviceId,
+      })
+    },
     onShow() {
       this.updateLogs()
     },
 
-    async updateLogs() {
-      const startTime = '2022-05-26 00:00:00'
-      const endTime = '2024-09-25 23:59:59'
-      // const startTime = dayjs().format('YYYY-MM-DD 00:00:00')
-      // const endTime = dayjs().format('YYYY-MM-DD 23:59:59')
+    async updateLogs(startTime?: string, endTime?: string) {
       const res = (await deviceTransmit('GET_DOOR_LOCK_DYNAMIC', {
-        deviceId: '177021372098906',
-        startTime,
-        endTime,
+        deviceId: this.data.deviceId,
+        startTime: startTime ?? this.data.startTime,
+        endTime: endTime ?? this.data.endTime,
         pageNo: 1,
-        pageSize: 3,
-        homeId: '67213056',
-        userId: '63868780',
-        messageId: '8537',
+        pageSize: 300, // TODO
       })) as IAnyObject
       this.setData({
-        logList: [...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list],
+        logList: res.result.list,
       })
+    },
+
+    handlePeriodMenu() {
+      this.setData({
+        ['periodMenu.isShow']: !this.data.periodMenu.isShow,
+      })
+    },
+
+    handleMenuTap(e: { detail: string }) {
+      const checked = e.detail
+      if (checked === this.data.currentPeriod) return // 没有变化
+
+      const index = this.data.periodMenu.list.findIndex((item) => item.value === checked)
+      const diffData = {
+        'periodMenu.isShow': false,
+        currentPeriod: checked,
+        currentPeriodName: this.data.periodMenu.list[index].name,
+      } as IAnyObject
+      for (const i in this.data.periodMenu.list) {
+        diffData[`periodMenu.list[${i}].checked`] = Number(i) === index
+      }
+      switch (checked) {
+        case 'weekly':
+          diffData.startTime = dayjs().subtract(1, 'week').format('YYYY-MM-DD 00:00:00')
+          break
+        case 'monthly':
+          diffData.startTime = dayjs().subtract(1, 'month').format('YYYY-MM-DD 00:00:00')
+          break
+        case 'bimonthly':
+          diffData.startTime = dayjs().subtract(2, 'month').format('YYYY-MM-DD 00:00:00')
+          break
+      }
+      this.setData(diffData)
+
+      this.updateLogs()
+    },
+
+    handleCalendar() {
+      this.setData({ showCalendar: true })
+    },
+
+    handleCalendarClose() {
+      this.setData({ showCalendar: false })
+    },
+
+    handleCalendarConfirm(e: { detail: Date }) {
+      const day = dayjs(e.detail)
+      this.updateLogs(day.format('YYYY-MM-DD 00:00:00'), day.format('YYYY-MM-DD 23:59:59'))
+      this.setData({ showCalendar: false })
     },
   },
 })

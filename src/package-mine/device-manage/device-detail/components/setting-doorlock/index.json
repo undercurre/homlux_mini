@@ -5,6 +5,7 @@
     "van-switch": "@vant/weapp/switch/index",
     "van-toast": "@vant/weapp/toast/index",
     "van-cell-group": "@vant/weapp/cell-group/index",
-    "van-cell": "@vant/weapp/cell/index"
+    "van-cell": "@vant/weapp/cell/index",
+    "door-lock-resume": "/components/door-lock-resume/index"
   }
 }

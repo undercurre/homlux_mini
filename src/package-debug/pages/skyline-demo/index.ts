@@ -14,6 +14,7 @@ Component({
    */
   data: {
     showDialog: false,
+    showCalendar: false,
     inputValue: '',
     showPopup: false,
     showPopup2: false,
@@ -102,6 +103,19 @@ Component({
       this.setData({
         brightness: e.detail,
       })
+    },
+    toShowCalendar() {
+      this.setData({
+        showCalendar: true,
+      })
+    },
+    handleCalendarClose() {
+      this.setData({ showCalendar: false })
+    },
+
+    handleCalendarConfirm(e: { detail: Date }) {
+      console.log(e.detail)
+      this.setData({ showCalendar: false })
     },
   },
 })

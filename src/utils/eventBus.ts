@@ -80,6 +80,7 @@ type Events = {
   keyof typeof WSEventType,
   {
     isMqtt: boolean
+    deviceId?: string
   }
 >
 

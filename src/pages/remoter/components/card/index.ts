@@ -34,6 +34,9 @@ ComponentWithComputed({
     action(data) {
       return data.device.actions[data.device.defaultAction]
     },
+    isNewTooFar(data) {
+      return data.device.isRSSIOK !== undefined && !data.device.isRSSIOK
+    },
   },
 
   /**

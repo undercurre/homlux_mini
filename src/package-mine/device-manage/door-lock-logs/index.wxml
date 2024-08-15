@@ -1,53 +1,112 @@
-<!-- 标题 -->
-<nav-bar
-  title="设备日志"
-  left-arrow
-  show-go-home
-  bind:leftTap="goBack"
-></nav-bar>
-
 <view
   class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7"
   style="z-index: -1"
 ></view>
 
-<view class="h-100vh flex flex-col items-center">
-  <view class="flex justify-between py-32rpx w-656rpx">
-    <view class="relative flex flex-row items-center shrink">
-      <text class="text-32 text-hex-555659">近一周</text>
+<view class="h-100vh flex flex-col">
+  <!-- 标题 -->
+  <nav-bar
+    title="设备日志"
+    left-arrow
+    show-go-home
+    bind:leftTap="goBack"
+  ></nav-bar>
+
+  <view class="flex flex-1 flex-col items-center">
+    <view class="flex justify-between py-32rpx w-656rpx">
+      <view
+        class="relative flex flex-row items-center shrink"
+        bind:tap="handlePeriodMenu"
+      >
+        <text class="text-32 text-hex-555659">{{currentPeriodName}}</text>
+        <image
+          class="w-32rpx h-32rpx"
+          src="/assets/img/base/arrow-down.png"
+        ></image>
+      </view>
       <image
-        class="w-32rpx h-32rpx"
-        src="/assets/img/base/arrow-down.png"
-      ></image>
-    </view>
-    <image
-      src="/package-mine/assets/img/icon-calendar.png"
-      class="w-64 h-64"
-    />
-  </view>
-
-  <view
-    wx:for="{{logListView}}"
-    wx:for-item="date"
-    wx:key="index"
-    class="w-686rpx flex-col-center relative log-bg"
-  >
-    <view class="flex w-full justify-between pt-32rpx pl-48rpx">
-      <text class="text-28 text-hex-555659 font-medium">{{date.dateStr}} {{date.weekday}}</text>
+        bind:tap="handleCalendar"
+        src="/package-mine/assets/img/icon-calendar.png"
+        class="w-64 h-64"
+      />
     </view>
 
-    <view class="log-step"></view>
+    <scroll-view
+      wx:if="{{hasLog}}"
+      type="list"
+      scroll-y
+      enhanced
+      enable-flex
+      show-scrollbar="{{false}}"
+      class="flex-1"
+      style="height: {{scrollHeight}}px;width: 686rpx;"
+    >
+      <view
+        wx:for="{{logListView}}"
+        wx:for-item="date"
+        wx:key="index"
+        class="w-686rpx flex-col-center mb-24rpx log-bg"
+      >
+        <view class="flex w-full justify-between pt-32rpx pl-48rpx">
+          <text class="text-28 text-hex-555659 font-medium">{{date.dateStr}} {{date.weekday}}</text>
+        </view>
+
+        <view
+          class="log-item"
+          wx:for="{{date.list}}"
+          wx:for-index="j"
+          wx:key="time"
+        >
+          <text class="block w-92rpx text-24 text-hex-a2a2a2">{{item.time}}</text>
+          <view class="circle"></view>
+          <view
+            wx:if="{{j !== date.list.length-1}}"
+            class="log-step"
+          ></view>
+          <text class="text-24 text-hex-000 ml-90rpx flex-1">{{item.content}}</text>
+        </view>
+      </view>
+    </scroll-view>
 
     <view
-      class="log-item"
-      wx:for="{{date.list}}"
-      wx:key="time"
+      wx:else
+      class="flex-1 flex-col-center"
     >
-      <view class="flex flex-col">
-        <text class="text-24 text-hex-a2a2a2">{{item.time}}</text>
-      </view>
-      <text class="text-24 text-hex-000 ml-90rpx">{{item.content}}</text>
-      <view class="circle"></view>
+      <tips-box
+        text="暂无动态"
+        icon="{{defaultImgDir}}/no-log.png"
+        size="240"
+      ></tips-box>
     </view>
+
+    <view class="h-48rpx"></view>
   </view>
 </view>
+
+<mz-pop-menu
+  is-show="{{periodMenu.isShow}}"
+  class="z-120"
+  x="{{periodMenu.x}}"
+  y="{{periodMenu.y}}"
+  arrowX="{{periodMenu.arrowX}}"
+  height="{{periodMenu.height}}"
+  width="{{periodMenu.width}}"
+  menu-list="{{periodMenu.list}}"
+  transform-origin="left top"
+  bind:menuTap="handleMenuTap"
+  bind:overlayClick="handlePeriodMenu"
+></mz-pop-menu>
+
+<mz-calendar
+  show="{{ showCalendar }}"
+  min-date="{{ minDate }}"
+  max-date="{{ maxDate }}"
+  show-title="{{ false }}"
+  show-subtitle="{{ false }}"
+  show-confirm="{{ false }}"
+  color="#488fff"
+  row-height="{{ 54 }}"
+  bind:close="handleCalendarClose"
+  bind:confirm="handleCalendarConfirm"
+>
+</mz-calendar>

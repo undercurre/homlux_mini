@@ -1,0 +1,18 @@
+<van-dialog
+  id="van-dialog"
+  confirm-button-color="#488FFF"
+  cancel-button-text="{{status === 'wakeup' ? '关闭' : '取消'}}"
+  show-confirm-button="{{status === 'wakeup'}}"
+  use-slot
+>
+  <view class="flex-col-center w-full">
+    <image
+      src="{{pic}}"
+      class="w-450rpx h-450rpx mt-70rpx"
+    />
+    <view class="flex flex-col mt-88rpx px-32rpx h-72rpx leading-36rpx text-center">
+      <text class="text-hex-A2A2A2 text-28rpx mt-20rpx">{{tips}}</text>
+    </view>
+    <view class="h-80rpx"></view>
+  </view>
+</van-dialog>

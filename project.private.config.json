@@ -13,6 +13,13 @@
     "miniprogram": {
       "list": [
         {
+          "name": "door-lock-logs",
+          "pathName": "package-mine/device-manage/door-lock-logs/index",
+          "query": "deviceId=177021372098906",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "场景首页",
           "pathName": "package-automation/automation/index",
           "query": "",

@@ -23,7 +23,6 @@ Component({
       }
       this.data._deviceConditionPropertyList = JSON.parse(JSON.stringify(autosceneStore.deviceConditionPropertyList))
       const value = this.data.dataInfo
-
       if (typeof value === 'object') {
         if (Object.keys(value).length == 0) {
           this.setData({

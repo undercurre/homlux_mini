@@ -25,6 +25,7 @@
           <text class="text-28 mt-48rpx">密码有效期：{{expired}}分钟</text>
 
           <view
+            wx:if="{{isDoorOnline}}"
             class="flex-center valid-period"
             bind:tap="showPicker"
           >
@@ -42,14 +43,22 @@
         </block>
 
         <block wx:elif="{{status === 'generated'}}">
+          <image
+            class="w-686rpx h-760rpx absolute right-0 bottom-0"
+            src="{{generatedImage}}"
+          />
           <text class="text-40 font-semibold mt-10rpx">美的智能门锁</text>
           <text class="text-28 text-hex-a2a2a2 mt-48rpx">密码有效期：{{expired}}分钟</text>
-          <text class="text-112 text-hex-267aff font-medium mt-120rpx text-psw">14371322</text>
+          <text
+            class="text-hex-267aff font-medium mt-120rpx text-psw"
+            style="font-size: {{pwdSize}}"
+            >{{pwd}}</text
+          >
           <view class="mt-240rpx w-560rpx">
-            <text class="text-26 text-hex-1e2c46">在门锁输入“ 8位数密码 + #键 ”结束</text>
+            <text class="text-26 text-hex-1e2c46">{{actionTips}}</text>
             <view class="flex flex-row items-center mt-40rpx">
               <text class="text-26 text-hex-1e2c46">临时密码有效期：</text>
-              <text class="text-36 text-hex-fff ml-50rpx block show-time">09:58</text>
+              <text class="text-36 text-hex-fff ml-50rpx block show-time">{{remainTime}}</text>
             </view>
           </view>
 
@@ -130,3 +139,5 @@
     </view>
   </view>
 </mz-popup>
+
+<mz-toast id="mz-toast" />

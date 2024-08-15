@@ -50,6 +50,8 @@
   <!-- 隔开一点距离 -->
   <view class="h-40rpx"></view>
   <!-- 底部按钮 -->
+  <van-button size="large" type="primary" custom-class="share-btn" open-type="share">分享设备</van-button>
+  <view class="h-40rpx"></view>
   <van-button size="large" type="warning" custom-class="delete-btn" bind:click="handleDeviceDelete">删除设备</van-button>
   <view class="h-96rpx"></view>
 

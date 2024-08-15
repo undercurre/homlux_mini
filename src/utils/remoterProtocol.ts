@@ -27,14 +27,17 @@ const _searchDeviceCallBack = (device: WechatMiniprogram.BlueToothDevice) => {
   let deviceType
   if (isV2) {
     const advertisDataArr = Array.from(new Uint8Array(device.advertisData))
+    const adVersion = advertisDataArr[2]
+    if (adVersion !== 0x81) return
     const typeVal = advertisDataArr[3] & 0x0f
     if (typeVal === 0) deviceType = '26'
     else if (typeVal === 1) deviceType = '40'
     else if (typeVal === 2) deviceType = '13a'
     else if (typeVal === 3) deviceType = '13b'
     else if (typeVal === 4) deviceType = '17'
+    else if (typeVal === 5) deviceType = 'a1'
     else return
-    if (!SUPPORT_LIST_V2.includes(deviceType.toLocaleUpperCase())) return
+    if (!SUPPORT_LIST_V2.includes(deviceType)) return
 
     const devRssi = (advertisDataArr[3] & 0x70) >> 4
     const rssiArr = [-90, -85, -80, -75, -70, -65, -60, -55]
@@ -283,6 +286,15 @@ const _parsePayloadV2 = (payload: string, deviceType: string) => {
   // if (deviceType === '17') {
   //   return {}
   // }
+  if (deviceType === 'a1') {
+    return {
+      isV2: true,
+      FAN_SWITCH: !!rxU16[0],
+      FAN_GEAR: rxU16[1],
+      FAN_DELAY_OFF_MIN: rxU16[2] * 256 + rxU16[3],
+      FAN_DELAY_OFF_RUNNING: !!rxU16[4],
+    }
+  }
   return {}
 }
 

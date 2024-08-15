@@ -6,6 +6,7 @@
   "componentFramework": "glass-easel",
   "disableScroll": true,
   "usingComponents": {
+    "mz-toast": "/skyline-components/mz-toast/index",
     "mz-button": "/skyline-components/mz-button/index",
     "mz-popup": "/skyline-components/mz-popup/index",
     "mz-picker": "/skyline-components/mz-picker/index",
