@@ -39,7 +39,7 @@
         <text
           class="text-28rpx font-normal"
           style="color: {{gearBtnConfig.isTopOn ? '#ffffff' : '#979EAD'}};"
-          >强风</text
+          >强吹风</text
         >
       </view>
       <view
@@ -55,7 +55,7 @@
         <text
           class="text-28rpx font-normal"
           style="color: {{gearBtnConfig.isBottomOn ? '#ffffff' : '#979EAD'}};"
-          >弱风</text
+          >弱吹风</text
         >
       </view>
     </view>
