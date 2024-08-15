@@ -314,15 +314,6 @@
   bind:close="handleEditPopupClose"
 ></edit-device-action-popup>
 
-<edit-sensor-popup
-  show="{{showEditSensorPopup}}"
-  productId="{{editingSensorType}}"
-  checkList="{{editingSensorAbility}}"
-  controlAction="{{editingSensorProperty}}"
-  bind:confirm="handleEditSensorConfirm"
-  bind:close="handleEditSensorClose"
-></edit-sensor-popup>
-
 <!-- 
 TODO：未验证
  -->

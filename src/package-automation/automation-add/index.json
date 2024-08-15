@@ -19,7 +19,6 @@
     "switch-control-popup": "../../components/switch-control-popup/index",
     "bath-control-popup": "../../components/bath-control-popup/index",
     "dryer-control-popup": "../../components/dryer-control-popup/index",
-    "edit-sensor-popup": "./components/edit-sensor-popup/index",
     "mz-dialog": "../../skyline-components/mz-dialog/index",
     "mz-cell-group": "../../skyline-components/mz-cell-group/index",
     "mz-cell": "../../skyline-components/mz-cell/index",
