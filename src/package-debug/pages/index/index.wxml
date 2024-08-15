@@ -14,13 +14,6 @@
     value="当前环境：{{curEnv}}"
   />
   <van-cell
-    title="添加虚拟设备"
-    is-link
-    center
-    link-type="navigateTo"
-    url="/package-debug/pages/add-virtual-device/index"
-  />
-  <van-cell
     title="HomOS调试"
     is-link
     center
