@@ -15,7 +15,6 @@
     "select-card-popup": "../../components/select-card-popup/index",
     "edit-effectiveTime-popup": "./components/edit-effectiveTime-popup/index",
     "curtain-control-popup": "../../components/curtain-control-popup/index",
-    "light-control-popup": "../../components/light-control-popup/index",
     "switch-control-popup": "../../components/switch-control-popup/index",
     "bath-control-popup": "../../components/bath-control-popup/index",
     "dryer-control-popup": "../../components/dryer-control-popup/index",
