@@ -1,4 +1,6 @@
-<view class="card-wrapper" bind:tap="handleCardTap">
+<view class="card-wrapper" 
+  style="opacity: {{isNewTooFar ? 0.6 : 1}}; background-image: {{isNewTooFar ? 'linear-gradient(180deg, #e6e6e6 10%, #f6f6f6 74%)' : 'linear-gradient(180deg, #f2f5fc 10%, #ffffff 74%)'}};" 
+  bind:tap="handleCardTap">
   <view class="flex item-center flex-1">
     <view class="w-96rpx h-96rpx rounded-999 flex-center" bind:tap="handlePicTap">
       <image src="{{device.devicePic}}" class="wh-full" />

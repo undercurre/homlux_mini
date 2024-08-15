@@ -19,6 +19,7 @@ declare namespace Remoter {
     defaultAction: number // 默认首页开关索引
     functionDes?: string
     isV2: boolean
+    isRSSIOK?: boolean
   }
 
   interface ButtonRes {

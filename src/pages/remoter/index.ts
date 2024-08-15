@@ -247,13 +247,14 @@ ComponentWithComputed({
 
     // 点击设备卡片
     async handleCardTap(e: WechatMiniprogram.TouchEvent) {
-      const { deviceType, deviceModel, saved, addr, isV2, functionDes } = e.detail
+      const { deviceType, deviceModel, saved, addr, isV2, functionDes, isRSSIOK } = e.detail
       if (isNullOrUnDef(deviceType) || isNullOrUnDef(deviceModel)) {
         return
       }
 
       if (!saved) {
-        this.saveDevice(e.detail as Remoter.DeviceItem)
+        if (isRSSIOK) this.saveDevice(e.detail as Remoter.DeviceItem)
+        else Toast('请靠近设备再添加')
       }
       // 跳转到控制页
       else {
@@ -293,11 +294,15 @@ ComponentWithComputed({
     },
     // 点击设备按钮
     async handleControlTap(e: WechatMiniprogram.TouchEvent) {
-      console.log('handleControlTap', e.detail)
+      const { isRSSIOK } = e.detail
 
       // 先触发本地保存，提高响应体验
       if (!e.detail.saved) {
-        this.saveDevice(e.detail as Remoter.DeviceItem)
+        if (isRSSIOK) this.saveDevice(e.detail as Remoter.DeviceItem)
+        else {
+          Toast('请靠近设备再尝试')
+          return
+        }
       }
 
       const now = new Date().getTime()
@@ -475,7 +480,8 @@ ComponentWithComputed({
         if (curFoundList.length > 0) {
           isExist = curFoundList.findIndex(oldItem => oldItem.addr === item?.addr) >= 0
         }
-        if (isExist || (item!.RSSI >= cusRSSI && !isSavedDevice)) {
+        const isRSSIOK = item!.RSSI >= cusRSSI
+        if (isExist || !isSavedDevice) {
           let config = null
           if (item!.isV2) {
             config = deviceConfigV2[deviceType] || null
@@ -483,7 +489,7 @@ ComponentWithComputed({
             config = deviceConfig[deviceType][deviceModel] || null
           }
           if (!config) {
-            console.log('config NOT EXISTED in onBluetoothDeviceFound')
+            // console.log(`lmn>>>不支持的设备:品类:${deviceType}/型号=${deviceModel}`)
             continue
           }
 
@@ -515,7 +521,11 @@ ComponentWithComputed({
             }
           }
           const deviceName = devSuffix ? nameKey + devSuffix : nameKey
-          console.log(`lmn>>>发现新设备::mac=${item!.addr}/品类=${deviceType}/型号=${deviceModel}/信号=${item!.RSSI}/阈值=${cusRSSI},命名=>${deviceName}`)
+          if (isRSSIOK) {
+            console.log(`lmn>>>发现可添加设备::mac=${item!.addr}/品类=${deviceType}/型号=${deviceModel}/信号=${item!.RSSI}/阈值=${cusRSSI},命名=>${deviceName}`)
+          } else {
+            console.warn(`lmn>>>发现弱信号设备::mac=${item!.addr}/品类=${deviceType}/型号=${deviceModel}/信号=${item!.RSSI}小于阈值=${cusRSSI},命名=>${deviceName}`)
+          }
 
           // 更新发现设备列表
           newFoundList.push({
@@ -533,6 +543,7 @@ ComponentWithComputed({
             DISCOVERED: 1,
             isV2: item!.isV2,
             functionDes: item!.functionDes,
+            isRSSIOK,
           })
         } else {
           if (!isSavedDevice)
