@@ -68,10 +68,10 @@ App<IAppOption>({
         Logger.trace('[数据初始化开始]')
         await Promise.all([userStore.updateUserInfo(), homeStore.homeInit(), sceneStore.updateAllRoomSceneList()])
         Logger.trace('[数据初始化完成] 耗时', `${Date.now() - start}ms`)
-        hideLoading()
       } catch (e) {
         Logger.error('appOnLaunch-err:', e)
       }
+      hideLoading()
     } else {
       othersStore.setIsInit(false)
     }

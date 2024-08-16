@@ -41,7 +41,7 @@ Component({
       help: '/package-mine/help/list/index',
       about: '/package-about/pages/about/index',
       deviceCategory: '/package-mine/device-category/index',
-      setting: '/package-mine/setting/index',
+      setting: '/package-mine/pages/setting/index',
     },
     userInfo: {},
     isLogin: false,

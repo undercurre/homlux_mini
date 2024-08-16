@@ -1,0 +1,50 @@
+<view
+  class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7"
+  style="z-index: -1"
+></view>
+
+<view class="h-100vh flex flex-col items-stretch">
+  <!-- 标题 -->
+  <nav-bar
+    title="注销账号"
+    left-arrow
+    bind:leftTap="goBack"
+  ></nav-bar>
+  <view class="h-24rpx"> </view>
+
+  <view class="grow justify-center items-center px-48rpx">
+    <view class="text-center">
+      <image
+        src="/assets/img/login/logo.png"
+        class="w-140 h-140 mt-110rpx mb-30rpx"
+      ></image>
+    </view>
+
+    <view class="text-center text-36 text-hex-27282A leading-50rpx font-medium">注销美的照明账号</view>
+
+    <view class="py-80rpx text-28 text-hex-666">
+      <view class="leading-40rpx pb-20rpx">亲爱的用户：</view>
+
+      <view class="leading-52rpx"> 当前为注销申请页面，注销账号前，请确认该账号是本人使用且为正常状态，<text class="text-hex-27282A font-medium">注销前请您先删除家庭中所有已绑定设备和第三方平台关联关系（包括：美居、小度、小爱）。</text>我们在收到您的注销账号请求后对您的请求进行核查和处理，当账号一旦注销，将您的美的照明账号将无法继续使用。 </view>
+    </view>
+  </view>
+
+  <view class="flex flex-row justify-between mt-40rpx px-32rpx">
+    <van-button
+      class="flex-1"
+      size="large"
+      bind:click="handleConfirm"
+      >确认注销</van-button
+    >
+    <view class="w-46rpx"></view>
+    <van-button
+      type="primary"
+      class="flex-1"
+      size="large"
+      bind:click="goBack"
+      >我再想想</van-button
+    >
+  </view>
+
+  <view class="h-96rpx"></view>
+</view>
