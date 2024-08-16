@@ -505,10 +505,12 @@ ComponentWithComputed({
       for (let i = 0; i < btns.length; i++) {
         if (btns[i].isMode && btns[i].isOn) {
           if (btns[i].gear > 0) statusTextArr.push(`${btns[i].name}${btns[i].gear}档`)
-          else statusTextArr.push(btns[i].name)
+          else {
+            if (btns[i].key === 'HEAT' && isShowTemp && temp === 42) statusTextArr.push('强暖')
+            else statusTextArr.push(btns[i].name)
+          }
         }
       }
-      if (isShowTemp && temp === 42) statusTextArr.push('强暖')
       this.setData({
         curTemp: isShowTemp ? temp : '--',
         btnList: btns,
