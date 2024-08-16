@@ -508,6 +508,7 @@ ComponentWithComputed({
           else statusTextArr.push(btns[i].name)
         }
       }
+      if (isShowTemp && temp === 42) statusTextArr.push('强暖')
       this.setData({
         curTemp: isShowTemp ? temp : '--',
         btnList: btns,

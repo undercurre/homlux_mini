@@ -215,14 +215,14 @@ ComponentWithComputed({
       const promise = new Promise((resolve) => {
         setTimeout(() => {
           resolve({
-            title: '分享我的数字遥控器',
+            title: '分享遥控器设备',
             path: `/pages/remoter/index?addr=${curDev.addr}&deviceType=${curDev.deviceType}&deviceModel=${curDev.deviceModel}&functionDes=${curDev.functionDes}&deviceName=${curDev.deviceName}&version=${curDev.version}`,
             imageUrl: ShareImgUrl,
           })
         }, 500)
       })
       return {
-        title: '分享我的数字遥控器',
+        title: '分享遥控器设备',
         path: `/pages/remoter/index?addr=${curDev.addr}&deviceType=${curDev.deviceType}&deviceModel=${curDev.deviceModel}&functionDes=${curDev.functionDes}&deviceName=${curDev.deviceName}&version=${curDev.version}`,
         imageUrl: ShareImgUrl,
         promise,

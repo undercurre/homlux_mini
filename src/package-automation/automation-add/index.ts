@@ -85,10 +85,6 @@ ComponentWithComputed({
     _isEditCondition: false,
     /** 是否修改过图标或名称 */
     // _isEditIconOrName: false,
-
-    editingSensorType: 'midea.ir.201',
-    editingSensorAbility: ['有人移动'],
-    editingSensorProperty: { occupancy: 1, modelName: 'irDetector' } as IAnyObject,
     // 正在控制的场景条件
     editingPropertyInfo: {} as IAnyObject,
 
@@ -1060,9 +1056,6 @@ ComponentWithComputed({
         })
       } else {
         this.setData({
-          editingSensorType: action.productId,
-          editingSensorAbility: action.desc,
-          editingSensorProperty: action.property,
           editingUniId: action.uniId,
           editingPropertyInfo: {
             title: action.name,

@@ -1,9 +1,0 @@
-{
-  "component": true,
-  "styleIsolation": "apply-shared",
-  "usingComponents": {
-    "mz-button": "../../../../skyline-components/mz-button/index",
-    "mz-popup": "../../../../skyline-components/mz-popup/index",
-    "sensor-ability-select": "../../../../components/sensor-ability-select/index"
-  }
-}

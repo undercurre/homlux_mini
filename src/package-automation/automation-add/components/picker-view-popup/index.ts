@@ -1,6 +1,6 @@
 import { scenePropertyOptions } from '../../../../config/index'
-import _ from 'lodash'
 import { autosceneStore } from '../../../../store/index'
+import { isEqual } from '../../../../utils/index'
 
 Component({
   options: {},
@@ -32,7 +32,7 @@ Component({
         } else {
           const tempValue = { ...scenePropertyOptions, ...this.data._deviceConditionPropertyList }[
             value.propertyKey as keyof typeof scenePropertyOptions
-          ].findIndex((item) => item.value === value.value || _.isEqual(item.value, value.value))
+          ].findIndex((item) => item.value === value.value || isEqual(item.value as unknown as IAnyObject, value.value))
           this.setData({
             value: tempValue < 0 ? 0 : tempValue,
             pickerColumns: { ...scenePropertyOptions, ...this.data._deviceConditionPropertyList }[

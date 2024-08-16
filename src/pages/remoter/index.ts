@@ -118,7 +118,7 @@ ComponentWithComputed({
       const list = remoterStore.remoterList
       for (let i = 0; i < list.length; i++) {
         if (list[i].addr === addr) {
-          Toast('该遥控已存在')
+          Toast('该遥控器已存在')
           return
         }
       }

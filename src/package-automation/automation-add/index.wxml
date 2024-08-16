@@ -314,25 +314,10 @@
   bind:close="handleEditPopupClose"
 ></edit-device-action-popup>
 
-<edit-sensor-popup
-  show="{{showEditSensorPopup}}"
-  productId="{{editingSensorType}}"
-  checkList="{{editingSensorAbility}}"
-  controlAction="{{editingSensorProperty}}"
-  bind:confirm="handleEditSensorConfirm"
-  bind:close="handleEditSensorClose"
-></edit-sensor-popup>
-
 <!-- 
 TODO：未验证
  -->
-<!-- <light-control-popup
-  show="{{showEditPopup === '0x13'}}"
-  title="{{sceneEditTitle}}"
-  lightInfo="{{sceneEditInfo}}"
-  bind:confirm="handleSceneEditConfirm"
-  bind:close="handleEditPopupClose"
-></light-control-popup> -->
+
 <switch-control-popup
   show="{{showEditPopup === '0x21'}}"
   title="{{sceneEditTitle}}"

@@ -4,6 +4,6 @@
   "usingComponents": {
     "van-button": "@vant/weapp/button/index",
     "van-popup": "@vant/weapp/popup/index",
-    "edit-device-form": "/components/edit-device-form/index"
+    "edit-device-form": "../../../../components/edit-device-form/index"
   }
 }
