@@ -84,3 +84,20 @@ export async function inviteHouseUserForMobile(
     data: params,
   })
 }
+
+/**
+ * 用户注销账号
+ */
+export async function logoutWxUserInfo(
+  params: {
+    confirm: boolean // 是否第二次确认删除,是否强制删除
+  },
+  options?: IApiRequestOption,
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/user/logoutWxUserInfo',
+    data: params,
+  })
+}

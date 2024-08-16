@@ -13,6 +13,28 @@
     "miniprogram": {
       "list": [
         {
+          "name": "注销账号",
+          "pathName": "package-mine/pages/logoff/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
+        {
+          "name": "设置页面",
+          "pathName": "package-mine/pages/setting/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
+        {
           "name": "door-lock-logs",
           "pathName": "package-mine/device-manage/door-lock-logs/index",
           "query": "deviceId=177021372098906",
