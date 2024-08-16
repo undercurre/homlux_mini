@@ -1,6 +1,8 @@
+import Toast from '@vant/weapp/toast/toast'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { logoutWxUserInfo } from '../../../apis/index'
 import { homluxOssUrl } from '../../../config/index'
+import { logout } from '../../../utils/index'
 
 Component({
   options: {
@@ -22,6 +24,19 @@ Component({
     async handleConfirm() {
       const res = await logoutWxUserInfo({ confirm: this.data._isForceLogut })
 
+      if (!res.success) {
+        Toast({
+          message: '注销成功',
+        })
+
+        setTimeout(() => {
+          logout()
+        }, 2000)
+      } else {
+        Toast({
+          message: res.msg,
+        })
+      }
       console.log('logoutWxUserInfo', res)
     },
   },
