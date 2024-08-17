@@ -37,14 +37,14 @@ ComponentWithComputed({
       this.init()
     },
     async init() {
-      const diffData = {} as IAnyObject
-
       // 查询小程序订阅设置
       wx.getSetting({
         withSubscriptions: true,
         success: (res) => {
           const { mainSwitch, itemSettings = {} } = res.subscriptionsSetting
-          diffData.isAcceptedSubscriptions = mainSwitch && itemSettings[ABNORMAL_TEMPLATE_ID] === 'accept'
+          this.setData({
+            isAcceptedSubscriptions: mainSwitch && itemSettings[ABNORMAL_TEMPLATE_ID] === 'accept',
+          })
         },
       })
 
@@ -57,7 +57,7 @@ ComponentWithComputed({
         Toast('提醒设置查询失败')
         return
       }
-
+      const diffData = {} as IAnyObject
       const { subscribeStatus } = res.result
       Object.keys(subscribeStatus).forEach((key) => {
         diffData[`abnormalSetting[${key}]`] = !!subscribeStatus[key]

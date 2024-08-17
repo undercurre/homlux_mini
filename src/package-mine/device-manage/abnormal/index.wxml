@@ -54,7 +54,7 @@
             slot="right-icon"
             data-key="132"
             checked="{{abnormalSetting[132]}}"
-            bind:change="{{handleSwitch}}"
+            bind:change="handleSwitch"
           />
         </van-cell>
       </van-cell-group>
