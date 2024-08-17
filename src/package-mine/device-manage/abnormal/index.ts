@@ -1,8 +1,9 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { wxRequestSubscribeMessage, queryUserSubscribeInfo } from '../../../apis/index'
+import { wxRequestSubscribeMessage, queryUserSubscribeInfo, updateUserSubscribeInfo } from '../../../apis/index'
 import { ABNORMAL_TEMPLATE_ID } from '../../../config/index'
+import { userStore } from '../../../store/index'
 
 ComponentWithComputed({
   behaviors: [pageBehavior],
@@ -13,11 +14,11 @@ ComponentWithComputed({
     deviceId: '',
     isAcceptedSubscriptions: false,
     abnormalSetting: {
-      132: false, // 门铃响
-      134: false, // 门锁被撬
-      133: false, // 5次后锁定
-      135: false, // 低电量
-    },
+      '132': false, // 门铃响
+      '134': false, // 门锁被撬
+      '133': false, // 5次后锁定
+      '135': false, // 低电量
+    } as Record<string, boolean>,
   },
 
   computed: {},
@@ -65,9 +66,13 @@ ComponentWithComputed({
 
       this.setData(diffData)
     },
-    async handleSwitch(e: WechatMiniprogram.CustomEvent<never, never, { key: number }>) {
-      if (!this.data.isAcceptedSubscriptions) {
-        // 如果订阅关闭
+
+    async handleSwitch(e: WechatMiniprogram.CustomEvent<never, never, { key: string }>) {
+      const cmdType = e.currentTarget.dataset.key
+      const oldStatus = this.data.abnormalSetting[cmdType]
+
+      if (oldStatus && !this.data.isAcceptedSubscriptions) {
+        // 如果要开启，但订阅设置关闭
         const res = await wxRequestSubscribeMessage([ABNORMAL_TEMPLATE_ID]) // 弹出授权框
         if (res[ABNORMAL_TEMPLATE_ID] !== 'accept') return // 如果用户未选择接受
 
@@ -75,8 +80,15 @@ ComponentWithComputed({
         Toast.success('订阅成功')
       }
 
+      await updateUserSubscribeInfo({
+        deviceId: this.data.deviceId,
+        cmdType,
+        onStatus: oldStatus ? 0 : 1,
+        userId: userStore.userInfo.userId,
+      })
+
       this.setData({
-        [`abnormalSetting[${e.currentTarget.dataset.key}]`]: true,
+        [`abnormalSetting[${cmdType}]`]: true,
       })
     },
   },

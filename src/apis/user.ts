@@ -103,7 +103,7 @@ export async function logoutWxUserInfo(
 }
 
 /**
- * 用户订阅小程序通知
+ * 用户订阅小程序通知查询
  */
 export async function queryUserSubscribeInfo(
   data: {
@@ -117,6 +117,28 @@ export async function queryUserSubscribeInfo(
     log: true,
     loading: options?.loading ?? false,
     url: '/v1/mzgd/user/queryUserDeviceSubscribeNotifyInfo',
+    data,
+  })
+}
+
+/**
+ * 用户订阅小程序通知设置
+ */
+export async function updateUserSubscribeInfo(
+  data: {
+    deviceId: string
+    cmdType: string
+    onStatus: number
+    userId: string
+  },
+  options?: IApiRequestOption,
+) {
+  return await mzaioRequest.post<{
+    subscribeStatus: Record<string, number>
+  }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/user/updateUserDeviceSubscribeNotifyInfo',
     data,
   })
 }
