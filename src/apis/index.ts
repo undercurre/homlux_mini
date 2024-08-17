@@ -6,6 +6,7 @@ export * from './user'
 export * from './ota'
 export * from './scene'
 export * from './meiju'
+export * from './wechat'
 
 export async function login(data: object) {
   return await mzaioRequest.post<User.UserLoginRes>({

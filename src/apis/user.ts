@@ -101,3 +101,22 @@ export async function logoutWxUserInfo(
     data: params,
   })
 }
+
+/**
+ * 用户订阅小程序通知
+ */
+export async function queryUserSubscribeInfo(
+  data: {
+    deviceId: string
+  },
+  options?: IApiRequestOption,
+) {
+  return await mzaioRequest.post<{
+    subscribeStatus: Record<string, number>
+  }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/user/queryUserDeviceSubscribeNotifyInfo',
+    data,
+  })
+}

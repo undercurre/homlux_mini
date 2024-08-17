@@ -47,9 +47,10 @@ ComponentWithComputed({
    */
   methods: {
     toPage(e: WechatMiniprogram.TouchEvent<never, never, { url: string }>) {
+      const { deviceId } = this.data.deviceInfo
       console.log('toPage', e.currentTarget.dataset.url)
       wx.navigateTo({
-        url: e.currentTarget.dataset.url,
+        url: `${e.currentTarget.dataset.url}?deviceId=${deviceId}`,
       })
     },
     async doorLockControl(params: { data: IAnyObject; cmdType: number }) {
