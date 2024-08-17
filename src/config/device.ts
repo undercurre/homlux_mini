@@ -133,3 +133,22 @@ export const pwdType: Record<number, string> = {
   19: '管理员门卡',
   20: '管理员人脸识别',
 } as const
+
+// 门锁状态配置
+export const doorStatusConfig: Record<number, Record<string, string>> = {
+  0: {
+    statusText: '已上锁',
+  },
+  1: {
+    statusText: '未上锁',
+  },
+  2: {
+    statusText: '门锁异常', //电控原因，该字段无法区分开门关门，有新方案在colmo实现
+  },
+  3: {
+    statusText: '门锁异常',
+  },
+  5: {
+    statusText: '已反锁',
+  },
+}

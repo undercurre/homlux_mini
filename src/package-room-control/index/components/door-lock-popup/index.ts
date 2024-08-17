@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { homeBinding } from '../../../../store/index'
-import { getModelName, PRO_TYPE, SCREEN_PID, defaultImgDir } from '../../../../config/index'
+import { getModelName, PRO_TYPE, SCREEN_PID, defaultImgDir, doorStatusConfig } from '../../../../config/index'
 import { deviceTransmit } from '../../../../apis/index'
 import pageBehavior from '../../../../behaviors/pageBehaviors'
 import dayjs from 'dayjs'
@@ -88,6 +88,19 @@ ComponentWithComputed({
           time,
         }
       })
+    },
+    /**
+     * 门锁状态显示，与美居保持一致
+     *
+     */
+    doorLockStateText(data) {
+      const { doorLockState = 0, electronicLock } = data.deviceInfo
+      let status = doorLockState % 128
+      // ! 只有在关闭状态，才能反锁
+      if (status === 0 && electronicLock === 1) {
+        status = 5
+      }
+      return doorStatusConfig[status].statusText
     },
   },
 

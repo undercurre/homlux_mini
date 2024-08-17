@@ -10,13 +10,6 @@
     <view class="flex justify-evenly w-686rpx mt-10rpx relative">
       <view class="flex-center">
         <text class="mx-12rpx mt-16rpx tab-title">{{deviceInfo.deviceName}}</text>
-        <view class="mt-16rpx relative w-60 h-30">
-          <image
-            class="absolute w-full h-full"
-            src="../../../assets/base/{{batteryIcon}}"
-          ></image>
-          <text class="text-center text-20rpx mr-4rpx {{batteryTextColor}}">{{batteryView}}</text>
-        </view>
       </view>
       <!-- 设置、关闭按钮 -->
       <view
@@ -27,6 +20,19 @@
           class="w-48 h-48"
           src="/assets/img/home-manage/setting.png"
         ></image>
+      </view>
+    </view>
+
+    <!-- 状态、电量 -->
+    <view class="w-686rpx mt-16rpx flex-center">
+      <text class="block text-hex-666">{{doorLockStateText}}</text>
+      <text class="block mx-24rpx text-hex-666">|</text>
+      <view class="relative w-60 h-30">
+        <image
+          class="absolute w-full h-full"
+          src="../../../assets/base/{{batteryIcon}}"
+        ></image>
+        <text class="leading-30rpx text-center text-20rpx mr-4rpx {{batteryTextColor}}">{{batteryView}}</text>
       </view>
     </view>
 
