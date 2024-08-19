@@ -29,8 +29,7 @@
 
       <van-cell
         title="隐私协议"
-        bind:tap="toPage"
-        data-url="/package-mine/device-manage/abnormal/index"
+        bind:click="handlePrivacy"
         is-link
         border="{{false}}"
       >
