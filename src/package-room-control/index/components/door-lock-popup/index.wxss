@@ -27,7 +27,7 @@
 .log-step {
   position: absolute;
   top: 50rpx;
-  left: 180rpx;
+  left: 190rpx;
   height: 110rpx;
   width: 2rpx;
   background-color: #e5e5e8;
@@ -35,7 +35,7 @@
 
 .circle {
   position: absolute;
-  left: 180rpx;
+  left: 190rpx;
   margin-left: -5rpx;
   width: 12rpx;
   height: 12rpx;

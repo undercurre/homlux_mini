@@ -88,14 +88,14 @@
         <mz-button
           class="flex-1 mr-16rpx"
           size="large"
-          bind:click="handlePickerConfirm"
+          bind:click="handleCopyPwd"
           >复制密码
         </mz-button>
         <mz-button
           type="primary"
           class="flex-1 ml-16rpx"
           size="large"
-          bind:click="handlePickerConfirm"
+          open-type="share"
           >微信分享
         </mz-button>
       </block>

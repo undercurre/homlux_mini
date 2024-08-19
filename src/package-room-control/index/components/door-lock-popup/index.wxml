@@ -62,7 +62,7 @@
         wrapperHeight="{{112}}"
         round="{{32}}"
         direction="row"
-        bind:btnTouchStart="toPage"
+        bind:btnTouchEnd="toPage"
         data-url="/package-mine/device-manage/door-lock-psw/index"
         textInset
       ></mz-icon-button>
@@ -79,7 +79,7 @@
         wrapperHeight="{{112}}"
         round="{{32}}"
         direction="row"
-        bind:btnTouchStart="toPage"
+        bind:btnTouchEnd="toPage"
         data-url="/package-mine/device-manage/door-lock-users/index"
         textInset
       ></mz-icon-button>
@@ -113,7 +113,7 @@
               wx:for="{{logListView}}"
               wx:key="index"
             >
-              <text class="block w-92rpx text-24 text-hex-a2a2a2">{{item.time}}</text>
+              <text class="block w-100rpx text-24 text-hex-a2a2a2">{{item.time}}</text>
               <view class="circle"></view>
               <view
                 wx:if="{{index !== logListView.length-1}}"
