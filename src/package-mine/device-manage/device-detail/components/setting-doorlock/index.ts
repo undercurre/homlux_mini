@@ -1,7 +1,8 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import Toast from '@vant/weapp/toast/toast'
-import { deviceTransmit, sendDevice } from '../../../../../apis/index'
+import { deviceTransmit, sendDevice, wxOpenDocs } from '../../../../../apis/index'
 import { getRandomNum } from '../../../../../utils/index'
+import { homluxOssUrl } from '../../../../../config/index'
 
 ComponentWithComputed({
   /**
@@ -52,6 +53,10 @@ ComponentWithComputed({
       wx.navigateTo({
         url: `${e.currentTarget.dataset.url}?deviceId=${deviceId}`,
       })
+    },
+    handlePrivacy() {
+      const url = `${homluxOssUrl}/downloadFile/%E7%BE%8E%E7%9A%84%E6%99%BA%E8%83%BD%E9%97%A8%E9%94%81%E9%9A%90%E7%A7%81%E5%8D%8F%E8%AE%AE.doc`
+      wxOpenDocs(url)
     },
     async doorLockControl(params: { data: IAnyObject; cmdType: number }) {
       const { proType, deviceType, deviceId } = this.data.deviceInfo

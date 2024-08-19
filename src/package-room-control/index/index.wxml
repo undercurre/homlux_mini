@@ -346,7 +346,14 @@
   cancel-button-color="#27282A"
   show-cancel-button
 >
-  <view class="flex-center w-full h-128 text-28"> <text>我已阅读</text><text class="link-text">隐私政策</text> </view>
+  <view class="flex-center w-full h-128 text-28">
+    <text>我已阅读</text
+    ><text
+      bind:tap="handlePrivacy"
+      class="link-text"
+      >隐私政策</text
+    >
+  </view>
 </mz-dialog>
 
 <device-auth-dialog

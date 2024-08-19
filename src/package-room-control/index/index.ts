@@ -2,7 +2,7 @@ import { ComponentWithStore } from 'mobx-miniprogram-bindings'
 import { deviceStore, sceneStore, roomStore, homeStore, userStore } from '../../store/index'
 import { runInAction } from 'mobx-miniprogram'
 import pageBehavior from '../../behaviors/pageBehaviors'
-import { sendDevice, execScene, saveDeviceOrder, queryGroup, queryAuthGetStatus } from '../../apis/index'
+import { sendDevice, execScene, saveDeviceOrder, queryGroup, queryAuthGetStatus, wxOpenDocs } from '../../apis/index'
 import Toast from '../../skyline-components/mz-toast/toast'
 import Dialog from '../../skyline-components/mz-dialog/dialog'
 import {
@@ -39,6 +39,7 @@ import {
   ZHONGHONG_PID,
   FAN_PID,
   NO_SYNC_DEVICE_STATUS_IN_ROOM,
+  homluxOssUrl,
 } from '../../config/index'
 import homOs from 'js-homos'
 
@@ -996,7 +997,10 @@ ComponentWithStore({
         this.queryAuthBeforeControlTap(e)
       }
     },
-
+    handlePrivacy() {
+      const url = `${homluxOssUrl}/downloadFile/%E7%BE%8E%E7%9A%84%E6%99%BA%E8%83%BD%E9%97%A8%E9%94%81%E9%9A%90%E7%A7%81%E5%8D%8F%E8%AE%AE.doc`
+      wxOpenDocs(url)
+    },
     /**
      * @description 卡片点击事件处理
      * @param e 设备属性
