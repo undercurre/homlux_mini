@@ -25,7 +25,7 @@
 
 <van-cell-group inset>
   <van-cell
-    icon="{{homluxOssUrl}}/assets/logoff.png"
+    icon="/package-mine/assets/img/setting/logoff.png"
     title="注销账号"
     is-link
     link-type="navigateTo"

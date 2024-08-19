@@ -2,7 +2,7 @@ import Toast from '@vant/weapp/toast/toast'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { logoutWxUserInfo } from '../../../apis/index'
 import { homluxOssUrl } from '../../../config/index'
-import { logout } from '../../../utils/index'
+import { logout, storage } from '../../../utils/index'
 
 Component({
   options: {
@@ -29,9 +29,11 @@ Component({
           message: '注销成功',
         })
 
+        storage.remove('hasAgree') // 注销后，移除协议阅读标志
+
         setTimeout(() => {
           logout()
-        }, 2000)
+        }, 1500)
       } else {
         Toast({
           message: res.msg,

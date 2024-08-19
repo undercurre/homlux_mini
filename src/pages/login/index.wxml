@@ -23,39 +23,10 @@
   >
 </view>
 
-<view class="absolute w-100vw left-0 bottom-0">
-  <view class="mx-74rpx">
-    <mz-checkbox
-      value="{{ isAgree }}"
-      bind:change="onAgreeClick"
-    >
-      <text class="text-24rpx">
-        <text>我已阅读并同意</text>
-        <text
-          style="color: #169bd5"
-          data-value="privacyPolicy"
-          catchtap="toPage"
-          >《美的照明隐私协议》</text
-        ><text
-          style="color: #169bd5"
-          data-value="userService"
-          catchtap="toPage"
-          >《软件许可及用户服务协议》</text
-        ><text
-          style="color: #169bd5"
-          data-value="userInfoList"
-          catchtap="toPage"
-          >《已收集个人信息清单》</text
-        >和<text
-          style="color: #169bd5"
-          data-value="authList"
-          catchtap="toPage"
-          >《美的照明权限列表》</text
-        >
-      </text>
-    </mz-checkbox>
-  </view>
-  <view class="px-32rpx mt-50rpx mb-128rpx">
+<view class="absolute w-100vw left-0 bottom-0 px-32rpx">
+  <agree-protocol bind:change="onAgreeClick"></agree-protocol>
+
+  <view class="mt-50rpx mb-128rpx">
     <mz-button
       open-type="getPhoneNumber|agreePrivacyAuthorization"
       bindtap="handleLoginTap"

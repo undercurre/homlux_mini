@@ -14,6 +14,7 @@
     }
   },
   "usingComponents": {
+    "agree-protocol": "./components/agree-protocol/index",
     "mz-button": "/skyline-components/mz-button/index",
     "mz-toast": "/skyline-components/mz-toast/index",
     "mz-checkbox": "/skyline-components/mz-checkbox/index"

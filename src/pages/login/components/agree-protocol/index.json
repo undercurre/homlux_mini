@@ -1,0 +1,9 @@
+{
+  "component": true,
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "mz-button": "/skyline-components/mz-button/index",
+    "mz-checkbox": "/skyline-components/mz-checkbox/index",
+    "mz-popup": "/skyline-components/mz-popup/index"
+  }
+}

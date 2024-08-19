@@ -16,11 +16,10 @@
 <van-cell-group inset>
   <van-cell
     wx:for="{{list}}"
-    wx:key="value"
-    title="{{item.title}}"
+    wx:key="url"
+    title="{{item.label}}"
     is-link
     data-url="{{item.url}}"
-    data-value="{{item.value}}"
     bind:click="handleTap"
   ></van-cell>
 
