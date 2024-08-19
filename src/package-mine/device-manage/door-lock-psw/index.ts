@@ -1,7 +1,7 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { deviceTransmit } from '../../../apis/index'
-import { ossDomain } from '../../../config/index'
+import { ossDomain, ShareImgUrl } from '../../../config/index'
 import Toast from '../../../skyline-components/mz-toast/toast'
 
 type StatusType = 'init' | 'generated'
@@ -47,6 +47,11 @@ ComponentWithComputed({
       const sec = remainSecond % 60
       return [min, sec].map((item) => String(item).padStart(2, '0')).join(':')
     },
+    pwdValidTime(data) {
+      const { expired } = data
+      return `有效时间：${expired}分钟`
+    },
+
     // 复合判断门锁在离线状态
     isDoorOnline(data) {
       const { doorOnline } = data
@@ -62,6 +67,11 @@ ComponentWithComputed({
       console.log('onLoad', deviceId)
       this.setData({
         deviceId,
+      })
+
+      wx.updateShareMenu({
+        withShareTicket: true,
+        isPrivateMessage: true,
       })
     },
 
@@ -80,6 +90,18 @@ ComponentWithComputed({
         isShowPicker: false,
         expired: this.data.timerSetVal,
       })
+    },
+    handleCopyPwd() {
+      wx.setClipboardData({
+        data: `【门锁临时密码】${this.data.pwd}，${this.data.pwdValidTime}`,
+      })
+    },
+    onShareAppMessage() {
+      return {
+        title: `【门锁临时密码】${this.data.pwd}，${this.data.pwdValidTime}`,
+        imageUrl: ShareImgUrl,
+        path: '/pages/index/index',
+      }
     },
     timeChange(e: { detail: { value: string[] } }) {
       const timerSetVal = Number(e.detail.value[0])
