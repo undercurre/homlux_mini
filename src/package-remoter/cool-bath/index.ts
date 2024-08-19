@@ -94,12 +94,12 @@ ComponentWithComputed({
     popSelectMode: [
       {
         key: 'HIGH',
-        name: '强风',
+        name: '强吹风',
         iconOff: '/package-remoter/assets/newUI/highWindOff.png',
       },
       {
         key: 'LOW',
-        name: '弱风',
+        name: '弱吹风',
         iconOff: '/package-remoter/assets/newUI/lowWindOff.png',
       },
       {
@@ -131,8 +131,8 @@ ComponentWithComputed({
       if (!data.isBLEConnected) return '未连接'
       const list = data.btnList
       const arr = []
-      if (data.gearBtnConfig.isTopOn) arr.push('强风')
-      else if (data.gearBtnConfig.isBottomOn) arr.push('弱风')
+      if (data.gearBtnConfig.isTopOn) arr.push('强吹风')
+      else if (data.gearBtnConfig.isBottomOn) arr.push('弱吹风')
       for (let i = 0; i < list.length; i++) {
         if (list[i].isMode && list[i].isOn) arr.push(list[i].name)
       }
