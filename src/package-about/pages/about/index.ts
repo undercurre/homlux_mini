@@ -2,6 +2,7 @@ import pageBehavior from '../../../behaviors/pageBehaviors'
 import { storage } from '../../../utils/index'
 import meta from '../../../meta'
 import { homluxOssUrl } from '../../../config/index'
+import { wxOpenDocs } from '../../../apis/index'
 
 let isDebug = false
 let debugTimeId = 0
@@ -73,21 +74,6 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    showDoc(fileUrl: string) {
-      wx.downloadFile({
-        // 示例 url，并非真实存在
-        url: `${homluxOssUrl}/${fileUrl}`,
-        success: function (res) {
-          const filePath = res.tempFilePath
-          wx.openDocument({
-            filePath: filePath,
-            success: function (res) {
-              console.log('打开文档成功', res)
-            },
-          })
-        },
-      })
-    },
     toTestUtil() {
       wx.navigateTo({
         url: '/package-debug/pages/test-util/index',
@@ -113,7 +99,7 @@ Component({
     handleTap(e: WechatMiniprogram.TouchEvent) {
       const { url } = e.currentTarget.dataset
 
-      this.showDoc(url)
+      wxOpenDocs(`${homluxOssUrl}/${url}`)
 
       // wx.navigateTo({
       //   url: '/package-about/pages/protocol-show/index?protocal=' + e.currentTarget.dataset.value,
