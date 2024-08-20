@@ -399,7 +399,12 @@ ComponentWithComputed({
       } else {
         status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
       }
-      console.log('lmn>>>receiveBluetoothData::status=', JSON.stringify(status))
+      const str = JSON.stringify(status)
+      if (str === '{}') {
+        console.warn('lmn>>>收到错误命令')
+        return
+      }
+      console.log('lmn>>>receiveBluetoothData::status=', str)
       this.setData({
         devStatus: status,
       })

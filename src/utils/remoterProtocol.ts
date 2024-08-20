@@ -258,6 +258,8 @@ const _parsePayloadV2 = (payload: string, deviceType: string) => {
   //   }
   // }
   if (deviceType === '26' || deviceType === '40') {
+    const isLegal = rxU16[0] <= 1 && rxU16[1] <= 100 && rxU16[2] <= 1
+    if (!isLegal) return {}
     return {
       isV2: true,
       BATH_LAMP: !!rxU16[0],
