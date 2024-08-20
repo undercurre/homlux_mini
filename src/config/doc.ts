@@ -17,7 +17,6 @@ export const DOC_List: IDoc[] = [
   {
     label: '美的智能门锁隐私协议',
     url: `${homluxOssUrl}/downloadFile/美的智能门锁隐私协议.doc`,
-    isShowLogin: true,
   },
   {
     label: '权限列表',
