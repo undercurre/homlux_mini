@@ -24,7 +24,7 @@ Component({
     async handleConfirm() {
       const res = await logoutWxUserInfo({ confirm: this.data._isForceLogut })
 
-      if (!res.success) {
+      if (res.success) {
         Toast({
           message: '注销成功',
         })
