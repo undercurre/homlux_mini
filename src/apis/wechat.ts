@@ -1,21 +1,4 @@
 /**
- * 查询用户信息
- */
-export async function wxRequestSubscribeMessage(tmplIds: string[]) {
-  return new Promise<WechatMiniprogram.RequestSubscribeMessageSuccessCallbackResult>((resolve, reject) =>
-    wx.requestSubscribeMessage({
-      tmplIds,
-      success: (res) => {
-        resolve(res)
-      },
-      fail: (err) => {
-        reject(err)
-      },
-    }),
-  )
-}
-
-/**
  * 下载并打开文档
  */
 export async function wxOpenDocs(url: string) {
