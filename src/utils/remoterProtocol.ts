@@ -137,13 +137,18 @@ const _parseEncryptFlag = (encryptFlag: string) => {
  * @description
  * @returns key 命名须与 src\config\remoter.ts 中的 actions.key 保持一致
  */
-const _parsePayload = (payload: string, deviceType: string, deviceModel?: string) => {
+const _parsePayload = (payload: string, deviceType: string, deviceModel?: string, srcDeviceModel?: string) => {
   const rxBuf = new ArrayBuffer(payload.length) // 申请内存
   const rxU16 = new Uint16Array(rxBuf)
   for (let i = 0; i < payload.length / 2; ++i) {
     rxU16[i] = parseInt(payload.slice(i * 2, i * 2 + 2), 16)
   }
   if (deviceType === '13') {
+    let isLegal = true
+    if (srcDeviceModel !== undefined) {
+      if (srcDeviceModel !== deviceModel || rxU16[0] > 1) isLegal = false
+    }
+    if (!isLegal) return {}
     // 共有属性
     const res: IAnyObject = {
       LIGHT_LAMP: !!(rxU16[0] & BIT_0), // 开关
