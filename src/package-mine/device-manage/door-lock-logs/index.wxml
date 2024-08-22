@@ -37,7 +37,12 @@
       scroll-y
       enhanced
       enable-flex
+      enable-passive
+      refresher-enabled
+      refresher-triggered="{{refresherTriggered}}"
       show-scrollbar="{{false}}"
+      bind:scrolltolower="scrollToLower"
+      bind:refresherstatuschange="refresherstatuschange"
       class="flex-1"
       style="height: {{scrollHeight}}px;width: 686rpx;"
     >
