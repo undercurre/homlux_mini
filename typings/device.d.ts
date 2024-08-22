@@ -265,5 +265,6 @@ declare namespace Device {
     content: string
     createTime: string
     deviceId: string
+    isAlarm: '1' | '2'
   }
 }

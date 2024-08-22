@@ -68,7 +68,7 @@
             wx:if="{{j !== date.list.length-1}}"
             class="log-step"
           ></view>
-          <text class="text-24 text-hex-000 ml-90rpx flex-1">{{item.content}}</text>
+          <text class="text-24 {{item.textColor}} ml-90rpx flex-1">{{item.content}}</text>
         </view>
       </view>
     </scroll-view>

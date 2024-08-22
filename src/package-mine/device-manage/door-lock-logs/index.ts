@@ -72,6 +72,7 @@ ComponentWithComputed({
         result[date].list.push({
           index,
           content: log.content,
+          textColor: log.isAlarm === '2' ? 'text-hex-ff3849' : 'text-hex-000',
           date,
           time,
         })
