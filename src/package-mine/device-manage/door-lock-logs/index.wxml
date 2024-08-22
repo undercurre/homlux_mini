@@ -32,7 +32,7 @@
     </view>
 
     <scroll-view
-      wx:if="{{hasLog}}"
+      wx:if="{{hasLogList}}"
       type="list"
       scroll-y
       enhanced
@@ -101,10 +101,10 @@
   show="{{ showCalendar }}"
   min-date="{{ minDate }}"
   max-date="{{ maxDate }}"
-  show-title="{{ false }}"
   show-subtitle="{{ false }}"
   show-confirm="{{ false }}"
   color="#488fff"
+  formatter="{{ formatter }}"
   row-height="{{ 54 }}"
   bind:close="handleCalendarClose"
   bind:confirm="handleCalendarConfirm"

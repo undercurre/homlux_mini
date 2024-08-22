@@ -14,7 +14,7 @@ ComponentWithComputed({
    */
   data: {
     defaultImgDir,
-    logList: [] as IAnyObject[], // 日志列表
+    logList: [] as Device.DoorLockLog[], // 日志列表
     deviceId: '',
     currentPeriod: 'weekly',
     currentPeriodName: '近一周',
@@ -54,7 +54,7 @@ ComponentWithComputed({
     logListView(data) {
       const result = {} as IAnyObject
 
-      data.logList.forEach((log, index) => {
+      data.logList.forEach((log: Device.DoorLockLog, index: number) => {
         const { createTime } = log
         const [date, time] = createTime.split(' ')
         if (!Object.prototype.hasOwnProperty.call(result, date)) {
@@ -74,8 +74,11 @@ ComponentWithComputed({
 
       return result
     },
-    hasLog(data) {
-      return !!Object.keys(data.logListView).length
+    logDateList(data) {
+      return Object.keys(data.logListView)
+    },
+    hasLogList(data) {
+      return !!data.logDateList.length
     },
   },
 
@@ -94,13 +97,17 @@ ComponentWithComputed({
     },
 
     async updateLogs(startTime?: string, endTime?: string) {
-      const res = (await deviceTransmit('GET_DOOR_LOCK_DYNAMIC', {
-        deviceId: this.data.deviceId,
-        startTime: startTime ?? this.data.startTime,
-        endTime: endTime ?? this.data.endTime,
-        pageNo: 1,
-        pageSize: 300, // TODO
-      })) as IAnyObject
+      const res = (await deviceTransmit(
+        'GET_DOOR_LOCK_DYNAMIC',
+        {
+          deviceId: this.data.deviceId,
+          startTime: startTime ?? this.data.startTime,
+          endTime: endTime ?? this.data.endTime,
+          pageNo: 1,
+          pageSize: 300, // TODO
+        },
+        { loading: true },
+      )) as unknown as MzaioResponseRowData<{ list: Device.DoorLockLog[] }>
       this.setData({
         logList: res.result.list,
       })
@@ -152,7 +159,7 @@ ComponentWithComputed({
     handleCalendarConfirm(e: { detail: Date }) {
       const day = dayjs(e.detail)
       this.updateLogs(day.format('YYYY-MM-DD 00:00:00'), day.format('YYYY-MM-DD 23:59:59'))
-      this.setData({ showCalendar: false })
+      this.setData({ showCalendar: false, currentPeriodName: '近一天' })
     },
   },
 })
