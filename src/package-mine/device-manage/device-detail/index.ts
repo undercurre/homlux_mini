@@ -22,6 +22,7 @@ ComponentWithComputed({
     showEditLaundryPopup: false,
     deviceInfo: {} as Device.DeviceItem,
     firstShow: true,
+    hasOtaUpdate: false, // 是否有ota更新
   },
 
   computed: {
@@ -70,12 +71,6 @@ ComponentWithComputed({
         return ''
       }
       return ''
-    },
-    hasOtaUpdate(data) {
-      if (data.deviceInfo.deviceId) {
-        return !!otaStore.deviceVersionInfoMap[data.deviceInfo.deviceId]
-      }
-      return false
     },
     canEditDevice(data) {
       return data.isCreator || data.isAdmin
@@ -226,6 +221,13 @@ ComponentWithComputed({
           deviceInfo: res.result,
           deviceName: res.result.deviceName,
           roomId: res.result.roomId,
+        })
+
+        // 加载ota列表信息，ota列表展示
+        await otaStore.updateList()
+
+        this.setData({
+          hasOtaUpdate: !!otaStore.deviceVersionInfoMap[this.data.deviceInfo.deviceId],
         })
       }
     },
