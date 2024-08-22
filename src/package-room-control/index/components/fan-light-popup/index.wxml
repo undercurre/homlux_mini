@@ -197,7 +197,7 @@
 
     <view class="w-750rpx border-t-1px border-t-hex-EEF2F7 border-t-solid">
       <mz-cell
-        title="是否启用"
+        title="启用"
         center
         border="{{false}}"
       >

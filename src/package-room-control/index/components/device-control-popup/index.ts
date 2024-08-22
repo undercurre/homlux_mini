@@ -284,7 +284,7 @@ ComponentWithComputed({
     handleClose() {
       this.triggerEvent('close')
     },
-    handleLinkPopup() {
+    async handleLinkPopup() {
       const switchUniId = this.data.checkedList[0]
 
       // 关联场景显示逻辑
@@ -303,6 +303,8 @@ ComponentWithComputed({
       let list = [] as Device.DeviceItem[]
 
       const relInfo = this.data._switchRelInfo
+
+      await deviceStore.updateAllRoomDeviceList()
 
       if (this.data.selectLinkType === 'light') {
         list = deviceStore.allRoomDeviceFlattenList.filter((item) => item.proType === PRO_TYPE.light)

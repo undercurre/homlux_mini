@@ -32,12 +32,17 @@
     </view>
 
     <scroll-view
-      wx:if="{{hasLog}}"
+      wx:if="{{hasLogList}}"
       type="list"
       scroll-y
       enhanced
       enable-flex
+      enable-passive
+      refresher-enabled
+      refresher-triggered="{{refresherTriggered}}"
       show-scrollbar="{{false}}"
+      bind:scrolltolower="scrollToLower"
+      bind:refresherstatuschange="refresherstatuschange"
       class="flex-1"
       style="height: {{scrollHeight}}px;width: 686rpx;"
     >
@@ -63,7 +68,7 @@
             wx:if="{{j !== date.list.length-1}}"
             class="log-step"
           ></view>
-          <text class="text-24 text-hex-000 ml-90rpx flex-1">{{item.content}}</text>
+          <text class="text-24 {{item.textColor}} ml-90rpx flex-1">{{item.content}}</text>
         </view>
       </view>
     </scroll-view>
@@ -101,10 +106,10 @@
   show="{{ showCalendar }}"
   min-date="{{ minDate }}"
   max-date="{{ maxDate }}"
-  show-title="{{ false }}"
   show-subtitle="{{ false }}"
   show-confirm="{{ false }}"
   color="#488fff"
+  formatter="{{ formatter }}"
   row-height="{{ 54 }}"
   bind:close="handleCalendarClose"
   bind:confirm="handleCalendarConfirm"

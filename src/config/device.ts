@@ -152,3 +152,12 @@ export const doorStatusConfig: Record<number, Record<string, string>> = {
     statusText: '已反锁',
   },
 }
+
+/**
+ * 微信消息订阅 model_id 映射
+ * 后台关联：https://mp.weixin.qq.com/wxamp/deviceList
+ * 开发文档：https://developers.weixin.qq.com/miniprogram/dev/framework/device/device-message.html
+ */
+export const TYPE_TO_WX_MODEL_ID: Record<string, string> = {
+  '0x09': '9AA0pG3Xn5TSAlKWUUXJ2w',
+}

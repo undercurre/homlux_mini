@@ -6,6 +6,7 @@ import storage from '../../../utils/storage'
 import { defaultImgDir } from '../../../config/index'
 
 const WEEKDAY_ARRAY = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+const LOG_PAGESIZE = 20 // 每页日志数
 
 ComponentWithComputed({
   behaviors: [pageBehavior],
@@ -14,7 +15,8 @@ ComponentWithComputed({
    */
   data: {
     defaultImgDir,
-    logList: [] as IAnyObject[], // 日志列表
+    logList: [] as Device.DoorLockLog[], // 日志列表
+    logTotal: 0,
     deviceId: '',
     currentPeriod: 'weekly',
     currentPeriodName: '近一周',
@@ -48,13 +50,16 @@ ComponentWithComputed({
     minDate: dayjs().subtract(2, 'month').valueOf(), // 日历显示范围
     maxDate: dayjs().valueOf(),
     showCalendar: false,
+    refresherTriggered: false,
+    _isLoading: false, // 防止连续多次更新
+    _currentPage: 0,
   },
 
   computed: {
     logListView(data) {
       const result = {} as IAnyObject
 
-      data.logList.forEach((log, index) => {
+      data.logList.forEach((log: Device.DoorLockLog, index: number) => {
         const { createTime } = log
         const [date, time] = createTime.split(' ')
         if (!Object.prototype.hasOwnProperty.call(result, date)) {
@@ -67,6 +72,7 @@ ComponentWithComputed({
         result[date].list.push({
           index,
           content: log.content,
+          textColor: log.isAlarm === '2' ? 'text-hex-ff3849' : 'text-hex-000',
           date,
           time,
         })
@@ -74,8 +80,11 @@ ComponentWithComputed({
 
       return result
     },
-    hasLog(data) {
-      return !!Object.keys(data.logListView).length
+    logDateList(data) {
+      return Object.keys(data.logListView)
+    },
+    hasLogList(data) {
+      return !!data.logDateList.length
     },
   },
 
@@ -90,20 +99,34 @@ ComponentWithComputed({
       })
     },
     onShow() {
-      this.updateLogs()
+      this.updateLogs(true)
     },
 
-    async updateLogs(startTime?: string, endTime?: string) {
-      const res = (await deviceTransmit('GET_DOOR_LOCK_DYNAMIC', {
-        deviceId: this.data.deviceId,
-        startTime: startTime ?? this.data.startTime,
-        endTime: endTime ?? this.data.endTime,
-        pageNo: 1,
-        pageSize: 300, // TODO
-      })) as IAnyObject
+    /**
+     * 更新日志列表
+     * @param isRefresh 是否刷新数据；为否时为追加模式
+     * @param startTime
+     * @param endTime
+     */
+    async updateLogs(isRefresh = false, startTime?: string, endTime?: string) {
+      this.data._isLoading = true
+      const res = (await deviceTransmit(
+        'GET_DOOR_LOCK_DYNAMIC',
+        {
+          deviceId: this.data.deviceId,
+          startTime: startTime ?? this.data.startTime,
+          endTime: endTime ?? this.data.endTime,
+          pageNo: ++this.data._currentPage,
+          pageSize: LOG_PAGESIZE,
+        },
+        { loading: true },
+      )) as unknown as MzaioResponseRowData<{ list: Device.DoorLockLog[]; total: number }>
       this.setData({
-        logList: res.result.list,
+        logList: isRefresh ? res.result.list : [...this.data.logList, ...res.result.list],
+        logTotal: res.result.total,
+        refresherTriggered: false,
       })
+      this.data._isLoading = false
     },
 
     handlePeriodMenu() {
@@ -138,7 +161,7 @@ ComponentWithComputed({
       }
       this.setData(diffData)
 
-      this.updateLogs()
+      this.updateLogs(true)
     },
 
     handleCalendar() {
@@ -151,8 +174,23 @@ ComponentWithComputed({
 
     handleCalendarConfirm(e: { detail: Date }) {
       const day = dayjs(e.detail)
-      this.updateLogs(day.format('YYYY-MM-DD 00:00:00'), day.format('YYYY-MM-DD 23:59:59'))
-      this.setData({ showCalendar: false })
+      this.updateLogs(true, day.format('YYYY-MM-DD 00:00:00'), day.format('YYYY-MM-DD 23:59:59'))
+      this.setData({ showCalendar: false, currentPeriodName: '近一天' })
+    },
+    scrollToLower() {
+      const hasMoreLog = this.data.logList.length < this.data.logTotal
+      if (!hasMoreLog || this.data._isLoading) return
+
+      console.log('scrollToLower', { hasMoreLog })
+      this.updateLogs()
+    },
+    refresherstatuschange(e: WechatMiniprogram.CustomEvent<{ status: number }>) {
+      if (e.detail.status !== 1) return
+
+      this.setData({
+        refresherTriggered: true,
+      })
+      this.updateLogs(true)
     },
   },
 })

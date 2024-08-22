@@ -142,3 +142,23 @@ export async function updateUserSubscribeInfo(
     data,
   })
 }
+
+/**
+ * 用户订阅小程序通知设备票据
+ */
+export async function getSnTicket(
+  data: {
+    modelId: string
+    sn: string
+  },
+  options?: IApiRequestOption,
+) {
+  return await mzaioRequest.post<{
+    snTicket: string
+  }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/user/getWxMiniSnTicket',
+    data,
+  })
+}
