@@ -56,7 +56,11 @@
         </view>
       </view>
 
-      <view wx:else>
+      <view
+        wx:else
+        class="{{ utils.bem('calendar__day', [item.type]) }}"
+        style="width: {{ rowHeight }}px; height: {{ rowHeight }}px;"
+      >
         <view
           wx:if="{{ item.topInfo }}"
           class="mz-calendar__top-info"
