@@ -17,6 +17,7 @@ ComponentWithComputed({
     defaultImgDir,
     logList: [] as Device.DoorLockLog[], // 日志列表
     logTotal: 0,
+    haveLogDates: [] as string[],
     deviceId: '',
     currentPeriod: 'weekly',
     currentPeriodName: '近一周',
@@ -51,6 +52,8 @@ ComponentWithComputed({
     maxDate: dayjs().valueOf(),
     showCalendar: false,
     refresherTriggered: false,
+    // eslint-disable-next-line
+    dayFormatter: (_: IAnyObject) => {}, // 日历日期格式化
     _isLoading: false, // 防止连续多次更新
     _currentPage: 0,
   },
@@ -100,6 +103,7 @@ ComponentWithComputed({
     },
     onShow() {
       this.updateLogs(true)
+      this.getHaveLogDates()
     },
 
     /**
@@ -127,6 +131,30 @@ ComponentWithComputed({
         refresherTriggered: false,
       })
       this.data._isLoading = false
+    },
+
+    /**
+     * 获取有日志的日期列表
+     */
+    async getHaveLogDates() {
+      const res = (await deviceTransmit(
+        'GET_HAVE_LOG_DATE',
+        {
+          deviceId: this.data.deviceId,
+        },
+        { loading: true },
+      )) as unknown as MzaioResponseRowData<{ list: string[] }>
+      // console.log('getHaveLogDates', res)
+      const haveLogDates = res.result.list
+      this.setData({
+        haveLogDates,
+        dayFormatter: (day: IAnyObject) => {
+          if (haveLogDates.includes(dayjs(day.date).format('YYYY-MM-DD'))) {
+            day.bottomInfo = '•'
+          }
+          return day
+        },
+      })
     },
 
     handlePeriodMenu() {
