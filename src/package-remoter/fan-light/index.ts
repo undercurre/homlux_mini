@@ -206,6 +206,19 @@ ComponentWithComputed({
         this.setData({
           btnList: temp,
         })
+      } else if (this.data.devModel == '06') {
+        const btns = this.data.btnList
+        const temp = []
+        for (let i = 0; i < btns.length; i++) {
+          if (btns[i].key == 'DISPLAY') {
+            continue
+          } else {
+            temp.push(btns[i])
+          }
+        }
+        this.setData({
+          btnList: temp,
+        })
       }
     },
     onUnload() {

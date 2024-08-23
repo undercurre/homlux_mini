@@ -107,6 +107,20 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
       ],
     },
+    '06': {
+      deviceName: '风扇灯',
+      devicePic: '/assets/img/remoter/fanLight.png',
+      actions: [
+        {
+          key: 'LIGHT_LAMP',
+          name: '照明',
+        },
+        {
+          key: 'FAN_SWITCH',
+          name: '风扇',
+        },
+      ],
+    },
   },
   '26': {
     // Q30系列 // 0001 不支持摆风，可调温

@@ -459,7 +459,7 @@ ComponentWithComputed({
           cusRSSI = item!.deviceRSSI
         } else {
           if (deviceType === '13') {
-            if (deviceModel === '02' || deviceModel === '03') {
+            if (deviceModel === '02' || deviceModel === '03' || deviceModel === '06') {
               if (isIOS) cusRSSI = -80
               else cusRSSI = -75
             } else if (deviceModel === '04') cusRSSI = -70
