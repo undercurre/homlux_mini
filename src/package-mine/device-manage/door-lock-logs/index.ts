@@ -52,6 +52,7 @@ ComponentWithComputed({
     maxDate: dayjs().valueOf(),
     showCalendar: false,
     refresherTriggered: false,
+    isLoaded: false,
     // eslint-disable-next-line
     dayFormatter: (_: IAnyObject) => {}, // 日历日期格式化
     _isLoading: false, // 防止连续多次更新
@@ -129,6 +130,7 @@ ComponentWithComputed({
         logList: isRefresh ? res.result.list : [...this.data.logList, ...res.result.list],
         logTotal: res.result.total,
         refresherTriggered: false,
+        isLoaded: true,
       })
       this.data._isLoading = false
     },

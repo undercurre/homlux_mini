@@ -62,6 +62,7 @@ ComponentWithComputed({
     list: [] as (Device.DeviceItem | Scene.SceneItem)[],
     todayStr: dayjs().format('YYYY年M月D日'),
     weekday: WEEKDAY_ARRAY[Number(dayjs().format('d'))],
+    isLoaded: false,
   },
 
   computed: {
@@ -126,6 +127,7 @@ ComponentWithComputed({
       this.setData({
         // logList: [...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list],
         logList: res.result.list,
+        isLoaded: true,
       })
     },
     handleClose() {

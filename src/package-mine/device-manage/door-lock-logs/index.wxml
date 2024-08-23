@@ -78,7 +78,8 @@
       class="flex-1 flex-col-center"
     >
       <tips-box
-        text="暂无动态"
+        wx:if="{{isLoaded}}"
+        text="暂无记录"
         icon="{{defaultImgDir}}/no-log.png"
         size="240"
       ></tips-box>
