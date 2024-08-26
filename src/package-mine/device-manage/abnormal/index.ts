@@ -3,7 +3,9 @@ import pageBehavior from '../../../behaviors/pageBehaviors'
 import { queryUserSubscribeInfo, updateUserSubscribeInfo, getSnTicket } from '../../../apis/index'
 import { ABNORMAL_TEMPLATE_ID, TYPE_TO_WX_MODEL_ID } from '../../../config/index'
 import { userStore } from '../../../store/index'
+import { hideLoading, showLoading } from '../../../utils/index'
 import Toast from '@vant/weapp/toast/toast'
+import Dialog from '@vant/weapp/dialog/dialog'
 
 ComponentWithComputed({
   behaviors: [pageBehavior],
@@ -91,17 +93,17 @@ ComponentWithComputed({
 
     async handleSwitch(e: WechatMiniprogram.CustomEvent<never, never, { key: string }>) {
       console.log('isAcceptedSubscriptions', this.data.isAcceptedSubscriptions)
-      if (!this.data.mainSwitch) {
-        Toast('点击小程序右上角，打开接收通知的权限')
-        return
-      }
-      if (this.data.isAcceptedSubscriptions === 'reject') {
-        Toast('点击小程序右上角，打开接收门锁异常消息的权限')
+      if (!this.data.mainSwitch || this.data.isAcceptedSubscriptions === 'reject') {
+        Dialog.confirm({
+          showCancelButton: false,
+        }).catch(() => {})
         return
       }
 
       const cmdType = e.currentTarget.dataset.key
       const oldStatus = this.data.abnormalSetting[cmdType]
+
+      showLoading()
 
       // 如果是开启，并且isAcceptedSubscriptions未设置过
       if (!oldStatus && typeof this.data.isAcceptedSubscriptions !== 'string') {
@@ -109,6 +111,7 @@ ComponentWithComputed({
         const ticketRes = await getSnTicket({ sn: this.data.deviceId, modelId })
         if (!ticketRes.success) {
           Toast('订阅失败')
+          hideLoading()
           return
         }
 
@@ -127,6 +130,7 @@ ComponentWithComputed({
         console.log('[wxRequestSubscribeMessage]', res)
         if (!res || res[ABNORMAL_TEMPLATE_ID] !== 'accept') {
           Toast('订阅失败')
+          hideLoading()
           return
         } // 如果用户未选择接受
 
@@ -145,6 +149,7 @@ ComponentWithComputed({
       this.setData({
         [`abnormalSetting[${cmdType}]`]: !oldStatus,
       })
+      hideLoading()
     },
   },
 })
