@@ -77,6 +77,17 @@ ComponentWithComputed({
 
     onShow() {
       this.updateReport()
+      this.resetStatus()
+    },
+
+    resetStatus() {
+      this.data._countdownId && clearInterval(this.data._countdownId)
+
+      this.setData({
+        status: 'init',
+        pwd: '',
+        remainSecond: 0,
+      })
     },
 
     showPicker() {
@@ -145,10 +156,7 @@ ComponentWithComputed({
           remainSecond: this.data.remainSecond - 1,
         })
         if (this.data.remainSecond <= 0) {
-          clearInterval(this.data._countdownId)
-          this.setData({
-            status: 'init',
-          })
+          this.resetStatus()
         }
       }, 1000)
     },
