@@ -445,10 +445,11 @@ ComponentWithComputed({
       const deviceInfo = wx.getDeviceInfo()
       const isIOS = deviceInfo.platform === 'ios'
       let addRSSI = 0
-      if (deviceInfo.brand.toLowerCase() === 'honor') {
+      const brandL = deviceInfo.brand.toLowerCase()
+      if (brandL === 'honor' || brandL === 'huawei') {
         addRSSI = 5
       }
-      console.log(`lmn>>>品牌:${deviceInfo.brand.toLowerCase()}=>阈值加${addRSSI}`)
+      console.log(`lmn>>>品牌:${brandL}=>阈值加${addRSSI}`)
       for (let j = 0; j < recoveredList.length; j++) {
         const item = recoveredList[j]
         const isSavedDevice = remoterStore.deviceAddrs.includes(item!.addr)
