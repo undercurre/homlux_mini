@@ -125,8 +125,8 @@ ComponentWithComputed({
         pageSize: 100,
       })) as IAnyObject
       this.setData({
-        // logList: [...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list, ...res.result.list],
         logList: res.result.list,
+        todayStr: dayjs().format('YYYY年M月D日'), // 在跨天待机的场景中，保证日志标题为当天
         isLoaded: true,
       })
     },
