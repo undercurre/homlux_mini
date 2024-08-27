@@ -460,13 +460,15 @@ ComponentWithComputed({
           cusRSSI = item!.deviceRSSI
         } else {
           if (deviceType === '13') {
-            if (deviceModel === '02' || deviceModel === '03' || deviceModel === '06') {
+            if (deviceModel === '02' || deviceModel === '03') {
               if (isIOS) cusRSSI = -80
               else cusRSSI = -75
             } else if (deviceModel === '04') cusRSSI = -70
             else if (deviceModel === '05') {
               if (isIOS) cusRSSI = -63
               else cusRSSI = -60
+            } else if (deviceModel === '06') {
+              cusRSSI = -65
             }
           } else if (deviceType === '26') {
             if (deviceModel === '0f' || deviceModel === '6f') {
