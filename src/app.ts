@@ -42,7 +42,7 @@ App<IAppOption>({
       othersStore.setDefaultPage(defaultPage)
     }
 
-    // 监听houseId变化(需要优先初始化监听，否则无法及时监听变化)，切换websocket连接,切换成对应家庭的sock连接
+    // 监听houseId变化(需要优先初始化监听，否则无法及时监听变化),切换成对应家庭的websocket连接
     reaction(
       () => homeStore.currentHomeDetail.houseId,
       async () => {
