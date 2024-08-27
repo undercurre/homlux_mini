@@ -91,6 +91,10 @@ ComponentWithComputed({
       this.setData(diffData)
     },
 
+    /**
+     * 开启异常提醒开关
+     * @param e.currentTarget.dataset.key 区分不同的提醒
+     */
     async handleSwitch(e: WechatMiniprogram.CustomEvent<never, never, { key: string }>) {
       console.log('isAcceptedSubscriptions', this.data.isAcceptedSubscriptions)
       if (!this.data.mainSwitch || this.data.isAcceptedSubscriptions === 'reject') {
@@ -106,7 +110,8 @@ ComponentWithComputed({
       showLoading()
 
       // 如果是开启，并且isAcceptedSubscriptions未设置过
-      if (!oldStatus && typeof this.data.isAcceptedSubscriptions !== 'string') {
+      //  && typeof this.data.isAcceptedSubscriptions !== 'string'
+      if (!oldStatus) {
         const modelId = TYPE_TO_WX_MODEL_ID['0x09']
         const ticketRes = await getSnTicket({ sn: this.data.deviceId, modelId })
         if (!ticketRes.success) {

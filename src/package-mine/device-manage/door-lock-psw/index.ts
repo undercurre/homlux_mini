@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { deviceTransmit } from '../../../apis/index'
+import { deviceTransmit, queryDeviceInfoByDeviceId } from '../../../apis/index'
 import { ossDomain, ShareImgUrl } from '../../../config/index'
 import Toast from '../../../skyline-components/mz-toast/toast'
 
@@ -29,12 +29,13 @@ ComponentWithComputed({
     doorOnline: '0',
     generatedImage: `${ossDomain}/homlux/guide/temp-psw.png`,
     _countdownId: 0,
+    deviceInfo: {} as Device.DeviceItem,
   },
 
   computed: {
     actionTips(data) {
       const { pwd } = data
-      return `在门锁输入“ ${pwd.length}位数密码 + #键 ”结束`
+      return `在门锁输入“ ${pwd.length}位数密码 + ✔键 ”结束`
     },
     pwdSize(data) {
       const { pwd } = data
@@ -54,8 +55,13 @@ ComponentWithComputed({
 
     // 复合判断门锁在离线状态
     isDoorOnline(data) {
-      const { doorOnline } = data
+      const { doorOnline, deviceInfo } = data
+      if (!deviceInfo.onLineStatus) return false
       return doorOnline === '1' || doorOnline === '2'
+    },
+    pwdTips(data) {
+      const { isDoorOnline } = data
+      return isDoorOnline ? '1. 生成新密码后，原临时密码失效。' : '1. 密码在有效期内可重复使用，请谨慎分享。'
     },
   },
 
@@ -78,6 +84,15 @@ ComponentWithComputed({
     onShow() {
       this.updateReport()
       this.resetStatus()
+      this.updateDeviceInfo()
+    },
+    async updateDeviceInfo() {
+      const res = await queryDeviceInfoByDeviceId({ deviceId: this.data.deviceId })
+      if (res.success) {
+        this.setData({
+          deviceInfo: res.result,
+        })
+      }
     },
 
     resetStatus() {
@@ -123,7 +138,8 @@ ComponentWithComputed({
      * ! 直接使用单向模式的接口，云端会作判断，若设备实际处于双向模式，返回双向模式的密码
      */
     async generatePsw() {
-      const res = (await deviceTransmit('GET_TMP_PWD', {
+      const handleType = this.data.isDoorOnline ? 'DOWN_DOUBLE_PWD' : 'GET_TMP_PWD'
+      const res = (await deviceTransmit(handleType, {
         deviceId: this.data.deviceId,
         expireTime: this.data.expired * 60,
       })) as IAnyObject
