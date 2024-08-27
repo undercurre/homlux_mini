@@ -468,7 +468,7 @@ ComponentWithComputed({
               if (isIOS) cusRSSI = -63
               else cusRSSI = -60
             } else if (deviceModel === '06') {
-              cusRSSI = -65
+              cusRSSI = -60
             }
           } else if (deviceType === '26') {
             if (deviceModel === '0f' || deviceModel === '6f') {
