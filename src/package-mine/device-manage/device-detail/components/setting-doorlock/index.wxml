@@ -20,7 +20,7 @@
         />
       </van-cell>
       <van-cell
-        title="异常提醒"
+        title="消息提醒"
         bind:tap="toPage"
         data-url="/package-mine/device-manage/abnormal/index"
         is-link

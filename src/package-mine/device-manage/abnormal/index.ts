@@ -1,11 +1,18 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehavior from '../../../behaviors/pageBehaviors'
 import { queryUserSubscribeInfo, updateUserSubscribeInfo, getSnTicket } from '../../../apis/index'
-import { ABNORMAL_TEMPLATE_ID, TYPE_TO_WX_MODEL_ID } from '../../../config/index'
-import { userStore } from '../../../store/index'
+import {
+  DOORLOCK_TEMPLATE_ID_LIST,
+  TYPE_TO_WX_MODEL_ID,
+  DOORLOCK_HAVE_EYE_LIST,
+  CMDTYPE_TO_TEMPLATE_ID,
+} from '../../../config/index'
+import { deviceStore, userStore } from '../../../store/index'
 import { hideLoading, showLoading } from '../../../utils/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
+
+type SubscriptionStatus = null | 'accept' | 'reject' | 'ban' | 'filter' | 'acceptWithAudio'
 
 ComponentWithComputed({
   behaviors: [pageBehavior],
@@ -14,27 +21,38 @@ ComponentWithComputed({
    */
   data: {
     deviceId: '',
+    pid: '',
     mainSwitch: false,
-    isAcceptedSubscriptions: null as null | 'accept' | 'reject' | 'ban' | 'filter' | 'acceptWithAudio',
-    abnormalSetting: {
-      '132': false, // 门铃响
-      '134': false, // 门锁被撬
+    itemSettings: Object.fromEntries(DOORLOCK_TEMPLATE_ID_LIST.map((item) => [item, 'accept'])),
+    isAcceptedSubscriptions: null as SubscriptionStatus,
+    subscriptionSetting: {
+      // '132': false, // 门铃响
       '133': false, // 5次后锁定
+      '134': false, // 门锁被撬
       '135': false, // 低电量
+      '136': false, // 开门失败
+      '137': false, // 关门失败
+      '159': false, // 门外逗留
     } as Record<string, boolean>,
   },
 
-  computed: {},
+  computed: {
+    hasEyesAlarm(data) {
+      return DOORLOCK_HAVE_EYE_LIST.includes(data.pid)
+    },
+  },
 
   methods: {
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad({ deviceId }: { deviceId: string }) {
-      console.log('onLoad', deviceId)
+      const pid = deviceStore.allRoomDeviceMap[deviceId].productId
       this.setData({
         deviceId,
+        pid,
       })
+      console.log('onLoad', deviceId, pid)
     },
 
     onShow() {
@@ -43,10 +61,9 @@ ComponentWithComputed({
         withSubscriptions: true,
         success: (res) => {
           const { mainSwitch, itemSettings = {} } = res.subscriptionsSetting
-          const isAcceptedSubscriptions = itemSettings[ABNORMAL_TEMPLATE_ID]
           this.setData({
             mainSwitch,
-            isAcceptedSubscriptions,
+            itemSettings,
           })
           console.log('wx getSetting', {
             mainSwitch,
@@ -54,12 +71,12 @@ ComponentWithComputed({
           })
 
           // 如果微信设置接收，则按云端数据初始化各种提醒的状态
-          if (mainSwitch && isAcceptedSubscriptions === 'accept') {
+          if (mainSwitch) {
             this.initCloudSetting()
           }
           // 如果微信设置不接收，则重置云端设置（否则手动打开微信设置后，云端可能有历史设置）
           else {
-            for (const cmdType of Object.keys(this.data.abnormalSetting)) {
+            for (const cmdType of Object.keys(this.data.subscriptionSetting)) {
               updateUserSubscribeInfo({
                 deviceId: this.data.deviceId,
                 cmdType,
@@ -82,35 +99,38 @@ ComponentWithComputed({
         Toast('提醒设置查询失败')
         return
       }
+      const { itemSettings } = this.data
+
       const diffData = {} as IAnyObject
       const { subscribeStatus } = res.result
-      Object.keys(subscribeStatus).forEach((key) => {
-        diffData[`abnormalSetting[${key}]`] = !!subscribeStatus[key]
+      // 遍历确定各订阅状态，需要云端开关以及微信对应的订阅授权同时开启
+      Object.keys(subscribeStatus).forEach((cmdType) => {
+        diffData[`subscriptionSetting[${cmdType}]`] =
+          !!subscribeStatus[cmdType] && itemSettings[CMDTYPE_TO_TEMPLATE_ID[cmdType]] === 'accept'
       })
 
       this.setData(diffData)
     },
 
     /**
-     * 开启异常提醒开关
+     * 开启消息订阅开关
      * @param e.currentTarget.dataset.key 区分不同的提醒
      */
     async handleSwitch(e: WechatMiniprogram.CustomEvent<never, never, { key: string }>) {
-      console.log('isAcceptedSubscriptions', this.data.isAcceptedSubscriptions)
-      if (!this.data.mainSwitch || this.data.isAcceptedSubscriptions === 'reject') {
+      const cmdType = e.currentTarget.dataset.key
+
+      // 如果微信总开关关闭，或某个订阅被手动关关闭过，提示用户需要手动打开
+      if (!this.data.mainSwitch || this.data.itemSettings[cmdType] === 'reject') {
         Dialog.confirm({
           showCancelButton: false,
         }).catch(() => {})
         return
       }
 
-      const cmdType = e.currentTarget.dataset.key
-      const oldStatus = this.data.abnormalSetting[cmdType]
-
       showLoading()
 
-      // 如果是开启，并且isAcceptedSubscriptions未设置过
-      //  && typeof this.data.isAcceptedSubscriptions !== 'string'
+      // !! 如果是开启操作，都必须再调用一次wx订阅接口
+      const oldStatus = this.data.subscriptionSetting[cmdType]
       if (!oldStatus) {
         const modelId = TYPE_TO_WX_MODEL_ID['0x09']
         const ticketRes = await getSnTicket({ sn: this.data.deviceId, modelId })
@@ -121,10 +141,11 @@ ComponentWithComputed({
         }
 
         const { snTicket } = ticketRes.result
+        const tmplIds = [CMDTYPE_TO_TEMPLATE_ID[cmdType]]
 
         const res = await wx
           .requestSubscribeDeviceMessage({
-            tmplIds: [ABNORMAL_TEMPLATE_ID],
+            tmplIds,
             sn: this.data.deviceId,
             snTicket,
             modelId,
@@ -132,14 +153,14 @@ ComponentWithComputed({
           .catch((err) => {
             console.log('[wxRequestSubscribeMessage]err', err)
           }) // 弹出授权框
-        console.log('[wxRequestSubscribeMessage]', res)
-        if (!res || res[ABNORMAL_TEMPLATE_ID] !== 'accept') {
+        console.log('[wxRequestSubscribeMessage]', cmdType, tmplIds, res)
+
+        if (!res || res[tmplIds[0]] !== 'accept') {
           Toast('订阅失败')
           hideLoading()
           return
         } // 如果用户未选择接受
 
-        this.setData({ isAcceptedSubscriptions: 'accept' })
         Toast('订阅成功')
       }
 
@@ -152,7 +173,7 @@ ComponentWithComputed({
       })
 
       this.setData({
-        [`abnormalSetting[${cmdType}]`]: !oldStatus,
+        [`subscriptionSetting[${cmdType}]`]: !oldStatus,
       })
       hideLoading()
     },

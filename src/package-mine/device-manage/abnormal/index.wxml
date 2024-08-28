@@ -6,7 +6,7 @@
 <view class="h-100vh flex flex-col items-center">
   <!-- 标题 -->
   <nav-bar
-    title="异常提醒"
+    title="消息提醒"
     left-arrow
     show-go-home
     bind:leftTap="goBack"
@@ -25,35 +25,7 @@
           <van-switch
             slot="right-icon"
             data-key="134"
-            checked="{{abnormalSetting[134]}}"
-            bind:change="handleSwitch"
-          />
-        </van-cell>
-      </van-cell-group>
-
-      <van-cell-group inset>
-        <van-cell
-          title="开锁失败5次后锁定提醒"
-          label="在门锁失败5次后，微信消息推送通知"
-        >
-          <van-switch
-            slot="right-icon"
-            data-key="133"
-            checked="{{abnormalSetting[133]}}"
-            bind:change="handleSwitch"
-          />
-        </van-cell>
-      </van-cell-group>
-
-      <van-cell-group inset>
-        <van-cell
-          title="门铃响提醒"
-          label="在门锁响铃时，微信消息推送通知"
-        >
-          <van-switch
-            slot="right-icon"
-            data-key="132"
-            checked="{{abnormalSetting[132]}}"
+            checked="{{subscriptionSetting[134]}}"
             bind:change="handleSwitch"
           />
         </van-cell>
@@ -67,7 +39,66 @@
           <van-switch
             slot="right-icon"
             data-key="135"
-            checked="{{abnormalSetting[135]}}"
+            checked="{{subscriptionSetting[135]}}"
+            bind:change="handleSwitch"
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group
+        inset
+        wx:if="{{hasEyesAlarm}}"
+      >
+        <van-cell
+          title="门外有人逗留提醒"
+          label="门外有人逗留时，微信消息推送通知"
+        >
+          <van-switch
+            slot="right-icon"
+            data-key="159"
+            checked="{{subscriptionSetting[159]}}"
+            bind:change="handleSwitch"
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group inset>
+        <van-cell
+          title="开锁失败5次后锁定提醒"
+          label="在门锁失败5次后，微信消息推送异常提醒通知"
+        >
+          <van-switch
+            slot="right-icon"
+            data-key="133"
+            checked="{{subscriptionSetting[133]}}"
+            bind:change="handleSwitch"
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group inset>
+        <van-cell
+          title="开门失败提醒"
+          label="开门失败时，微信消息推送异常提醒通知"
+        >
+          <van-switch
+            slot="right-icon"
+            data-key="136"
+            checked="{{subscriptionSetting[136]}}"
+            bind:change="handleSwitch"
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group inset>
+        <van-cell
+          title="关门失败提醒"
+          label="关门失败时，微信消息推送异常提醒通知"
+        >
+          <van-switch
+            slot="right-icon"
+            data-key="137"
+            checked="{{subscriptionSetting[137]}}"
             bind:change="handleSwitch"
           />
         </van-cell>
