@@ -436,7 +436,18 @@ ComponentWithComputed({
       // 强绑情况下，取旧命名
       const deviceName = existDevice ? existDevice.deviceName : params.deviceName + (gatewayNum > 0 ? ++gatewayNum : '')
 
-      Logger.log('requestBindDevice', 'existDevice', existDevice, 'params', params, sn, deviceId)
+      Logger.log(
+        'requestBindDevice',
+        'existDevice',
+        existDevice,
+        'params',
+        params,
+        sn,
+        deviceId,
+        'homeBinding.store.currentHomeId',
+        homeBinding.store.currentHomeId,
+        roomBinding.store.currentRoomId,
+      )
 
       const res = await bindDevice({
         deviceId: deviceId,
