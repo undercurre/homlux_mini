@@ -18,3 +18,13 @@ export const CMDTYPE_TO_TEMPLATE_ID = {
   '137': DOORLOCK_TEMPLATE_ID_LIST[3], // 关门失败
   '159': DOORLOCK_TEMPLATE_ID_LIST[0], // 门外逗留
 } as Record<string, string>
+
+// CMDTYPE 到模板名称的映射
+export const CMDTYPE_TO_TEMPLATE_NAME = {
+  '133': '门锁异常提醒',
+  '134': '门锁撬动告警',
+  '135': '门锁电量不足提醒',
+  '136': '门锁异常提醒',
+  '137': '门锁异常提醒',
+  '159': '有人逗留提醒',
+} as Record<string, string>

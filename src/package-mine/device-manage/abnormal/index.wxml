@@ -120,7 +120,7 @@
     <view class="flex flex-col w-520rpx py-48rpx">
       <text class="text-hex-555659 text-28rpx">请点击小程序右上角【...】，点击【设置】-【订阅消息】，确保已开启以下信息权限：</text>
       <text class="text-hex-27282A text-32rpx mt-20rpx">1、允许“订阅消息”接收通知</text>
-      <text class="text-hex-27282A text-32rpx mt-20rpx">2、允许“门锁异常提醒”接收通知</text>
+      <text class="text-hex-27282A text-32rpx mt-20rpx">2、允许“{{dialogTips}}”接收通知</text>
     </view>
   </view>
 </van-dialog>

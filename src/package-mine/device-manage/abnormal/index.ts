@@ -6,6 +6,7 @@ import {
   TYPE_TO_WX_MODEL_ID,
   DOORLOCK_HAVE_EYE_LIST,
   CMDTYPE_TO_TEMPLATE_ID,
+  CMDTYPE_TO_TEMPLATE_NAME,
 } from '../../../config/index'
 import { deviceStore, userStore } from '../../../store/index'
 import { hideLoading, showLoading } from '../../../utils/index'
@@ -34,6 +35,7 @@ ComponentWithComputed({
       '137': false, // 关门失败
       '159': false, // 门外逗留
     } as Record<string, boolean>,
+    dialogTips: '',
   },
 
   computed: {
@@ -122,6 +124,9 @@ ComponentWithComputed({
 
       // 如果微信总开关关闭，或某个订阅被手动关关闭过，提示用户需要手动打开
       if (!this.data.mainSwitch || this.data.itemSettings[tmplIds[0]] === 'reject') {
+        this.setData({
+          dialogTips: CMDTYPE_TO_TEMPLATE_NAME[cmdType],
+        })
         Dialog.confirm({
           showCancelButton: false,
         }).catch(() => {})
