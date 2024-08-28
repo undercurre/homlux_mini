@@ -13,7 +13,7 @@ import { hideLoading, showLoading } from '../../../utils/index'
 import Toast from '@vant/weapp/toast/toast'
 import Dialog from '@vant/weapp/dialog/dialog'
 
-type SubscriptionStatus = null | 'accept' | 'reject' | 'ban' | 'filter' | 'acceptWithAudio'
+type SubscriptionStatus = null | 'accept' | 'reject' | 'ban' | 'filter' | 'acceptWithAudio' | 'acceptWithForcePush'
 
 ComponentWithComputed({
   behaviors: [pageBehavior],
@@ -24,8 +24,10 @@ ComponentWithComputed({
     deviceId: '',
     pid: '',
     mainSwitch: false,
-    itemSettings: Object.fromEntries(DOORLOCK_TEMPLATE_ID_LIST.map((item) => [item, 'accept'])),
-    isAcceptedSubscriptions: null as SubscriptionStatus,
+    itemSettings: Object.fromEntries(DOORLOCK_TEMPLATE_ID_LIST.map((item) => [item, 'accept'])) as Record<
+      string,
+      SubscriptionStatus
+    >,
     subscriptionSetting: {
       // '132': false, // 门铃响
       '133': false, // 5次后锁定
@@ -107,8 +109,9 @@ ComponentWithComputed({
       const { subscribeStatus } = res.result
       // 遍历确定各订阅状态，需要云端开关以及微信对应的订阅授权同时开启
       Object.keys(subscribeStatus).forEach((cmdType) => {
+        const wxSubStatus = itemSettings[CMDTYPE_TO_TEMPLATE_ID[cmdType]]
         diffData[`subscriptionSetting[${cmdType}]`] =
-          !!subscribeStatus[cmdType] && itemSettings[CMDTYPE_TO_TEMPLATE_ID[cmdType]] === 'accept'
+          !!subscribeStatus[cmdType] && wxSubStatus && wxSubStatus.indexOf('accept') > -1
       })
 
       this.setData(diffData)
@@ -160,7 +163,7 @@ ComponentWithComputed({
           }) // 弹出授权框
         console.log('[wxRequestSubscribeMessage]', cmdType, tmplIds, res)
 
-        if (!res || res[tmplIds[0]] !== 'accept') {
+        if (!res || !res[tmplIds[0]] || res[tmplIds[0]].indexOf('accept') === -1) {
           Toast('订阅失败')
           hideLoading()
           return
