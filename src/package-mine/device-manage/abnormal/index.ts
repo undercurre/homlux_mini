@@ -118,9 +118,10 @@ ComponentWithComputed({
      */
     async handleSwitch(e: WechatMiniprogram.CustomEvent<never, never, { key: string }>) {
       const cmdType = e.currentTarget.dataset.key
+      const tmplIds = [CMDTYPE_TO_TEMPLATE_ID[cmdType]]
 
       // 如果微信总开关关闭，或某个订阅被手动关关闭过，提示用户需要手动打开
-      if (!this.data.mainSwitch || this.data.itemSettings[cmdType] === 'reject') {
+      if (!this.data.mainSwitch || this.data.itemSettings[tmplIds[0]] === 'reject') {
         Dialog.confirm({
           showCancelButton: false,
         }).catch(() => {})
@@ -141,7 +142,6 @@ ComponentWithComputed({
         }
 
         const { snTicket } = ticketRes.result
-        const tmplIds = [CMDTYPE_TO_TEMPLATE_ID[cmdType]]
 
         const res = await wx
           .requestSubscribeDeviceMessage({
