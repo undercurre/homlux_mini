@@ -61,7 +61,7 @@ ComponentWithComputed({
     },
     pwdTips(data) {
       const { isDoorOnline } = data
-      return isDoorOnline ? '1. 生成新密码后，原临时密码失效。' : '1. 密码在有效期内可重复使用，请谨慎分享。'
+      return isDoorOnline ? '1.生成新密码后，原临时密码失效。' : '1.密码在有效期内可重复使用，请谨慎分享。'
     },
   },
 

@@ -38,7 +38,7 @@
 
           <view class="text-28 text-hex-a2a2a2 w-560rpx mt-140rpx">
             <text>{{pwdTips}}</text>
-            <text class="mt-32rpx">2. 输入密码前请重新唤醒门锁。</text>
+            <text class="mt-32rpx">2.输入密码前请重新唤醒门锁。</text>
           </view>
         </block>
 
