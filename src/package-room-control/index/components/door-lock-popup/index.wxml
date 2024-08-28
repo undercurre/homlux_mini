@@ -113,7 +113,7 @@
               wx:for="{{logListView}}"
               wx:key="index"
             >
-              <text class="block w-100rpx text-24 text-hex-a2a2a2">{{item.time}}</text>
+              <text class="block w-110rpx text-24 text-hex-a2a2a2">{{item.time}}</text>
               <view class="circle"></view>
               <view
                 wx:if="{{index !== logListView.length-1}}"
