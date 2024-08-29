@@ -33,7 +33,7 @@
       wx:for="{{ days }}"
       wx:key="index"
       style="{{ computed.getDayStyle(item.type, index, date, rowHeight, color, firstDayOfWeek) }}"
-      class="{{ utils.bem('calendar__day', [item.type]) }} {{ item.className }}"
+      class="{{ utils.bem('calendar__day', [item.type]) }} ~{{ item.className }}"
       data-index="{{ index }}"
       bindtap="onClick"
     >
