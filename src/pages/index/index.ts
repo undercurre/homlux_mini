@@ -113,6 +113,7 @@ ComponentWithStore({
       draggable: true,
     },
     _isFirstShow: true, // 是否首次加载
+    _isVisible: true, // 页面是否可见
     isRefreshing: false, // 非首次加载，后台数据刷新中的标志
     refreshCallback: null as null | (() => void),
     _from: '', // 页面进入来源
@@ -171,10 +172,12 @@ ComponentWithStore({
       })
     },
     'roomList,lightSummary.**'(roomList: roomInfo[], lightSummary) {
+      if (!this.data._isVisible) return // 页面不可见，不作更新
+
       const roomCardList = roomList.map((room) => ({
         ...room,
         ...(lightSummary[room.roomId] ?? { lightCount: 0, lightOnCount: 0 }),
-        id: room.roomId,
+        id: room.roomId, // 补充列表主索引
       }))
       this.setData({ roomCardList })
     },
@@ -207,6 +210,8 @@ ComponentWithStore({
       }
     },
     onHide() {
+      this.data._isVisible = false
+
       // 隐藏之前展示的下拉菜单
       emitter.off('wsReceive')
 
@@ -222,6 +227,7 @@ ComponentWithStore({
       })
     },
     async onShow() {
+      this.data._isVisible = true
       this.data._timer = Date.now()
       // 房间选择恢复默认
       if (roomStore.currentRoomId) {
