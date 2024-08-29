@@ -150,12 +150,12 @@ ComponentWithComputed({
       const haveLogDates = res.result.list
       this.setData({
         haveLogDates,
-        dayFormatter: (day: IAnyObject) => {
-          if (haveLogDates.includes(dayjs(day.date).format('YYYY-MM-DD'))) {
-            day.bottomInfo = '•'
-          }
-          return day
-        },
+        // dayFormatter: (day: IAnyObject) => {
+        //   if (haveLogDates.includes(dayjs(day.date).format('YYYY-MM-DD'))) {
+        //     day.className = 'hasLogInfo'
+        //   }
+        //   return day
+        // },
       })
     },
 
