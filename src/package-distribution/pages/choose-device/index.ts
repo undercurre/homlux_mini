@@ -86,18 +86,18 @@ ComponentWithComputed({
         },
         path: '',
       },
-      // {
-      //   icon: `${productImgDir}/0x09.png`,
-      //   name: '门锁',
-      //   source: 'meiju',
-      //   meijuProductInfo: {
-      //     proType: '09',
-      //     sn8: '798777C9',
-      //     mode: 0,
-      //     deviceImg: `${productImgDir}/0x09.png`,
-      //   },
-      //   path: '',
-      // },
+      {
+        icon: `${productImgDir}/0x09.png`,
+        name: '门锁',
+        source: 'meiju',
+        meijuProductInfo: {
+          proType: '09',
+          sn8: '798777C9',
+          mode: 0,
+          deviceImg: `${productImgDir}/0x09.png`,
+        },
+        path: '',
+      },
     ],
   },
 

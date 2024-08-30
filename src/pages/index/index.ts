@@ -13,6 +13,8 @@ import {
   delay,
   Logger,
   isLightOn,
+  isConnect,
+  verifyNetwork,
 } from '../../utils/index'
 import {
   MAX_DEVICES_USING_WS,
@@ -111,6 +113,7 @@ ComponentWithStore({
       draggable: true,
     },
     _isFirstShow: true, // 是否首次加载
+    _isVisible: true, // 页面是否可见
     isRefreshing: false, // 非首次加载，后台数据刷新中的标志
     refreshCallback: null as null | (() => void),
     _from: '', // 页面进入来源
@@ -169,10 +172,12 @@ ComponentWithStore({
       })
     },
     'roomList,lightSummary.**'(roomList: roomInfo[], lightSummary) {
+      if (!this.data._isVisible) return // 页面不可见，不作更新
+
       const roomCardList = roomList.map((room) => ({
         ...room,
         ...(lightSummary[room.roomId] ?? { lightCount: 0, lightOnCount: 0 }),
-        id: room.roomId,
+        id: room.roomId, // 补充列表主索引
       }))
       this.setData({ roomCardList })
     },
@@ -205,6 +210,8 @@ ComponentWithStore({
       }
     },
     onHide() {
+      this.data._isVisible = false
+
       // 隐藏之前展示的下拉菜单
       emitter.off('wsReceive')
 
@@ -220,14 +227,16 @@ ComponentWithStore({
       })
     },
     async onShow() {
+      this.data._isVisible = true
       this.data._timer = Date.now()
       // 房间选择恢复默认
       if (roomStore.currentRoomId) {
         roomStore.setCurrentRoom('')
       }
+      await verifyNetwork()
 
       // 首次onShow，有App.onLaunch初始化加载
-      if (!this.data._isFirstShow || this.data._from === 'addDevice') {
+      if (isConnect() && (!this.data._isFirstShow || this.data._from === 'addDevice')) {
         this.setData({ isRefreshing: true })
         // updateHomeInfo 先加载后面的接口依赖获取当前家庭Id
         await homeStore.updateHomeInfo({ isInit: false }, { isDefaultErrorTips: false })
@@ -340,7 +349,7 @@ ComponentWithStore({
       }
 
       // 如果在首页的房间或设备数据未加载完成，则先等待完成，并通过observers执行回调
-      if (this.data.isRefreshing) {
+      if (this.data.isRefreshing && isConnect()) {
         showLoading('数据刷新中...')
       }
       // 无刷新中标志，则直接执行

@@ -21,7 +21,7 @@
       ></image>
 
       <image
-        src="/assets/img/logo/meiju.png"
+        src="{{homluxOssUrl}}/assets/logo/meiju.png"
         class="w-128 h-128"
       ></image>
     </view>
@@ -52,5 +52,3 @@
     >
   </view>
 </view>
-
-<van-toast id="van-toast" />

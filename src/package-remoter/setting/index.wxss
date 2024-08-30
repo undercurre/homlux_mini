@@ -5,6 +5,12 @@
   background-image: linear-gradient(270deg, #f68aa9 13%, #ef6586 92%) !important;
   border-radius: 24rpx !important;
 }
+.share-btn {
+  width: 686rpx !important;
+  height: 88rpx !important;
+  background-image: linear-gradient(270deg, #B0C4F9 13%, #5691F7 92%) !important;
+  border-radius: 24rpx !important;
+}
 .cus-cell {
   height: 144rpx;
   display: flex;

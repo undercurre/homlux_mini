@@ -1,0 +1,16 @@
+{
+  "styleIsolation": "apply-shared",
+  "component": true,
+  "navigationStyle": "custom",
+  "renderer": "skyline",
+  "componentFramework": "glass-easel",
+  "disableScroll": true,
+  "usingComponents": {
+    "mz-calendar": "/skyline-components/mz-calendar/index",
+    "mz-cell-group": "/skyline-components/mz-cell-group/index",
+    "mz-cell": "/skyline-components/mz-cell/index",
+    "mz-tabs": "/components/mz-tabs/index",
+    "mz-pop-menu": "/skyline-components/mz-pop-menu/index",
+    "tips-box": "/components/tips-box/index"
+  }
+}

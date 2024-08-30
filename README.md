@@ -129,11 +129,11 @@ HomLux小程序
 > svg。使用
 > svg
 
+请优先使用图标库：https://icon-sets.iconify.design/icon-park-outline/
+
 ### 静态资源
 
 > 由于小程序代码包大小限制，需要将部分静态资源放到 OSS。详情可参考`src/config/img.ts`
-
-请优先使用图标库：https://icon-sets.iconify.design/icon-park-outline/
 
 ### JS
 

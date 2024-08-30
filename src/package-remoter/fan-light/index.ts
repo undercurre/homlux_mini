@@ -206,6 +206,19 @@ ComponentWithComputed({
         this.setData({
           btnList: temp,
         })
+      } else if (this.data.devModel == '06') {
+        const btns = this.data.btnList
+        const temp = []
+        for (let i = 0; i < btns.length; i++) {
+          if (btns[i].key == 'DISPLAY') {
+            continue
+          } else {
+            temp.push(btns[i])
+          }
+        }
+        this.setData({
+          btnList: temp,
+        })
       }
     },
     onUnload() {
@@ -279,8 +292,14 @@ ComponentWithComputed({
       }
     },
     receiveBluetoothData(data: string) {
-      const status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
-      console.log('lmn>>>receiveBluetoothData::status=', JSON.stringify(status))
+      const srcModel = data.slice(0, 2)
+      const status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel, srcModel)
+      const str = JSON.stringify(status)
+      if (str === '{}') {
+        console.warn('lmn>>>收到错误命令')
+        return
+      }
+      console.log('lmn>>>receiveBluetoothData::status=', str)
       this.setData({
         devStatus: status,
       })

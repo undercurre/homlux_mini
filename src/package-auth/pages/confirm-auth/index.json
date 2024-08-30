@@ -2,7 +2,6 @@
   "component": true,
   "usingComponents": {
     "van-button": "@vant/weapp/button/index",
-    "van-toast": "@vant/weapp/toast/index",
     "mz-checkbox": "/components/mz-checkbox/index"
   }
 }

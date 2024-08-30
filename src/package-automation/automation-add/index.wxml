@@ -297,8 +297,8 @@
   cardType="{{cardType}}"
   list="{{list}}"
   selectList="{{linkSelectList}}"
-  isSingleSelect="{{selectCardType === 'sensor'}}"
-  showCancel="{{(selectCardType !== 'sensor'||!sceneDeviceConditionsFlatten.length) && opearationType === 'auto'}}"
+  isSingleSelect="{{selectCardType === 'conditionDevice'}}"
+  showCancel="{{(selectCardType !== 'conditionDevice'||!sceneDeviceConditionsFlatten.length) && opearationType === 'auto'}}"
   bind:select="handleSelectCardSelect"
   bind:handleOfflineTap="handleSelectCardOfflineTap"
   bind:close="handleSelectCardClose"
@@ -314,25 +314,10 @@
   bind:close="handleEditPopupClose"
 ></edit-device-action-popup>
 
-<edit-sensor-popup
-  show="{{showEditSensorPopup}}"
-  productId="{{editingSensorType}}"
-  checkList="{{editingSensorAbility}}"
-  controlAction="{{editingSensorProperty}}"
-  bind:confirm="handleEditSensorConfirm"
-  bind:close="handleEditSensorClose"
-></edit-sensor-popup>
-
 <!-- 
 TODO：未验证
  -->
-<!-- <light-control-popup
-  show="{{showEditPopup === '0x13'}}"
-  title="{{sceneEditTitle}}"
-  lightInfo="{{sceneEditInfo}}"
-  bind:confirm="handleSceneEditConfirm"
-  bind:close="handleEditPopupClose"
-></light-control-popup> -->
+
 <switch-control-popup
   show="{{showEditPopup === '0x21'}}"
   title="{{sceneEditTitle}}"
@@ -365,7 +350,13 @@ TODO：未验证
   bind:confirm="handleSceneEditConfirm"
   bind:close="handleEditPopupClose"
 ></dryer-control-popup>
-
+<picker-view-popup
+  show="{{showEditDeviceConditionPopup}}"
+  dataInfo="{{editingPropertyInfo}}"
+  bind:confirm="onDeviceConditionPropertyPopupConfirm"
+  bind:close="onDeviceConditionPropertyPopupClose"
+  bind:cancel="onDeviceConditionPropertyPopupClose"
+></picker-view-popup>
 <mz-toast id="mz-toast" />
 <mz-dialog
   id="mz-dialog"

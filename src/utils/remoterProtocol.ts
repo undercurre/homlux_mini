@@ -137,13 +137,18 @@ const _parseEncryptFlag = (encryptFlag: string) => {
  * @description
  * @returns key 命名须与 src\config\remoter.ts 中的 actions.key 保持一致
  */
-const _parsePayload = (payload: string, deviceType: string, deviceModel?: string) => {
+const _parsePayload = (payload: string, deviceType: string, deviceModel?: string, srcDeviceModel?: string) => {
   const rxBuf = new ArrayBuffer(payload.length) // 申请内存
   const rxU16 = new Uint16Array(rxBuf)
   for (let i = 0; i < payload.length / 2; ++i) {
     rxU16[i] = parseInt(payload.slice(i * 2, i * 2 + 2), 16)
   }
   if (deviceType === '13') {
+    let isLegal = true
+    if (srcDeviceModel !== undefined) {
+      if (srcDeviceModel !== deviceModel || rxU16[0] > 1) isLegal = false
+    }
+    if (!isLegal) return {}
     // 共有属性
     const res: IAnyObject = {
       LIGHT_LAMP: !!(rxU16[0] & BIT_0), // 开关
@@ -157,7 +162,7 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
       res.DELAY_OFF = rxU16[7] // 延时关灯剩余分钟数，0表示延时关灯失效
       res.LIGHT_NIGHT_LAMP = rxU16[8] === 0x06 // 小夜灯状态，0x06代表开启，0x9表示助眠状态
       res.LIGHT_SCENE_SLEEP = rxU16[8] === 0x09
-    } else if (deviceModel === '02' || deviceModel === '03') {
+    } else if (deviceModel === '02' || deviceModel === '03' || deviceModel === '06') {
       res.DELAY_OFF = (rxU16[7] << 8) + rxU16[8] // 延时关风扇剩余分钟数
       res.FAN_SWITCH = !!(rxU16[9] & BIT_0) // 风扇开关状态
       res.FAN_NEGATIVE = !!(rxU16[9] & BIT_1) // 风扇是否反转状态
@@ -258,6 +263,8 @@ const _parsePayloadV2 = (payload: string, deviceType: string) => {
   //   }
   // }
   if (deviceType === '26' || deviceType === '40') {
+    const isLegal = rxU16[0] <= 1 && rxU16[1] <= 100 && rxU16[2] <= 1
+    if (!isLegal) return {}
     return {
       isV2: true,
       BATH_LAMP: !!rxU16[0],

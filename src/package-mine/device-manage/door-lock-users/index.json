@@ -1,0 +1,14 @@
+{
+  "styleIsolation": "apply-shared",
+  "component": true,
+  "navigationStyle": "custom",
+  "renderer": "skyline",
+  "componentFramework": "glass-easel",
+  "disableScroll": true,
+  "usingComponents": {
+    "mz-cell-group": "/skyline-components/mz-cell-group/index",
+    "mz-cell": "/skyline-components/mz-cell/index",
+    "mz-tabs": "/components/mz-tabs/index",
+    "tips-box": "/components/tips-box/index"
+  }
+}

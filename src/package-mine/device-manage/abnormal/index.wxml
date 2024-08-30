@@ -1,0 +1,126 @@
+<view
+  class="fixed left-0 top-0 w-100vw h-100vh bg-hex-eef2f7"
+  style="z-index: -1"
+></view>
+
+<view class="h-100vh flex flex-col items-center">
+  <!-- 标题 -->
+  <nav-bar
+    title="消息提醒"
+    left-arrow
+    show-go-home
+    bind:leftTap="goBack"
+  ></nav-bar>
+
+  <view
+    class="flex-1"
+    id="content"
+  >
+    <view class="mt-24rpx w-750rpx">
+      <van-cell-group inset>
+        <van-cell
+          title="门锁被撬提醒"
+          label="在门锁被撬时，微信消息推送通知"
+        >
+          <van-switch
+            slot="right-icon"
+            data-key="134"
+            checked="{{subscriptionSetting[134]}}"
+            bind:change="handleSwitch"
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group inset>
+        <van-cell
+          title="门锁低电量提醒"
+          label="在门锁电量不足时，微信消息推送通知"
+        >
+          <van-switch
+            slot="right-icon"
+            data-key="135"
+            checked="{{subscriptionSetting[135]}}"
+            bind:change="handleSwitch"
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group
+        inset
+        wx:if="{{hasEyesAlarm}}"
+      >
+        <van-cell
+          title="门外有人逗留提醒"
+          label="门外有人逗留时，微信消息推送通知"
+        >
+          <van-switch
+            slot="right-icon"
+            data-key="159"
+            checked="{{subscriptionSetting[159]}}"
+            bind:change="handleSwitch"
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group inset>
+        <van-cell
+          title="开锁失败5次后锁定提醒"
+          label="在门锁失败5次后，微信消息推送异常提醒通知"
+        >
+          <van-switch
+            slot="right-icon"
+            data-key="133"
+            checked="{{subscriptionSetting[133]}}"
+            bind:change="handleSwitch"
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group inset>
+        <van-cell
+          title="开门失败提醒"
+          label="开门失败时，微信消息推送异常提醒通知"
+        >
+          <van-switch
+            slot="right-icon"
+            data-key="136"
+            checked="{{subscriptionSetting[136]}}"
+            bind:change="handleSwitch"
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group inset>
+        <van-cell
+          title="关门失败提醒"
+          label="关门失败时，微信消息推送异常提醒通知"
+        >
+          <van-switch
+            slot="right-icon"
+            data-key="137"
+            checked="{{subscriptionSetting[137]}}"
+            bind:change="handleSwitch"
+          />
+        </van-cell>
+      </van-cell-group>
+    </view>
+  </view>
+</view>
+
+<van-toast id="van-toast" />
+
+<van-dialog
+  id="van-dialog"
+  confirm-button-color="#488FFF"
+  confirm-button-text="好的"
+  use-slot
+  class="flex-col-center"
+>
+  <view class="flex-col-center">
+    <view class="flex flex-col w-520rpx py-48rpx">
+      <text class="text-hex-555659 text-28rpx">请点击小程序右上角【...】，点击【设置】-【订阅消息】，确保已开启以下信息权限：</text>
+      <text class="text-hex-27282A text-32rpx mt-20rpx">1、允许“订阅消息”接收通知</text>
+      <text class="text-hex-27282A text-32rpx mt-20rpx">2、允许“{{dialogTips}}”接收通知</text>
+    </view>
+  </view>
+</van-dialog>

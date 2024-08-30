@@ -48,9 +48,14 @@
         "pages/member-manage/index",
         "device-replace/index",
         "pages/ota/index",
-        "setting/index",
+        "pages/logoff/index",
+        "pages/setting/index",
         "device-manage/index",
         "device-manage/device-detail/index",
+        "device-manage/abnormal/index",
+        "device-manage/door-lock-logs/index",
+        "device-manage/door-lock-users/index",
+        "device-manage/door-lock-psw/index",
         "device-manage/group-detail/index",
         "voice-control/index",
         "guideline/index",
@@ -74,7 +79,6 @@
       "pages": [
         "pages/index/index",
         "pages/homos-debug/index",
-        "pages/add-virtual-device/index",
         "pages/skyline-demo/index",
         "pages/movable-demo/index",
         "pages/test-util/index"

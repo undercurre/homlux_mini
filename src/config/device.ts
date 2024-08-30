@@ -37,6 +37,7 @@ export const ROOM_CARD_TOP = 170 // 列表顶部距离
 
 // 设备 modelName -> 品类码
 export const PRO_TYPE = {
+  doorLock: '0x09',
   light: '0x13',
   switch: '0x21',
   curtain: '0x14',
@@ -73,6 +74,7 @@ export const getModelName = (proType: string, productId?: string) => {
 
 // 设备品类码 -> modelName
 export const proName: Record<string, string> = {
+  '0x09': 'doorLock',
   '0x13': 'light',
   '0x14': 'curtain',
   '0x16': 'gateway',
@@ -117,3 +119,49 @@ export const ZHONGHONG_PID: readonly string[] = [
   PRODUCT_ID.zhonghong_air,
   PRODUCT_ID.zhonghong_cac,
 ]
+// 门锁pid集合 //798777B9因为是非标协议,所以暂时不接 (郭工)
+export const DOORLOCK_PID: readonly string[] = ['798777C7', '798777C8', '798777C9', '798777CT', '798777AT', 'M0900012']
+/**
+ * 有猫眼功能的门锁列表
+ */
+export const DOORLOCK_HAVE_EYE_LIST = ['798777C8', '798777C9']
+
+// pwdType -> 权限类型
+export const pwdType: Record<number, string> = {
+  1: '密码',
+  2: '指纹',
+  3: '门卡',
+  10: '人脸识别',
+  17: '管理员密码',
+  18: '管理员指纹',
+  19: '管理员门卡',
+  20: '管理员人脸识别',
+} as const
+
+// 门锁状态配置
+export const doorStatusConfig: Record<number, Record<string, string>> = {
+  0: {
+    statusText: '已上锁',
+  },
+  1: {
+    statusText: '未上锁',
+  },
+  2: {
+    statusText: '门锁异常', //电控原因，该字段无法区分开门关门，有新方案在colmo实现
+  },
+  3: {
+    statusText: '门锁异常',
+  },
+  5: {
+    statusText: '已反锁',
+  },
+}
+
+/**
+ * 微信消息订阅 model_id 映射
+ * 后台关联：https://mp.weixin.qq.com/wxamp/deviceList
+ * 开发文档：https://developers.weixin.qq.com/miniprogram/dev/framework/device/device-message.html
+ */
+export const TYPE_TO_WX_MODEL_ID: Record<string, string> = {
+  '0x09': '9AA0pG3Xn5TSAlKWUUXJ2w',
+}

@@ -8,10 +8,39 @@
     "skylineRenderEnable": true,
     "autoAudits": false
   },
-  "libVersion": "3.5.1",
+  "libVersion": "3.5.5",
   "condition": {
     "miniprogram": {
       "list": [
+        {
+          "name": "注销账号",
+          "pathName": "package-mine/pages/logoff/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
+        {
+          "name": "设置页面",
+          "pathName": "package-mine/pages/setting/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        },
+        {
+          "name": "door-lock-logs",
+          "pathName": "package-mine/device-manage/door-lock-logs/index",
+          "query": "deviceId=177021372098906",
+          "launchMode": "default",
+          "scene": null
+        },
         {
           "name": "场景首页",
           "pathName": "package-automation/automation/index",

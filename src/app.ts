@@ -42,7 +42,7 @@ App<IAppOption>({
       othersStore.setDefaultPage(defaultPage)
     }
 
-    // 监听houseId变化(需要优先初始化监听，否则无法及时监听变化)，切换websocket连接,切换成对应家庭的sock连接
+    // 监听houseId变化(需要优先初始化监听，否则无法及时监听变化),切换成对应家庭的websocket连接
     reaction(
       () => homeStore.currentHomeDetail.houseId,
       async () => {
@@ -68,10 +68,10 @@ App<IAppOption>({
         Logger.trace('[数据初始化开始]')
         await Promise.all([userStore.updateUserInfo(), homeStore.homeInit(), sceneStore.updateAllRoomSceneList()])
         Logger.trace('[数据初始化完成] 耗时', `${Date.now() - start}ms`)
-        hideLoading()
       } catch (e) {
         Logger.error('appOnLaunch-err:', e)
       }
+      hideLoading()
     } else {
       othersStore.setIsInit(false)
     }

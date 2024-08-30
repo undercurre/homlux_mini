@@ -122,6 +122,53 @@ export function _get(obj: object, path: string, defaultVal = undefined) {
 }
 
 /**
+ * @description 类似 lodash.isEqual()
+ * 比较对象是否相等
+ */
+export function isEqual(a: IAnyObject, b: IAnyObject) {
+  // 如果两个值是同一个对象，返回true
+  if (a === b) return true
+
+  // 如果其中一个值是undefined，而另一个不是，返回false
+  if (a === undefined || b === undefined) return false
+
+  // 检查类型是否相同
+  const typeA = typeof a
+  const typeB = typeof b
+  if (typeA !== typeB) return false
+
+  // 如果是引用类型，进行深入比较
+  if (typeA === 'object') {
+    // 如果是数组
+    if (Array.isArray(a)) {
+      if (!Array.isArray(b)) return false
+      if (a.length !== b.length) return false
+      for (let i = 0; i < a.length; i++) {
+        if (!isEqual(a[i], b[i])) return false
+      }
+      return true
+    }
+
+    // 如果是普通对象
+    const keysA = Object.keys(a)
+    const keysB = Object.keys(b)
+    if (keysA.length !== keysB.length) return false
+    for (const key of keysA) {
+      if (!isEqual(a[key], b[key])) return false
+    }
+    return true
+  }
+
+  // 如果是函数，直接比较函数字符串
+  if (typeA === 'function') {
+    return a.toString() === b.toString()
+  }
+
+  // 对于其他类型，使用===比较
+  return a === b
+}
+
+/**
  * @description 判断某扁平设备，是否亮灯设备
  * !! ButtonMode 0 普通面板或者关联开关 2 场景 3 关联灯
  */
@@ -228,4 +275,11 @@ export const deviceFlatten = function (originList: Device.DeviceItem[]) {
       return a.uniId?.localeCompare(b.uniId)
     }
   })
+}
+
+/**
+ * 生成随机数
+ */
+export const getRandomNum = function (min: number, max: number) {
+  return Math.floor(Math.random() * (max - min)) + min
 }

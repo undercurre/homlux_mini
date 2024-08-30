@@ -2,6 +2,9 @@
 
 // 小程序（图片存放）
 export const ossDomain = 'https://mzgd-oss-bucket.oss-cn-shenzhen.aliyuncs.com' // ossFile根目录
+
+// OSS静态资源文件备份目录
+export const homluxOssUrl = `${ossDomain}/homlux`
 // const imgBaseUrl = `${domain}/${getEnv() === 'sit' || getEnv() == 'dev' ? 'sit' : 'prod'}`
 export const ShareImgUrl = `${ossDomain}/homlux/welcome.png`
 

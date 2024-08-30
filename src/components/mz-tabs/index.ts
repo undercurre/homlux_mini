@@ -14,6 +14,12 @@ Component({
         this.onTapTab({ currentTarget: { dataset: { activeid: val } } })
       },
     },
+    textColorActive: {
+      type: String,
+      value: '#27282a',
+    },
+    itemWidth: String,
+    itemHeight: String,
   },
   data: {
     selectedTab: 0,
@@ -21,6 +27,21 @@ Component({
     _tabItemWidth: [] as number[],
     _tabBorderWidth: 0,
     scrollLeft: 0,
+    itemStyle: '',
+    wrapperStyle: 'height: 100rpx;',
+  },
+
+  observers: {
+    'itemWidth,itemHeight'(w, h) {
+      let itemStyle = '',
+        wrapperStyle = ''
+      if (w) itemStyle += `width: ${w}rpx;`
+      if (h) {
+        itemStyle += `height: ${h}rpx;`
+        wrapperStyle += `height: ${h}rpx;`
+      }
+      this.setData({ itemStyle, wrapperStyle })
+    },
   },
 
   lifetimes: {

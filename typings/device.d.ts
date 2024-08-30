@@ -260,4 +260,11 @@ declare namespace Device {
     content: string
     reportAt: string
   }
+
+  type DoorLockLog = {
+    content: string
+    createTime: string
+    deviceId: string
+    isAlarm: '1' | '2'
+  }
 }

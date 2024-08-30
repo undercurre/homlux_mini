@@ -27,6 +27,7 @@
     "mz-checkbox": "/skyline-components/mz-checkbox/index",
     "mz-switch": "/skyline-components/mz-switch/index",
     "mz-picker": "/skyline-components/mz-picker/index",
-    "mz-slider": "/skyline-components/mz-slider/index"
+    "mz-slider": "/skyline-components/mz-slider/index",
+    "mz-calendar": "/skyline-components/mz-calendar/index"
   }
 }

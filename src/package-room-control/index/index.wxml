@@ -245,6 +245,14 @@
   bind:lightStatusChange="refreshLightStatus"
 ></fan-light-popup>
 
+<door-lock-popup
+  show="{{controlType === '0x09'}}"
+  deviceInfo="{{checkedDeviceInfo}}"
+  checkedList="{{checkedList}}"
+  bind:close="cancelCheckAndPops"
+  bind:updateDevice="updateQueue"
+></door-lock-popup>
+
 <device-control-popup
   show="{{isShowCommonControl}}"
   deviceInfo="{{checkedDeviceInfo}}"
@@ -326,6 +334,25 @@
       </block>
     </view>
     <view class="h-80rpx"></view>
+  </view>
+</mz-dialog>
+
+<mz-dialog
+  use-slot
+  id="mz-dialog-privacy"
+  title="用户隐私授权"
+  confirm-button-text="同意并继续"
+  confirm-button-color="#27282A"
+  cancel-button-color="#27282A"
+  show-cancel-button
+>
+  <view class="flex-center w-full h-128 text-28">
+    <text>我已阅读</text
+    ><text
+      bind:tap="handlePrivacy"
+      class="link-text"
+      >隐私政策</text
+    >
   </view>
 </mz-dialog>
 

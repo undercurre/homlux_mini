@@ -84,3 +84,81 @@ export async function inviteHouseUserForMobile(
     data: params,
   })
 }
+
+/**
+ * 用户注销账号
+ */
+export async function logoutWxUserInfo(
+  params: {
+    confirm: boolean // 是否第二次确认删除,是否强制删除
+  },
+  options?: IApiRequestOption,
+) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/user/logoutWxUserInfo',
+    data: params,
+  })
+}
+
+/**
+ * 用户订阅小程序通知查询
+ */
+export async function queryUserSubscribeInfo(
+  data: {
+    deviceId: string
+  },
+  options?: IApiRequestOption,
+) {
+  return await mzaioRequest.post<{
+    subscribeStatus: Record<string, number>
+  }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/user/queryUserDeviceSubscribeNotifyInfo',
+    data,
+  })
+}
+
+/**
+ * 用户订阅小程序通知设置
+ */
+export async function updateUserSubscribeInfo(
+  data: {
+    deviceId: string
+    cmdType: string
+    onStatus: number
+    userId: string
+  },
+  options?: IApiRequestOption,
+) {
+  return await mzaioRequest.post<{
+    subscribeStatus: Record<string, number>
+  }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/user/updateUserDeviceSubscribeNotifyInfo',
+    data,
+  })
+}
+
+/**
+ * 用户订阅小程序通知设备票据
+ */
+export async function getSnTicket(
+  data: {
+    modelId: string
+    sn: string
+  },
+  options?: IApiRequestOption,
+) {
+  return await mzaioRequest.post<{
+    snTicket: string
+  }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/mzgd/user/getWxMiniSnTicket',
+    data,
+  })
+}

@@ -15,6 +15,17 @@
     class="h-60vh grow shrink"
   >
     <view class="section">
+      <view class="m-24rpx">mz-calendar</view>
+      <mz-button
+        block
+        class="mt-24rpx"
+        type="primary"
+        plain
+        size="large"
+        bind:click="toShowCalendar"
+        >打开日历</mz-button
+      >
+
       <view class="m-24rpx">mz-field</view>
 
       <mz-field
@@ -498,3 +509,9 @@
     </view>
   </view>
 </mz-popup>
+
+<mz-calendar
+  show="{{ showCalendar }}"
+  bind:close="handleCalendarClose"
+  bind:confirm="handleCalendarConfirm"
+/>

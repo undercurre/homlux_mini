@@ -1,5 +1,5 @@
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { roomBinding, deviceBinding, deviceStore, roomStore, otaStore } from '../../store/index'
+import { roomBinding, deviceBinding, deviceStore, roomStore } from '../../store/index'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehavior from '../../behaviors/pageBehaviors'
 import { emitter, WSEventType } from '../../utils/eventBus'
@@ -187,8 +187,6 @@ ComponentWithComputed({
     },
 
     async loadData() {
-      // 先加载ota列表信息，用于设备详情页展示
-      otaStore.updateList()
       // await roomStore.updateRoomList()
       // if (this.data.roomSelect === '0') {
       deviceBinding.store.updateAllRoomDeviceList()

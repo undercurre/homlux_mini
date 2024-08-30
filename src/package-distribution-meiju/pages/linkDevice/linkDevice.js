@@ -2064,6 +2064,9 @@ Component({
         bindInfo,
         'app.addDeviceInfo',
         app.addDeviceInfo,
+        'homeStore.currentHomeId',
+        homeStore.currentHomeId,
+        roomStore.currentRoomId,
       )
 
       // if (bindInfo && bindInfo.mode == 100) {

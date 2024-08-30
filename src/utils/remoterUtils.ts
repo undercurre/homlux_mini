@@ -244,7 +244,7 @@ export class BleService {
     // showLoading('正在建立蓝牙连接')
     const startTime = Date.now()
 
-    Logger.log('lmn>>>', `${this.addr} 开始连接蓝牙`)
+    Logger.log('lmn>>>', `${this.addr}/${this.deviceId} 开始连接蓝牙`)
 
     // 会出现createBLEConnection一直没返回的情况（低概率）
     // 微信bug，安卓端timeout参数无效

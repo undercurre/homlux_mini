@@ -27,7 +27,7 @@ export const roomStore = observable({
     runInAction(() => {
       // 指定房间id（用户操作）
       if (id) {
-        roomStore.currentRoomId = id
+        this.currentRoomId = id
         // 比较更新时间戳；若非最新，则按全屋设备列表，筛选出当前房间的设备列表
         if (deviceStore.deviceTimestamp <= deviceStore.allRoomDeviceTimestamp) {
           deviceStore.deviceList = deviceStore.allRoomDeviceList.filter((device) => device.roomId === id)
@@ -37,9 +37,11 @@ export const roomStore = observable({
       }
       // 设置为默认房间（列表第一个）；同时重置更新时间戳，以便下次进入房间时刷新
       else if (this.roomList?.length) {
-        roomStore.currentRoomId = this.roomList[0].roomId
+        this.currentRoomId = this.roomList[0].roomId
         deviceStore.deviceTimestamp = 0
       }
+
+      Logger.log('[store setCurrentRoom]currentRoomId', this.currentRoomId)
     })
   },
 
@@ -82,10 +84,10 @@ export const roomStore = observable({
         }))
       })
 
-      // 若默认房间值未设置，则设置为房间列表第一个
-      if (!this.currentRoomId) {
-        this.setCurrentRoom('')
-      }
+      // 默认房间值设置为房间列表第一个
+      // if (!this.currentRoomId) {
+      this.setCurrentRoom('')
+      // }
     }
   },
 })

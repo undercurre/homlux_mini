@@ -1,6 +1,6 @@
 import { PRO_TYPE, AC_MODE, CAC_MODE, CAC_FA_WINDSPEED, WIND_SPEED_MAP, FAN_SCENE_MAP } from '../config/index'
-import { isNullOrUnDef } from './index'
-
+import { isEqual, isNullOrUnDef } from './index'
+import { autosceneStore } from '../store/index'
 /**
  * Deserted 此方法已不必使用，暂时保留代码
  *  子设备和wifi设备属性不一致,以子设备属性为标准转换
@@ -98,7 +98,17 @@ export function getColorTempText(params: { colorTemp: number; maxColorTemp: numb
  * @param proType
  * @param property 设备属性
  */
-export function toPropertyDesc(proType: string, property: IAnyObject) {
+export function toPropertyDesc({
+  proType,
+  property,
+  productId,
+  deviceId,
+}: {
+  proType: string
+  property: IAnyObject
+  productId?: string
+  deviceId?: string
+}) {
   if (isNullOrUnDef(property)) {
     console.warn('转换属性描述失败，属性集为空')
     return []
@@ -229,7 +239,14 @@ export function toPropertyDesc(proType: string, property: IAnyObject) {
     !isNullOrUnDef(property.power) && descList.push(property.power === 1 ? '开启' : '关闭')
     !isNullOrUnDef(property.targetTemperature) && descList.push(`${property.targetTemperature}℃`)
   }
-
+  if (proType === PRO_TYPE.doorLock) {
+    if (isNullOrUnDef(productId)) return []
+    autosceneStore.deviceConditionPropertyList[productId + '|' + deviceId].forEach((item) => {
+      if (isEqual(item.value, property)) {
+        descList.push(item.title)
+      }
+    })
+  }
   if (descList.length > 3) {
     descList = [...descList.slice(0, 2), '...']
   }

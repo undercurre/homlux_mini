@@ -399,7 +399,12 @@ ComponentWithComputed({
       } else {
         status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
       }
-      console.log('lmn>>>receiveBluetoothData::status=', JSON.stringify(status))
+      const str = JSON.stringify(status)
+      if (str === '{}') {
+        console.warn('lmn>>>收到错误命令')
+        return
+      }
+      console.log('lmn>>>receiveBluetoothData::status=', str)
       this.setData({
         devStatus: status,
       })
@@ -505,7 +510,10 @@ ComponentWithComputed({
       for (let i = 0; i < btns.length; i++) {
         if (btns[i].isMode && btns[i].isOn) {
           if (btns[i].gear > 0) statusTextArr.push(`${btns[i].name}${btns[i].gear}档`)
-          else statusTextArr.push(btns[i].name)
+          else {
+            if (btns[i].key === 'HEAT' && isShowTemp && temp === 42) statusTextArr.push('强暖')
+            else statusTextArr.push(btns[i].name)
+          }
         }
       }
       this.setData({
