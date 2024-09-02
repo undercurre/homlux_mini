@@ -47,13 +47,6 @@
           bind:click="toPage"
         />
         <mz-cell
-          icon="/assets/img/mine/voiceControl.png"
-          title="语音控制"
-          is-link
-          data-url="{{urls.voiceControl}}"
-          bind:click="toPage"
-        />
-        <mz-cell
           icon="/assets/img/mine/link.png"
           title="连接其他平台"
           is-link

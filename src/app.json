@@ -89,6 +89,7 @@
       "root": "package-auth",
       "pages": [
         "pages/index/index",
+        "pages/third-party/index",
         "pages/meiju/index",
         "pages/home-list/index",
         "pages/confirm-auth/index",
