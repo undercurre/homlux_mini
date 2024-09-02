@@ -1,9 +1,15 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import Toast from '@vant/weapp/toast/toast'
-import { deviceStore, homeBinding, homeStore, otaStore, roomBinding } from '../../../store/index'
+import { deviceStore, homeBinding, homeStore, roomBinding } from '../../../store/index'
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { waitingDeleteDevice, editDeviceInfo, queryDeviceInfoByDeviceId, sendDevice } from '../../../apis/index'
+import {
+  waitingDeleteDevice,
+  editDeviceInfo,
+  queryDeviceInfoByDeviceId,
+  sendDevice,
+  queryDeviceOtaUpdateList,
+} from '../../../apis/index'
 import { proName, PRO_TYPE, SCREEN_PID } from '../../../config/index'
 import Dialog from '@vant/weapp/dialog/dialog'
 import { emitter, strUtil } from '../../../utils/index'
@@ -224,11 +230,14 @@ ComponentWithComputed({
         })
 
         // 加载ota列表信息，ota列表展示
-        await otaStore.updateList()
+        const otaRes = await queryDeviceOtaUpdateList(homeStore.currentHomeDetail.houseId)
 
-        this.setData({
-          hasOtaUpdate: !!otaStore.deviceVersionInfoMap[this.data.deviceInfo.deviceId],
-        })
+        if (otaRes.success) {
+          this.setData({
+            hasOtaUpdate:
+              otaRes.result.otaUpdateList.findIndex((item) => item.deviceId === this.data.deviceInfo.deviceId) >= 0,
+          })
+        }
       }
     },
     toSetLaundry() {

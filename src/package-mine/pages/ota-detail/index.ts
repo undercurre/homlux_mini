@@ -1,9 +1,9 @@
 import Toast from '@vant/weapp/toast/toast'
 import { ComponentWithComputed } from 'miniprogram-computed'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
-import { execOtaUpdate, setOtaSchedule } from '../../../apis/ota'
+import { execOtaUpdate, setOtaSchedule, queryDeviceOtaUpdateList } from '../../../apis/ota'
 import pageBehavior from '../../../behaviors/pageBehaviors'
-import { homeBinding, userBinding, otaStore, homeStore } from '../../../store/index'
+import { homeBinding, userBinding, homeStore } from '../../../store/index'
 import { getCurrentPageParams } from '../../../utils/index'
 
 ComponentWithComputed({
@@ -91,7 +91,7 @@ ComponentWithComputed({
       this.stopPolling()
     },
     async queryOtaInfo() {
-      const res = await otaStore.updateList()
+      const res = await queryDeviceOtaUpdateList(homeStore.currentHomeDetail.houseId)
 
       if (!res.success) {
         Toast('查询OTA信息失败')
