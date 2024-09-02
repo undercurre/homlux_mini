@@ -48,6 +48,7 @@
         "pages/member-manage/index",
         "device-replace/index",
         "pages/ota/index",
+        "pages/ota-detail/index",
         "pages/logoff/index",
         "pages/setting/index",
         "device-manage/index",
