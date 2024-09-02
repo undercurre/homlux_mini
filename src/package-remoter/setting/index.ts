@@ -32,6 +32,7 @@ ComponentWithComputed({
     curShowHeight: '--',
     customOption: [{ key: 'SLOWUP', name: '轻抬上升', isOn: false }],
     curOneKeySettingStep: 0, // 0-开始设置，1-上升复位中，2-下降待完成中
+    totalAccess: 0,
   },
   methods: {
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
@@ -41,6 +42,7 @@ ComponentWithComputed({
       dataBus.on('DEVSTATUS', (e) => {
         this.updateView(e)
       })
+      this.getAccessCount()
     },
     handleDeviceNameEditPopup() {
       this.setData({
@@ -87,6 +89,15 @@ ComponentWithComputed({
       })
         .then(() => {
           Toast('删除成功')
+          wx.reportEvent("remoter_operate", {
+            "rm_total_control": 0,
+            "rm_device_model": remoterStore.curRemoter.deviceModel,
+            "rm_device_type": remoterStore.curRemoter.deviceType,
+            "rm_device_mac": remoterStore.curRemoter.addr,
+            "rm_operate_type": "delete",
+            "rm_total_access": this.data.totalAccess
+          })
+
           remoterStore.removeCurRemoter()
           emitter.emit('remoterChanged')
 
@@ -227,6 +238,19 @@ ComponentWithComputed({
         imageUrl: ShareImgUrl,
         promise,
       }
+    },
+    getAccessCount() {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const that = this
+      wx.batchGetStorage({
+        keyList: ['REMOTERTOTALACCESS'],
+        success (res: any) {
+          const list = res.dataList
+          that.setData({
+            totalAccess: list[0] ? parseInt(list[0]) : 0
+          })
+        }
+      })
     },
   },
   lifetimes: {

@@ -1,27 +1,21 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import {
-  // ACTIONSHEET_MAP,
   CMD,
-  // COLORTEMP_RANGE,
   FACTORY_ADDR,
-  // FREQUENCY_TIME,
 } from '../../config/remoter'
 import {
   initBleCapacity,
-  // storage,
-  // isDevMode,
 } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import {
   createBleServer,
   bleAdvertising,
-  // bleAdvertisingEnd,
-  // stopAdvertising,
   BleService,
 } from '../../utils/remoterUtils'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
+import { emitter } from '../../utils/index'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] })],
@@ -221,6 +215,7 @@ ComponentWithComputed({
       } else {
         this.sendBluetoothAd(paramsArr)
       }
+      emitter.emit('remoterControl', {mac: remoterStore.curAddr})
     },
     receiveBluetoothData(data: string) {
       const srcModel = data.slice(0, 2)

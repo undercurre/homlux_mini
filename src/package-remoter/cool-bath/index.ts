@@ -5,6 +5,7 @@ import remoterProtocol from '../../utils/remoterProtocol'
 import { createBleServer, bleAdvertising, BleService } from '../../utils/remoterUtils'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
+import { emitter } from '../../utils/index'
 // import Toast from '@vant/weapp/toast/toast'
 
 ComponentWithComputed({
@@ -324,6 +325,7 @@ ComponentWithComputed({
       } else {
         this.sendBluetoothAd(paramsArr)
       }
+      emitter.emit('remoterControl', {mac: remoterStore.curAddr})
     },
     receiveBluetoothData(data: string) {
       let status = {}

@@ -73,6 +73,9 @@ type Events = {
   }
   // 删除遥控器
   remoterChanged: void
+  remoterControl: {
+    mac: string
+  }
 
   // HACK 从store中同步设备数据（暂只用于房间页）
   roomDeviceSync: void

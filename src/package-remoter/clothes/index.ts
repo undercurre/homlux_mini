@@ -8,6 +8,7 @@ import { remoterStore, remoterBinding } from '../../store/index'
 import { hideLoading, showLoading } from '../../utils/system'
 import dataBus from '../utils/dataBus'
 import Toast from '@vant/weapp/toast/toast'
+import { emitter } from '../../utils/index'
 
 const minuteArr = []
 for (let i = 0; i <= 180; i+=5) {
@@ -228,6 +229,7 @@ ComponentWithComputed({
       } else {
         this.sendBluetoothAd(paramsArr)
       }
+      emitter.emit('remoterControl', {mac: remoterStore.curAddr})
     },
     receiveBluetoothData(data: string) {
       const status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)

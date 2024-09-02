@@ -46,9 +46,12 @@ ComponentWithComputed({
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
     _timer: 0, // 记录上次指令时间
     _holdBleScan: false, // onHide时保持蓝牙扫描的标志
-    debugStr: '[rx]',
-    isDebugMode: false,
-    curShareAddr: ''
+    curShareAddr: '',
+    totalAccess: 0,
+    dayAccess: 0,
+    monthAccess: 0,
+    accessDate: 0,
+    newAddTemp: [] as Remoter.DeviceItem[]
   },
 
   computed: {},
@@ -69,29 +72,30 @@ ComponentWithComputed({
       // 根据通知,更新设备列表
       emitter.on('remoterChanged', async () => {
         await delay(0)
-        console.log('remoterChanged on IndexList')
-
         const drag = this.selectComponent('#drag')
         drag?.init()
+        wx.reportEvent("remoter_live", {
+          "rm_month_access": this.data.monthAccess,
+          "rm_day_access": this.data.dayAccess,
+          "rm_total_access": this.data.totalAccess,
+          "rm_live_type": "delete"
+        })
       })
-
-      // 监听蓝牙连接值变化
-      // wx.onBLECharacteristicValueChange(function (res) {
-      //   console.log('onBLECharacteristicValueChange', res.value)
-      //   console.log('onBLECharacteristicValueChange', remoterCrypto.ab2hex(res.value))
-      // })
+      emitter.on('remoterControl', (e) => {
+        this.clearAddAndControlTemp(e.mac)
+      })
 
       // 版本获取
       const info = wx.getAccountInfoSync()
       this.data._envVersion = info.miniProgram.envVersion
-    },
 
+      this.getAccessCount()
+    },
     async onShow() {
       this.data._holdBleScan = false
       await initBleCapacity()
       // 监听扫描到新设备事件
       wx.onBluetoothDeviceFound((res: WechatMiniprogram.OnBluetoothDeviceFoundCallbackResult) => {
-        // console.log('onBluetoothDeviceFound', res)
         this.resolveFoundDevices(res)
       })
 
@@ -184,18 +188,9 @@ ComponentWithComputed({
         }
       }
     },
-
     onUnload() {
-      console.log('onUnload on Index')
       this.endSeek()
-    },
-
-    toggleDebug() {
-      if (this.data._envVersion === 'release') {
-        return
-      }
-
-      this.setData({ isDebugMode: !this.data.isDebugMode })
+      emitter.off('remoterControl')
     },
 
     // 拖拽列表初始化
@@ -212,6 +207,18 @@ ComponentWithComputed({
       remoterStore.retrieveRmStore()
 
       this.initDrag()
+      setTimeout(() => {
+        remoterStore.remoterList.forEach(item => {
+          wx.reportEvent("remoter_operate", {
+            "rm_total_control": 0,
+            "rm_device_model": item.deviceModel,
+            "rm_device_type": item.deviceType,
+            "rm_device_mac": item.addr,
+            "rm_operate_type": "read",
+            "rm_total_access": this.data.totalAccess
+          })
+        })
+      }, 500)
     },
 
     // 将新发现设备, 添加到[我的设备]
@@ -243,6 +250,28 @@ ComponentWithComputed({
           this.initDrag() // 动画结束了位置变化过又要刷新
         }, 2000)
       }
+      const notTemp = this.data.newAddTemp.findIndex(item => item.addr === newDevice.addr) == -1
+      if (notTemp) {
+        const temp = this.data.newAddTemp
+        temp.push(newDevice)
+        this.setData({
+          newAddTemp: temp
+        })
+      }
+      wx.reportEvent("remoter_live", {
+        "rm_month_access": this.data.monthAccess,
+        "rm_day_access": this.data.dayAccess,
+        "rm_total_access": this.data.totalAccess,
+        "rm_live_type": "add"
+      })
+      wx.reportEvent("remoter_operate", {
+        "rm_total_control": 0,
+        "rm_device_model": newDevice.deviceModel,
+        "rm_device_type": newDevice.deviceType,
+        "rm_device_mac": newDevice.addr,
+        "rm_operate_type": "add",
+        "rm_total_access": this.data.totalAccess
+      })
     },
 
     // 点击设备卡片
@@ -334,6 +363,13 @@ ComponentWithComputed({
         payload,
         isV2: isV2Dev,
       })
+      wx.reportEvent("remoter_live", {
+        "rm_month_access": this.data.monthAccess,
+        "rm_day_access": this.data.dayAccess,
+        "rm_total_access": this.data.totalAccess,
+        "rm_live_type": "control"
+      })
+      this.clearAddAndControlTemp(addr)
     },
 
     /**
@@ -426,11 +462,6 @@ ComponentWithComputed({
       // 更新我的设备列表
       remoterStore.renewRmState(recoveredList as Remoter.DeviceRx[])
       this.initDrag()
-
-      // 显示设备调试信息
-      const rListRSSI = recoveredList.map((r) => `${r?.deviceType},${r?.deviceModel}:${r?.RSSI}`)
-      const debugStr = `[rx]${rListRSSI.join('|')}`
-      this.setData({ debugStr })
 
       // 静默搜索，只处理已保存列表的设备
       if (!isUserControlled) {
@@ -556,33 +587,6 @@ ComponentWithComputed({
 
       this.setData({ foundList: newFoundList })
     },
-
-    // 获取已建立连接的设备 暂时用不着
-    // async getConnectedDevices() {
-    //   const services = Object.keys(this.data._localList)
-    //     .map((addr) => this.data._localList[addr].serviceId)
-    //     .filter((service) => !!service) as string[]
-
-    //   const res = await wx.getConnectedBluetoothDevices({
-    //     services,
-    //   })
-    //   console.log('getConnectedBluetoothDevices', res)
-
-    //   // 更新已连接状态
-    //   if (res.devices?.length) {
-    //     const servicesList = res.devices.map((item) => item.deviceId)
-
-    //     const diffData = {} as IAnyObject
-    //     this.data.deviceList.forEach((device, index) => {
-    //       if (servicesList.includes(device.deviceId)) {
-    //         diffData[`deviceList[${index}].connected`] = true
-    //       }
-    //     })
-    //     this.setData(diffData)
-    //     this.initDrag()
-    //   }
-    // },
-
     onPageScroll() {
       // console.log(e.detail)
       // this.setData({
@@ -618,12 +622,82 @@ ComponentWithComputed({
         tipsStep: this.data.tipsStep + 1,
       })
     },
-    rssiToggle() {
-      let rssi = this.data.MIN_RSSI - 5
-      if (rssi < -100) {
-        rssi = -50
-      }
-      this.setData({ MIN_RSSI: rssi })
+    getAccessCount() {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const that = this
+      wx.batchGetStorage({
+        keyList: ['REMOTERTOTALACCESS', 'REMOTERDAYACCESS', 'REMOTERMONTHACCESS', 'REMOTERACCESSDATE'],
+        success (res: any) {
+          const list = res.dataList
+          that.setData({
+            totalAccess: list[0] ? parseInt(list[0]) : 0,
+            dayAccess: list[1] ? parseInt(list[1]): 0,
+            monthAccess: list[2] ? parseInt(list[2]): 0,
+            accessDate: list[3] ? parseInt(list[3]): 0,
+          })
+          that.updateAccessCount()
+        }
+      })
     },
+    updateAccessCount() {
+      let total = this.data.totalAccess
+      let dayCnt = this.data.dayAccess
+      let monthCnt = this.data.monthAccess
+      total++
+      const now = new Date()
+      const date = this.data.accessDate > 0 ? new Date(this.data.accessDate) : now
+      if (date.getDate() === now.getDate()) dayCnt++
+      else dayCnt = 1
+      if (date.getMonth() === now.getMonth()) monthCnt++
+      else monthCnt = 1
+      this.setData({
+        totalAccess: total,
+        dayAccess: dayCnt,
+        monthAccess: monthCnt
+      })
+      this.setAccessCount()
+      console.log('lmn>>>访问计数=', total, dayCnt, monthCnt, `@${now.toLocaleString()}`)
+      wx.reportEvent("remoter_live", {
+        "rm_month_access": monthCnt,
+        "rm_day_access": dayCnt,
+        "rm_total_access": total,
+        "rm_live_type": "access"
+      })
+    },
+    setAccessCount() {
+      wx.batchSetStorage({
+        kvList: [{
+          key: 'REMOTERTOTALACCESS',
+          value: `${this.data.totalAccess}`,
+        }, {
+          key: 'REMOTERDAYACCESS',
+          value: `${this.data.dayAccess}`,
+        }, {
+          key: 'REMOTERMONTHACCESS',
+          value: `${this.data.monthAccess}`,
+        }, {
+          key: 'REMOTERACCESSDATE',
+          value: `${new Date().valueOf()}`,
+        }],
+      })
+    },
+    clearAddAndControlTemp(mac: string) {
+      const temp = this.data.newAddTemp
+      const index = temp.findIndex(item => item.addr === mac)
+      if (index >= 0) {
+        wx.reportEvent("remoter_operate", {
+          "rm_total_control": 1,
+          "rm_device_model": temp[index].deviceModel,
+          "rm_device_type": temp[index].deviceType,
+          "rm_device_mac": temp[index].addr,
+          "rm_operate_type": "add",
+          "rm_total_access": this.data.totalAccess
+        })
+        temp.splice(index, 1)
+        this.setData({
+          newAddTemp: temp
+        })
+      }
+    }
   },
 })
