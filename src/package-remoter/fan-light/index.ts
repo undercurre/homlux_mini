@@ -275,7 +275,7 @@ ComponentWithComputed({
         }
       }
     },
-    sendBluetoothCMD(paramsArr?: number[]) {
+    sendBluetoothCMD(paramsArr?: number[], key?: string) {
       // [3, 4, 5]
       if (!paramsArr || paramsArr.length == 0) return
       if (this.data.isBLEConnected) {
@@ -284,7 +284,15 @@ ComponentWithComputed({
       } else {
         this.sendBluetoothAd(paramsArr)
       }
-      emitter.emit('remoterControl', {mac: remoterStore.curAddr})
+      emitter.emit('remoterControl', {mac: this.data.devAddr})
+      if (!key) return
+      wx.reportEvent("remoter_control", {
+        "rm_control_function": key,
+        "rm_control_type": this.data.isBLEConnected ? "connect" : "ad",
+        "rm_device_model": this.data.devModel,
+        "rm_device_type": this.data.devType,
+        "rm_device_mac": this.data.devAddr
+      })
     },
     receiveBluetoothData(data: string) {
       const srcModel = data.slice(0, 2)
@@ -418,7 +426,7 @@ ComponentWithComputed({
       const key = `FAN_SPEED_${value}`
       const para = [CMD[key]]
       if (para != undefined && para != null) {
-        this.sendBluetoothCMD(para)
+        this.sendBluetoothCMD(para, key)
       }
     },
     onBtnListClick(e: any) {
@@ -450,11 +458,11 @@ ComponentWithComputed({
         }
       }
       if (key === 'NATURN') {
-        this.sendBluetoothCMD([CMD['FAN_NATURE']])
+        this.sendBluetoothCMD([CMD['FAN_NATURE']], 'FAN_NATURE')
       } else if (key === 'DIR') {
-        this.sendBluetoothCMD([CMD['FAN_NEGATIVE']])
+        this.sendBluetoothCMD([CMD['FAN_NEGATIVE']], 'FAN_NEGATIVE')
       } else if (key === 'DISPLAY') {
-        this.sendBluetoothCMD([CMD['CLOSE_DISPLAY']])
+        this.sendBluetoothCMD([CMD['CLOSE_DISPLAY']], 'CLOSE_DISPLAY')
       } else if (key === 'BRI' || key === 'COL') {
         this.setData({
           isShowPopup: true,
@@ -490,9 +498,9 @@ ComponentWithComputed({
         }, 300)
       }
       if (list[index].key == 'POWER') {
-        this.sendBluetoothCMD([CMD['FAN_SWITCH']])
+        this.sendBluetoothCMD([CMD['FAN_SWITCH']], 'FAN_SWITCH')
       } else if (list[index].key == 'LIGHT') {
-        this.sendBluetoothCMD([CMD['LIGHT_LAMP']])
+        this.sendBluetoothCMD([CMD['LIGHT_LAMP']], 'LIGHT_LAMP')
       }
     },
     closePopup() {
@@ -506,14 +514,14 @@ ComponentWithComputed({
       this.setData({
         curBrightnessPercent: value,
       })
-      this.sendBluetoothCMD([CMD['LIGHT_BRIGHT'], this.percent2Rang(this.data.curBrightnessPercent)])
+      this.sendBluetoothCMD([CMD['LIGHT_BRIGHT'], this.percent2Rang(this.data.curBrightnessPercent)], 'LIGHT_BRIGHT')
     },
     onColorSliderEnd(e: any) {
       const value = e.detail
       this.setData({
         curColorTempPercent: value,
       })
-      this.sendBluetoothCMD([CMD['LIGHT_COLOR_TEMP'], this.percent2Rang(this.data.curColorTempPercent)])
+      this.sendBluetoothCMD([CMD['LIGHT_COLOR_TEMP'], this.percent2Rang(this.data.curColorTempPercent)], 'LIGHT_COLOR_TEMP')
     },
     onPickTimeConfirm() {
       showLoading('加载中')
@@ -522,11 +530,11 @@ ComponentWithComputed({
         this.closePopup()
         const hour = this.data.hourArr[this.data.curTimePickerIndex[0]]
         if (hour == 0) {
-          this.sendBluetoothCMD([CMD['FAN_DELAY_OFF_CANCEL']])
+          this.sendBluetoothCMD([CMD['FAN_DELAY_OFF_CANCEL']], 'FAN_DELAY_OFF_CANCEL')
         } else {
           const key = `FAN_DELAY_OFF_${hour}`
           const para = CMD[key]
-          if (para != undefined && para != null) this.sendBluetoothCMD([CMD[key]])
+          if (para != undefined && para != null) this.sendBluetoothCMD([CMD[key]], key)
         }
       }, 1200);
     },

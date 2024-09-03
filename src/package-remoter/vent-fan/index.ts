@@ -6,6 +6,7 @@ import { createBleServer, bleAdvertising, BleService } from '../../utils/remoter
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 import { hideLoading, showLoading } from '../../utils/system'
+import { emitter } from '../../utils/index'
 // import Toast from '@vant/weapp/toast/toast'
 
 const minuteArr = []
@@ -189,7 +190,7 @@ ComponentWithComputed({
         }
       }
     },
-    sendBluetoothCMD(paramsArr?: number[]) {
+    sendBluetoothCMD(paramsArr?: number[], key?: string) {
       // [3, 4, 5]
       if (!paramsArr || paramsArr.length == 0) return
       if (this.data.isBLEConnected) {
@@ -199,6 +200,15 @@ ComponentWithComputed({
       } else {
         this.sendBluetoothAd(paramsArr)
       }
+      emitter.emit('remoterControl', {mac: this.data.devAddr})
+      if (!key) return
+      wx.reportEvent("remoter_control", {
+        "rm_control_function": key,
+        "rm_control_type": this.data.isBLEConnected ? "connect" : "ad",
+        "rm_device_model": this.data.devModel,
+        "rm_device_type": this.data.devType,
+        "rm_device_mac": this.data.devAddr
+      })
     },
     receiveBluetoothData(data: string) {
       let status = {}
@@ -293,7 +303,7 @@ ComponentWithComputed({
       this.setData({
         gearSlicerConfig: config,
       })
-      this.sendBluetoothCMD([CMD['FAN_GEAR'], value])
+      this.sendBluetoothCMD([CMD['FAN_GEAR'], value], 'FAN_GEAR')
     },
     onBtnListClick(e: any) {
       const index = e.currentTarget.dataset.index
@@ -346,7 +356,7 @@ ComponentWithComputed({
         }, 300)
       }
       if (list[index].key == 'POWER') {
-        this.sendBluetoothCMD([CMD['FAN_SWITCH']])
+        this.sendBluetoothCMD([CMD['FAN_SWITCH']], 'FAN_SWITCH')
       }
     },
     closePopup() {
@@ -375,7 +385,7 @@ ComponentWithComputed({
         const minute = this.data.minuteArr[this.data.curTimePickerIndex[0]] * 60
         const HByte = Math.floor(minute / 256)
         const LByte = minute % 256
-        this.sendBluetoothCMD([CMD['FAN_DELAY_OFF_MIN'], HByte, LByte])
+        this.sendBluetoothCMD([CMD['FAN_DELAY_OFF_MIN'], HByte, LByte], 'FAN_DELAY_OFF_MIN')
       }, 500);
     },
   },

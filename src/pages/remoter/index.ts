@@ -341,7 +341,7 @@ ComponentWithComputed({
       }
       this.data._timer = now
 
-      const { addr, actions, defaultAction, deviceModel, isV2 } = e.detail
+      const { addr, actions, defaultAction, deviceModel, isV2, deviceType } = e.detail
       const isV2Dev = isV2 !== undefined ? isV2 : deviceModel.length === 1
 
       // HACK 特殊的照明按钮反转处理
@@ -370,6 +370,13 @@ ComponentWithComputed({
         "rm_live_type": "control"
       })
       this.clearAddAndControlTemp(addr)
+      wx.reportEvent("remoter_control", {
+        "rm_control_function": key,
+        "rm_control_type": "ad",
+        "rm_device_model": deviceModel,
+        "rm_device_type": deviceType,
+        "rm_device_mac": addr
+      })
     },
 
     /**

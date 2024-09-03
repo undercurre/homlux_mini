@@ -220,7 +220,7 @@ ComponentWithComputed({
         }
       }
     },
-    sendBluetoothCMD(paramsArr?: number[]) {
+    sendBluetoothCMD(paramsArr?: number[], key?: string) {
       // [3, 4, 5]
       if (!paramsArr || paramsArr.length == 0) return
       if (this.data.isBLEConnected) {
@@ -229,7 +229,15 @@ ComponentWithComputed({
       } else {
         this.sendBluetoothAd(paramsArr)
       }
-      emitter.emit('remoterControl', {mac: remoterStore.curAddr})
+      emitter.emit('remoterControl', {mac: this.data.devAddr})
+      if (!key) return
+      wx.reportEvent("remoter_control", {
+        "rm_control_function": key,
+        "rm_control_type": this.data.isBLEConnected ? "connect" : "ad",
+        "rm_device_model": this.data.devModel,
+        "rm_device_type": this.data.devType,
+        "rm_device_mac": this.data.devAddr
+      })
     },
     receiveBluetoothData(data: string) {
       const status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
@@ -362,7 +370,7 @@ ComponentWithComputed({
           })
         }, 300)
       }
-      this.sendBluetoothCMD([CMD['CLOTHES_UP']])
+      this.sendBluetoothCMD([CMD['CLOTHES_UP']], 'CLOTHES_UP')
     },
     onGearBottomClick() {
       const config = this.data.gearBtnConfig
@@ -383,7 +391,7 @@ ComponentWithComputed({
           })
         }, 300)
       }
-      this.sendBluetoothCMD([CMD['CLOTHES_DOWN']])
+      this.sendBluetoothCMD([CMD['CLOTHES_DOWN']], 'CLOTHES_DOWN')
     },
     onGearMiddleClick() {
       const config = this.data.gearBtnConfig
@@ -404,7 +412,7 @@ ComponentWithComputed({
           })
         }, 300)
       }
-      this.sendBluetoothCMD([CMD['CLOTHES_PAUSE']])
+      this.sendBluetoothCMD([CMD['CLOTHES_PAUSE']], 'CLOTHES_PAUSE')
     },
     onBtnListClick(e: any) {
       const index = e.currentTarget.dataset.index
@@ -436,7 +444,7 @@ ComponentWithComputed({
           isShowPopup: true
         })
       } else if (key === 'ONEKEY') {
-        this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY']])
+        this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY']], 'CLOTHES_ONE_KEY')
       } else if (key === 'DELAY') {
         this.setData({
           isShowTimePicker: true,
@@ -472,7 +480,7 @@ ComponentWithComputed({
         }, 300)
       }
       if (list[index].key == 'LIGHT') {
-        this.sendBluetoothCMD([CMD['CLOTHES_LIGHT']])
+        this.sendBluetoothCMD([CMD['CLOTHES_LIGHT']], 'CLOTHES_LIGHT')
       }
     },
     closePopup() {
@@ -486,7 +494,7 @@ ComponentWithComputed({
       this.setData({
         curBrightnessPercent: value
       })
-      this.sendBluetoothCMD([CMD['CLOTHES_BRIGHT'], this.data.curBrightnessPercent])
+      this.sendBluetoothCMD([CMD['CLOTHES_BRIGHT'], this.data.curBrightnessPercent], 'CLOTHES_BRIGHT')
     },
     onTimePickChange(e: any) {
       const indexs = e.detail.value
@@ -507,7 +515,7 @@ ComponentWithComputed({
         hideLoading()
         this.closePopup()
         const minute = this.data.minuteArr[this.data.curTimePickerIndex[0]]
-        this.sendBluetoothCMD([CMD['CLOTHES_DELAY_LIGHT_TIME'], minute])
+        this.sendBluetoothCMD([CMD['CLOTHES_DELAY_LIGHT_TIME'], minute], 'CLOTHES_DELAY_LIGHT_TIME')
       }, 1200);
     },
   },

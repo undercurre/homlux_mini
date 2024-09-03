@@ -315,7 +315,7 @@ ComponentWithComputed({
         }
       }
     },
-    sendBluetoothCMD(paramsArr?: number[]) {
+    sendBluetoothCMD(paramsArr?: number[], key?: string) {
       // [3, 4, 5]
       if (!paramsArr || paramsArr.length == 0) return
       if (this.data.isBLEConnected) {
@@ -325,7 +325,15 @@ ComponentWithComputed({
       } else {
         this.sendBluetoothAd(paramsArr)
       }
-      emitter.emit('remoterControl', {mac: remoterStore.curAddr})
+      emitter.emit('remoterControl', {mac: this.data.devAddr})
+      if (!key) return
+      wx.reportEvent("remoter_control", {
+        "rm_control_function": key,
+        "rm_control_type": this.data.isBLEConnected ? "connect" : "ad",
+        "rm_device_model": this.data.devModel,
+        "rm_device_type": this.data.devType,
+        "rm_device_mac": this.data.devAddr
+      })
     },
     receiveBluetoothData(data: string) {
       let status = {}
@@ -429,7 +437,7 @@ ComponentWithComputed({
           })
         }, 300)
       }
-      this.sendBluetoothCMD([CMD['KITCHEN_WIND_STRONG']])
+      this.sendBluetoothCMD([CMD['KITCHEN_WIND_STRONG']], 'KITCHEN_WIND_STRONG')
     },
     onGearBottomClick() {
       const config = this.data.gearBtnConfig
@@ -448,7 +456,7 @@ ComponentWithComputed({
           })
         }, 300)
       }
-      this.sendBluetoothCMD([CMD['KITCHEN_WIND_SOFT']])
+      this.sendBluetoothCMD([CMD['KITCHEN_WIND_SOFT']], 'KITCHEN_WIND_SOFT')
     },
     onBtnListClick(e: any) {
       const index = e.currentTarget.dataset.index
@@ -470,11 +478,11 @@ ComponentWithComputed({
         }, 300)
       }
       if (key === 'VENT') {
-        this.sendBluetoothCMD([CMD['BATH_VENTILATE']])
+        this.sendBluetoothCMD([CMD['BATH_VENTILATE']], 'BATH_VENTILATE')
       } else if (key === 'SWING') {
-        this.sendBluetoothCMD([CMD['BATH_SWING']])
+        this.sendBluetoothCMD([CMD['BATH_SWING']], 'BATH_SWING')
       } else if (key === 'ANION') {
-        this.sendBluetoothCMD([CMD['BATH_ANION']])
+        this.sendBluetoothCMD([CMD['BATH_ANION']], 'BATH_ANION')
       }
     },
     goToDevManage() {
@@ -507,23 +515,23 @@ ComponentWithComputed({
             isShowPopup: true,
           })
         } else {
-          this.sendBluetoothCMD([CMD['BATH_ALL_OFF']])
+          this.sendBluetoothCMD([CMD['BATH_ALL_OFF']], 'BATH_ALL_OFF')
         }
       } else if (list[index].key == 'LIGHT') {
-        this.sendBluetoothCMD([CMD['BATH_LAMP']])
+        this.sendBluetoothCMD([CMD['BATH_LAMP']], 'BATH_LAMP')
       } else if (list[index].key == 'NIGHT') {
-        this.sendBluetoothCMD([CMD['BATH_NIGHT_LAMP']])
+        this.sendBluetoothCMD([CMD['BATH_NIGHT_LAMP']], 'BATH_NIGHT_LAMP')
       }
     },
     onPopupSelect(e: any) {
       this.closePopup()
       const key = e.currentTarget.dataset.key
       if (key === 'HIGH') {
-        this.sendBluetoothCMD([CMD['KITCHEN_WIND_STRONG']])
+        this.sendBluetoothCMD([CMD['KITCHEN_WIND_STRONG']], 'KITCHEN_WIND_STRONG')
       } else if (key === 'LOW') {
-        this.sendBluetoothCMD([CMD['KITCHEN_WIND_SOFT']])
+        this.sendBluetoothCMD([CMD['KITCHEN_WIND_SOFT']], 'KITCHEN_WIND_SOFT')
       } else if (key === 'VENT') {
-        this.sendBluetoothCMD([CMD['BATH_VENTILATE']])
+        this.sendBluetoothCMD([CMD['BATH_VENTILATE']], 'BATH_VENTILATE')
       }
     },
     closePopup() {
