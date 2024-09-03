@@ -16,7 +16,7 @@
         bind:click="toPage"
       />
       <van-cell
-        icon="/package-auth/assets/img/voiceControl.png"
+        icon="/package-auth/assets/img/thirdParty.png"
         title="第三方平台"
         center
         is-link
@@ -27,7 +27,7 @@
 
     <van-cell-group inset>
       <van-cell
-        icon="/package-auth/assets/img/voiceControl.png"
+        icon="/package-auth/assets/img/platform.png"
         title="授权设备至其它平台"
         center
         is-link
