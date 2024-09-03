@@ -1,0 +1,11 @@
+<view class="page-container flex flex-col">
+  <nav-bar
+    leftArrow="{{true}}"
+    bind:leftTap="goBack"
+    title="门锁临时密码下发"
+  ></nav-bar>
+</view>
+
+<van-toast id="van-toast" />
+
+<van-dialog id="van-dialog" />

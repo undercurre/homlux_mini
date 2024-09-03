@@ -1,0 +1,29 @@
+<view class="page-container flex flex-col">
+  <nav-bar
+    leftArrow="{{true}}"
+    bind:leftTap="goBack"
+    title="实验室功能"
+  ></nav-bar>
+
+  <van-cell-group inset>
+    <van-cell
+      title="门锁临时密码下发"
+      center
+      bind:click="toPage"
+      is-link
+      label="基于门锁随机数和管理员密码"
+      custom-class="cell-wrapper"
+      data-url="/package-lab/pages/doorlock-psw/index"
+    >
+      <image
+        slot="icon"
+        class="w-96rpx h-96rpx mr-32rpx"
+        src="/assets/img/mine/meiju.png"
+      />
+    </van-cell>
+  </van-cell-group>
+</view>
+
+<van-toast id="van-toast" />
+
+<van-dialog id="van-dialog" />

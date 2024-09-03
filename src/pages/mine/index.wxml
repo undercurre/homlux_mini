@@ -47,6 +47,14 @@
           bind:click="toPage"
         />
         <mz-cell
+          wx:if="{{isManager}}"
+          icon="/assets/img/mine/deviceReplace.png"
+          title="设备替换"
+          is-link
+          data-url="{{urls.deviceReplace}}"
+          bind:click="toPage"
+        />
+        <mz-cell
           icon="/assets/img/mine/link.png"
           title="连接其他平台"
           is-link
@@ -55,10 +63,10 @@
         />
         <mz-cell
           wx:if="{{isManager}}"
-          icon="/assets/img/mine/deviceReplace.png"
-          title="设备替换"
+          icon="/assets/img/mine/lab.png"
+          title="实验室功能"
           is-link
-          data-url="{{urls.deviceReplace}}"
+          data-url="{{urls.lab}}"
           bind:click="toPage"
         />
         <mz-cell

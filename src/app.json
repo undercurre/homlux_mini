@@ -135,6 +135,10 @@
         "pages/webView/webView",
         "pages/linkAp/linkAp"
       ]
+    },
+    {
+      "root": "package-lab",
+      "pages": ["pages/index/index", "pages/doorlock-psw/index"]
     }
   ],
   "preloadRule": {
@@ -145,6 +149,10 @@
     "package-distribution/pages/choose-device/index": {
       "network": "all",
       "packages": ["package-distribution-meiju", "package-auth"]
+    },
+    "pages/mine/index": {
+      "network": "all",
+      "packages": ["package-about", "package-lab"]
     }
   },
   "lazyCodeLoading": "requiredComponents",

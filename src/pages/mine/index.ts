@@ -42,6 +42,7 @@ Component({
       about: '/package-about/pages/about/index',
       deviceCategory: '/package-mine/device-category/index',
       setting: '/package-mine/pages/setting/index',
+      lab: '/package-lab/pages/index/index',
     },
     userInfo: {},
     isLogin: false,

@@ -1,0 +1,7 @@
+.text-label {
+  color: #488fff;
+}
+
+.cell-wrapper {
+  height: 192rpx;
+}
