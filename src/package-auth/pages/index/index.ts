@@ -10,7 +10,7 @@ ComponentWithComputed({
   data: {
     urls: {
       voiceControl: '/package-mine/voice-control/index',
-      thirdParty: '/package-auth/pages/device-list/index',
+      thirdParty: '/package-auth/pages/third-party/index',
       platform: '/package-auth/pages/platform/index',
     },
   },
