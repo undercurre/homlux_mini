@@ -2,28 +2,29 @@
   <nav-bar
     leftArrow="{{true}}"
     bind:leftTap="goBack"
-    title="第三方平台"
+    title="授权设备至其它平台"
   ></nav-bar>
 
   <view class="px-40rpx mt-20rpx">
-    <text class="text-hex-555659 text-28">通过绑定其他平台账号，将您在其他平台的设备同步至美的照明进行控制</text>
+    <text class="text-hex-555659 text-28">登录其他平台账号，将您的设备（智能网关、智能灯、智能开关）授权至该平台进行控制</text>
   </view>
   <van-cell-group inset>
     <van-cell
-      title="美的美居"
+      title="米家"
       center
       bind:click="toAuth"
+      label="授权智能网关及子设备至米家"
       custom-class="cell-wrapper"
     >
       <image
         slot="icon"
         class="w-96rpx h-96rpx mr-32rpx"
-        src="/assets/img/mine/meiju.png"
+        src="/package-auth/assets/img/mijia.png"
       />
       <text
         slot="right-icon"
         class="text-label text-24"
-        >{{meijuLinkText}} ></text
+        >{{ authStatusText }}</text
       >
     </van-cell>
   </van-cell-group>

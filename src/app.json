@@ -90,9 +90,11 @@
       "pages": [
         "pages/index/index",
         "pages/third-party/index",
+        "pages/platform/index",
         "pages/meiju/index",
         "pages/home-list/index",
         "pages/confirm-auth/index",
+        "pages/confirm-mi/index",
         "pages/device-list/index"
       ]
     },
