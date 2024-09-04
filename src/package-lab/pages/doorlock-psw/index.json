@@ -1,8 +1,13 @@
 {
+  "styleIsolation": "apply-shared",
+  "component": true,
+  "navigationStyle": "custom",
+  "renderer": "skyline",
+  "componentFramework": "glass-easel",
+  "disableScroll": true,
   "usingComponents": {
-    "van-toast": "@vant/weapp/toast/index",
-    "van-dialog": "@vant/weapp/dialog/index",
-    "van-cell-group": "@vant/weapp/cell-group/index",
-    "van-cell": "@vant/weapp/cell/index"
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-button": "/skyline-components/mz-button/index",
+    "mz-field": "/skyline-components/mz-field/index"
   }
 }

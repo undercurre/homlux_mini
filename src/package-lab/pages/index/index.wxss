@@ -3,5 +3,7 @@
 }
 
 .cell-wrapper {
+  display: flex;
+  align-items: center;
   height: 192rpx;
 }

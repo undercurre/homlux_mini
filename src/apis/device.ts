@@ -1053,3 +1053,18 @@ export async function deviceTransmit(handleType: string, data: IAnyObject, optio
     },
   })
 }
+
+/**
+ * 单机版门锁生成临时密码
+ */
+export async function getNewTempPwd(data: { random: string; adminPwd: string }, options?: { loading?: boolean }) {
+  return await mzaioRequest.post<{
+    tmpPwd: string
+    createTime: string
+  }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/qyLock/getTempPwd',
+    data,
+  })
+}

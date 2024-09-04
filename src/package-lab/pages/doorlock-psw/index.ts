@@ -1,5 +1,10 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
+import { ossDomain } from '../../../config/index'
+import { getNewTempPwd } from '../../../apis/index'
+import Toast from '../../../skyline-components/mz-toast/toast'
+
+type StatusType = 'init' | 'generated'
 
 ComponentWithComputed({
   behaviors: [pageBehaviors],
@@ -8,14 +13,50 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    urls: {},
+    status: 'init' as StatusType,
+    randomCode: '',
+    adminPwd: '',
+    tmpPwd: '',
+    tips: '1、随机码生成流程：门锁输入*#后，生成4位随机码；\n2、临时密码10分钟有效，从随机码生成后开始计算；\n3、生成新密码后，原临时密码失效；\n4、支持门锁型号：XXXXX。',
+    actionTips: '临时密码10分钟有效，从随机码生成后开始计算',
+    generatedImage: `${ossDomain}/homlux/guide/temp-psw.png`,
   },
 
-  computed: {},
+  computed: {
+    infoReady(data) {
+      return data.adminPwd && data.randomCode
+    },
+  },
 
   pageLifetimes: {
     async show() {},
   },
 
-  methods: {},
+  methods: {
+    async handleConfirm() {
+      const { adminPwd, randomCode } = this.data
+      const res = await getNewTempPwd({ random: randomCode, adminPwd })
+      if (!res.success) {
+        Toast('门锁临时密码生成失败')
+        return
+      }
+      const { tmpPwd } = res.result
+      this.setData({
+        status: 'generated',
+        tmpPwd,
+      })
+    },
+    handleCopyPwd() {
+      wx.setClipboardData({
+        data: `【门锁临时密码】${this.data.tmpPwd}`,
+      })
+    },
+    resetStatus() {
+      this.setData({
+        adminPwd: '',
+        randomCode: '',
+        status: 'init',
+      })
+    },
+  },
 })

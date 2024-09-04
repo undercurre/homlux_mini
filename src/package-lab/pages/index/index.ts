@@ -1,9 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
-import pageBehaviors from '../../../behaviors/pageBehaviors'
 
 ComponentWithComputed({
-  behaviors: [pageBehaviors],
-
   /**
    * 页面的初始数据
    */
