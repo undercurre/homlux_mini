@@ -49,7 +49,7 @@ ComponentWithComputed({
      */
     toNextStep() {
       wx.redirectTo({
-        url: '',
+        url: '/package-auth/pages/mi/index',
       })
     },
   },
