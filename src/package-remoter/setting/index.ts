@@ -25,6 +25,7 @@ ComponentWithComputed({
     fastSwitchName: '照明开关',
     deviceType: '',
     deviceModel: '',
+    deviceAddr: '',
     heightArr,
     isShowPicker: false,
     curPickerIndex: [0],
@@ -33,11 +34,12 @@ ComponentWithComputed({
     customOption: [{ key: 'SLOWUP', name: '轻抬上升', isOn: false }],
     curOneKeySettingStep: 0, // 0-开始设置，1-上升复位中，2-下降待完成中
     totalAccess: 0,
+    curSwitchFun: '--',
   },
   methods: {
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
       const { deviceType, deviceModel, addr } = query
-      this.setData({ deviceType, deviceModel, addr })
+      this.setData({ deviceType, deviceModel, deviceAddr: addr })
 
       dataBus.on('DEVSTATUS', (e) => {
         this.updateView(e)
@@ -208,6 +210,11 @@ ComponentWithComputed({
       if (key === 'SLOWUP') {
         this.sendBluetoothCMD([CMD['CLOTHES_SLOW_UP']])
       }
+    },
+    onSwitchFunClick() {
+      wx.navigateTo({
+        url: `/package-remoter/fan-light-setting/index?addr=${this.data.deviceAddr}&deviceType=${this.data.deviceType}&deviceModel=${this.data.deviceModel}`,
+      })
     },
     updateShareSetting() {
       wx.updateShareMenu({

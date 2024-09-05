@@ -1,0 +1,89 @@
+<view class="container-pg">
+  <nav-bar
+    background="#EFF2F7"
+    leftArrow="{{true}}"
+    bind:leftTap="goBack"
+  >
+    <view class="title-block flex-center">
+      <text class="text-36rpx font-medium">墙壁开关切换</text>
+    </view>
+  </nav-bar>
+
+  <view style="width: 750rpx; margin-top: 24rpx;">
+    <text class="switch-text">选择墙壁开关切换类型</text>
+  </view>
+
+  <van-cell-group inset style="width: 750rpx;">
+    <van-cell
+      title="色温"
+      label="8秒内快速开关，可切换中性光、暖光、冷光"
+      border="{{true}}"
+      custom-class="cus-cell">
+      <van-checkbox
+        slot="right-icon"
+        catch:tap="onTempCheck"
+        value="{{mainOptionIndex == 0}}"
+      />
+    </van-cell>
+  </van-cell-group>
+
+  <van-cell-group inset style="width: 750rpx; margin-top: -24rpx;">
+    <van-cell
+      title="功能"
+      label="8秒内快速开关，可切换灯、风扇功能"
+      border="{{true}}"
+      custom-class="cus-cell">
+      <van-checkbox
+        slot="right-icon"
+        catch:tap="onFunctionCheck"
+        value="{{mainOptionIndex == 1}}"
+      />
+    </van-cell>
+  </van-cell-group>
+
+  <view class="fun-block" wx:if="{{mainOptionIndex == 1}}">
+    <van-cell inset
+      title="按列表顺序进行切换"
+      label="长按可拖动功能顺序"
+      border="{{true}}"
+      custom-class="cus-cell"></van-cell>
+
+      <view class="drag-block" id="dragLayout">
+        <view wx:for="{{funOptionList}}"
+          wx:key="index"
+          style="box-shadow: inset 0 0 {{item.isChoose ? 20 : 0}}rpx rgba(93,148,244, 0.4);">
+          <view style="opacity: {{item.isChoose ? 0 : 1}};">
+            <van-cell inset
+              title="{{item.name}}"
+              border="{{false}}"
+              custom-class="drag-cell">
+              <image slot="right-icon"
+                style="width: 36rpx; height: 28rpx; margin-right: 10rpx;"
+                src="/package-remoter/assets/newUI/drag.png"></image>
+            </van-cell>
+          </view>
+          <view wx:if="{{index !== funOptionList.length -1}}" class="line"></view>
+        </view>
+
+        <view class="mask-block" style="left: 0; top: {{maskPosY}}rpx; opacity: {{isDraging ? 1 : 0}};">
+          <van-cell
+              title="{{curDragName}}"
+              border="{{false}}"
+              custom-class="drag-mask-cell">
+              <image slot="right-icon"
+                style="width: 36rpx; height: 28rpx; margin-right: 10rpx;"
+                src="/package-remoter/assets/newUI/drag.png"></image>
+            </van-cell>
+        </view>
+        <view class="tap-block" catchtouchstart="start" catchtouchmove="move" catchtouchend="end"></view>
+      </view>
+  </view>
+
+  <view style="width: 750rpx; margin-top: 40rpx; display: flex; flex-direction: column;" 
+    wx:if="{{mainOptionIndex == 1}}">
+    <text class="tip-title">备注：</text>
+    <text class="tip-content">如不调整顺序，墙壁开关切换顺序默认为“ 按一次：仅开灯；按两次：灯+风扇都开；按三次：仅开风扇”</text>
+  </view>
+</view>
+
+<van-toast id="van-toast" />

@@ -341,7 +341,7 @@ ComponentWithComputed({
     },
     goToDevManage() {
       wx.navigateTo({
-        url: `/package-remoter/setting/index?addr=${remoterStore.curAddr}`,
+        url: `/package-remoter/setting/index?addr=${this.data.devAddr}&deviceType=${this.data.devType}&deviceModel=${this.data.devModel}`,
       })
     },
     onBottomClick(e: any) {

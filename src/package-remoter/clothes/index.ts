@@ -457,7 +457,7 @@ ComponentWithComputed({
         dataBus.emit('DEVSTATUS', this.data.devStatus)
       }, 500);
       wx.navigateTo({
-        url: `/package-remoter/setting/index?addr=${this.data.devAddr}&deviceType=${this.data.devType}`,
+        url: `/package-remoter/setting/index?addr=${this.data.devAddr}&deviceType=${this.data.devType}&deviceModel=${this.data.devModel}`,
       })
     },
     onBottomClick(e: any) {

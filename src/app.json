@@ -117,6 +117,7 @@
         "light/index",
         "setting/index",
         "fan-light/index",
+        "fan-light-setting/index",
         "bath/index",
         "cool-bath/index",
         "clothes/index",

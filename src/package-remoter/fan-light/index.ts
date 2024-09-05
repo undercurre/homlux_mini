@@ -17,6 +17,7 @@ import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
 import { emitter } from '../../utils/index'
+import dataBus from '../utils/dataBus'
 
 const hourArr = []
 for (let i = 0; i <= 6; i++) {
@@ -131,6 +132,7 @@ ComponentWithComputed({
       })
       console.log('lmn>>>rece AD status=', JSON.stringify(temp))
       this.updateView()
+      dataBus.emit('DEVSTATUS', temp)
     },
   },
   computed: {
@@ -178,6 +180,10 @@ ComponentWithComputed({
       this.configBtns()
       this.updateView()
 
+      dataBus.on('DEVSEND', (cmd) => {
+        this.sendBluetoothCMD(cmd as number[])
+      })
+
       const bleInited = await initBleCapacity()
       if (!bleInited) {
         return
@@ -216,6 +222,7 @@ ComponentWithComputed({
       }
     },
     onUnload() {
+      dataBus.all.clear()
       clearTimeout(this.data.conTimer)
       if (this.data.isBLEConnected) {
         this.data._bleService?.close()
@@ -307,6 +314,7 @@ ComponentWithComputed({
         devStatus: status,
       })
       this.updateView()
+      dataBus.emit('DEVSTATUS', status)
     },
     bluetoothConnectChange(isConnected: boolean) {
       console.log('lmn>>>bluetoothConnectChange::isConnected=', isConnected)
@@ -477,8 +485,11 @@ ComponentWithComputed({
       }
     },
     goToDevManage() {
+      setTimeout(() => {
+        dataBus.emit('DEVSTATUS', this.data.devStatus)
+      }, 500);
       wx.navigateTo({
-        url: `/package-remoter/setting/index?addr=${remoterStore.curAddr}`,
+        url: `/package-remoter/setting/index?addr=${this.data.devAddr}&deviceType=${this.data.devType}&deviceModel=${this.data.devModel}`,
       })
     },
     onBottomClick(e: any) {
