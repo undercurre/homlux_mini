@@ -78,7 +78,8 @@ ComponentWithComputed({
           "rm_month_access": this.data.monthAccess,
           "rm_day_access": this.data.dayAccess,
           "rm_total_access": this.data.totalAccess,
-          "rm_live_type": "delete"
+          "rm_live_type": "delete",
+          "rm_device_type": "none"
         })
       })
       emitter.on('remoterControl', (e) => {
@@ -262,7 +263,8 @@ ComponentWithComputed({
         "rm_month_access": this.data.monthAccess,
         "rm_day_access": this.data.dayAccess,
         "rm_total_access": this.data.totalAccess,
-        "rm_live_type": "add"
+        "rm_live_type": "add",
+        "rm_device_type": newDevice.deviceType
       })
       wx.reportEvent("remoter_operate", {
         "rm_total_control": 0,
@@ -367,7 +369,8 @@ ComponentWithComputed({
         "rm_month_access": this.data.monthAccess,
         "rm_day_access": this.data.dayAccess,
         "rm_total_access": this.data.totalAccess,
-        "rm_live_type": "control"
+        "rm_live_type": "control",
+        "rm_device_type": deviceType,
       })
       this.clearAddAndControlTemp(addr)
       wx.reportEvent("remoter_control", {
@@ -668,7 +671,8 @@ ComponentWithComputed({
         "rm_month_access": monthCnt,
         "rm_day_access": dayCnt,
         "rm_total_access": total,
-        "rm_live_type": "access"
+        "rm_live_type": "access",
+        "rm_device_type": "none",
       })
     },
     setAccessCount() {

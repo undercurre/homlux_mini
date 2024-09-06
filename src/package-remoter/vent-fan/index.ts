@@ -126,6 +126,8 @@ ComponentWithComputed({
       // 建立BLE外围设备服务端
       this.data._bleServer = await createBleServer()
       if (this.data.isNeedConnectBLE) this.start()
+
+      this.getAccessCount()
     },
     configBtns() {},
     onUnload() {
@@ -387,6 +389,24 @@ ComponentWithComputed({
         const LByte = minute % 256
         this.sendBluetoothCMD([CMD['FAN_DELAY_OFF_MIN'], HByte, LByte], 'FAN_DELAY_OFF_MIN')
       }, 500);
+    },
+    getAccessCount() {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const that = this
+      wx.batchGetStorage({
+        keyList: ['REMOTERTOTALACCESS', 'REMOTERDAYACCESS', 'REMOTERMONTHACCESS'],
+        success (res: any) {
+          const list = res.dataList
+          if (list.length < 3) return
+          wx.reportEvent("remoter_live", {
+            "rm_month_access": parseInt(list[2]),
+            "rm_day_access": parseInt(list[1]),
+            "rm_total_access": parseInt(list[0]),
+            "rm_live_type": "access",
+            "rm_device_type": that.data.devType,
+          })
+        }
+      })
     },
   },
 })
