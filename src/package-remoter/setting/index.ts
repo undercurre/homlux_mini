@@ -34,7 +34,8 @@ ComponentWithComputed({
     customOption: [{ key: 'SLOWUP', name: '轻抬上升', isOn: false }],
     curOneKeySettingStep: 0, // 0-开始设置，1-上升复位中，2-下降待完成中
     totalAccess: 0,
-    curSwitchFun: '--',
+    curSwitchFun: '',
+    statusTemp: null as any
   },
   methods: {
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
@@ -43,6 +44,9 @@ ComponentWithComputed({
 
       dataBus.on('DEVSTATUS', (e) => {
         this.updateView(e)
+        this.setData({
+          statusTemp: e
+        })
       })
       this.getAccessCount()
     },
@@ -120,13 +124,16 @@ ComponentWithComputed({
     },
     updateView(status: any) {
       console.log('lmn>>>dev status=', JSON.stringify(status))
+      if (this.data.deviceType === '17') this.update17(status)
+      else if (this.data.deviceType === '13') this.update13(status)
+    },
+    update17(status: any) {
       if (status.CLOTHES_SET_HEIGHT !== undefined) {
         const height = status.CLOTHES_SET_HEIGHT
         this.setData({
           curShowHeight: height === 0 ? '未设置' : '已设置',
         })
       }
-
       const option = this.data.customOption
       if (status.CLOTHES_SLOW_UP !== undefined) {
         for (let i = 0; i < option.length; i++) {
@@ -136,7 +143,6 @@ ComponentWithComputed({
           }
         }
       }
-
       let step = this.data.curOneKeySettingStep
       if (status.CLOTHES_IS_SETTING_HEIGHT !== undefined && status.CLOTHES_ACTION !== undefined) {
         if (!status.CLOTHES_IS_SETTING_HEIGHT) {
@@ -146,10 +152,19 @@ ComponentWithComputed({
           else if (status.CLOTHES_ACTION === 2) step = 2
         }
       }
-
       this.setData({
         customOption: option,
         curOneKeySettingStep: step,
+      })
+    },
+    update13(status: any) {
+      let text = this.data.curSwitchFun
+      if (status.WALL_SWITCH !== undefined) {
+        if (status.WALL_SWITCH === 0) text = '色温'
+        else text = '功能'
+      }
+      this.setData({
+        curSwitchFun: text
       })
     },
     sendBluetoothCMD(paramsArr?: number[]) {
@@ -212,6 +227,9 @@ ComponentWithComputed({
       }
     },
     onSwitchFunClick() {
+      setTimeout(() => {
+        dataBus.emit('DEVSTATUS', this.data.statusTemp)
+      }, 500);
       wx.navigateTo({
         url: `/package-remoter/fan-light-setting/index?addr=${this.data.deviceAddr}&deviceType=${this.data.deviceType}&deviceModel=${this.data.deviceModel}`,
       })

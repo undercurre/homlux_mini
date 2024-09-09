@@ -8,7 +8,7 @@ import {
   remoterBinding
 } from '../../store/index'
 import dataBus from '../utils/dataBus'
-// import { CMD } from '../../config/remoter'
+import { CMD } from '../../config/remoter'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
@@ -51,7 +51,31 @@ ComponentWithComputed({
       this.getAccessCount()
     },
     updateView(status: any) {
+      if (this.data.isDraging) return
       console.log('lmn>>>dev status=', JSON.stringify(status))
+      let mainIndex = this.data.mainOptionIndex
+      if (status.WALL_SWITCH !== undefined) {
+        mainIndex = status.WALL_SWITCH
+      }
+      const optionList = this.data.funOptionList
+      if (status.WALL_ORDER !== undefined) {
+        if (status.WALL_ORDER >= 1 && status.WALL_ORDER <= 6) {
+          const arr = [
+            [1, 2, 3], [1, 3, 2],
+            [2, 1, 3], [2, 3, 1],
+            [3, 1, 2], [3, 2, 1]
+          ]
+          const order = arr[status.WALL_ORDER - 1]
+          const arrFun = ['仅开灯', '灯+风扇都开', '仅开风扇']
+          for (let i = 0; i < optionList.length; i++) {
+            optionList[i].name = arrFun[order[i] - 1]
+          }
+        }
+      }
+      this.setData({
+        mainOptionIndex: mainIndex,
+        funOptionList: optionList
+      })
     },
     sendBluetoothCMD(paramsArr?: number[]) {
       if (!paramsArr || paramsArr.length == 0) return
@@ -61,11 +85,13 @@ ComponentWithComputed({
       this.setData({
         mainOptionIndex: 0
       })
+      this.sendBluetoothCMD([CMD['WALL_SWITCH'], 0])
     },
     onFunctionCheck() {
       this.setData({
         mainOptionIndex: 1
       })
+      this.sendBluetoothCMD([CMD['WALL_SWITCH'], 1])
     },
     getAccessCount() {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -120,7 +146,7 @@ ComponentWithComputed({
           delayTimer: null
         })
         wx.vibrateShort({ type: 'light' })
-      }, 1000)
+      }, 600)
       this.setData({
         delayTimer: timer
       })
@@ -163,8 +189,9 @@ ComponentWithComputed({
       let layoutY = mY - this.data.layout.top
       layoutY = layoutY < 0 ? 0 : layoutY > maxHeight ? maxHeight : layoutY
 
-      const dragIndex = Math.floor(layoutY / maskHeight)
+      let dragIndex = Math.floor(layoutY / maskHeight)
       const option = this.data.funOptionList
+      dragIndex = dragIndex < 0 ? 0 : dragIndex > option.length - 1 ? option.length - 1 : dragIndex
       if (option[dragIndex].isChoose) return
       let cnt = 0
       for (let i = 0; i < option.length; i++) {
@@ -187,13 +214,27 @@ ComponentWithComputed({
       for (let i = 0; i < option.length; i++) {
         option[i].isChoose = false
       }
-      this.setData({ 
+      this.setData({
         isDraging: false,
         funOptionList: option,
         delayTimer: null,
         curDragName: '',
         curOtherArr: []
       })
+      this.sendOrder()
+    },
+    sendOrder() {
+      const arr = ['123', '132', '213', '231', '312', '321']
+      const optionList = this.data.funOptionList
+      let indexList = ''
+      for (let i = 0; i < optionList.length; i++) {
+        if (optionList[i].name === '仅开灯') indexList += '1'
+        else if (optionList[i].name === '灯+风扇都开') indexList += '2'
+        else if (optionList[i].name === '仅开风扇') indexList += '3'
+      }
+      const order = arr.findIndex(item => item == indexList)
+      if (order < 0) return
+      this.sendBluetoothCMD([CMD['WALL_ORDER'], order + 1])
     },
   },
   lifetimes: {
