@@ -1,0 +1,9 @@
+.text-label {
+  color: #488fff;
+}
+
+.cell-wrapper {
+  display: flex;
+  align-items: center;
+  height: 192rpx;
+}

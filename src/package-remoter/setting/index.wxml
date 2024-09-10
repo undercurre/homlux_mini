@@ -45,6 +45,15 @@
             data-index="{{index}}" data-key="{{item.key}}"/>
       </van-cell>
     </van-cell-group>
+
+    <van-cell-group inset wx:if="{{deviceType === '13' && deviceModel === '07'}}">
+      <van-cell is-link
+        title="墙壁开关切换"
+        value="{{curSwitchFun}}"
+        border="{{false}}"
+        bind:click="onSwitchFunClick"
+        custom-class="cus-cell"></van-cell>
+    </van-cell-group>
   </view>
 
   <!-- 隔开一点距离 -->

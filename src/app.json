@@ -89,10 +89,15 @@
       "root": "package-auth",
       "pages": [
         "pages/index/index",
-        "pages/meiju/index",
-        "pages/home-list/index",
+        "pages/third-party/index",
+        "pages/platform/index",
         "pages/confirm-auth/index",
-        "pages/device-list/index"
+        "pages/confirm-mi/index",
+        "pages/meiju/index",
+        "pages/mi/index",
+        "pages/home-list/index",
+        "pages/device-list/index",
+        "pages/sync-mi/index"
       ]
     },
     {
@@ -112,6 +117,7 @@
         "light/index",
         "setting/index",
         "fan-light/index",
+        "fan-light-setting/index",
         "bath/index",
         "cool-bath/index",
         "clothes/index",
@@ -132,6 +138,10 @@
         "pages/webView/webView",
         "pages/linkAp/linkAp"
       ]
+    },
+    {
+      "root": "package-lab",
+      "pages": ["pages/index/index", "pages/doorlock-psw/index"]
     }
   ],
   "preloadRule": {
@@ -142,6 +152,10 @@
     "package-distribution/pages/choose-device/index": {
       "network": "all",
       "packages": ["package-distribution-meiju", "package-auth"]
+    },
+    "pages/mine/index": {
+      "network": "all",
+      "packages": ["package-about", "package-lab"]
     }
   },
   "lazyCodeLoading": "requiredComponents",

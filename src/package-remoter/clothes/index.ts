@@ -8,6 +8,7 @@ import { remoterStore, remoterBinding } from '../../store/index'
 import { hideLoading, showLoading } from '../../utils/system'
 import dataBus from '../utils/dataBus'
 import Toast from '@vant/weapp/toast/toast'
+import { emitter } from '../../utils/index'
 
 const minuteArr = []
 for (let i = 0; i <= 180; i+=5) {
@@ -157,6 +158,8 @@ ComponentWithComputed({
       // 建立BLE外围设备服务端
       this.data._bleServer = await createBleServer()
       if (this.data.isNeedConnectBLE) this.start()
+
+      this.getAccessCount()
     },
     onUnload() {
       dataBus.all.clear()
@@ -219,7 +222,7 @@ ComponentWithComputed({
         }
       }
     },
-    sendBluetoothCMD(paramsArr?: number[]) {
+    sendBluetoothCMD(paramsArr?: number[], key?: string) {
       // [3, 4, 5]
       if (!paramsArr || paramsArr.length == 0) return
       if (this.data.isBLEConnected) {
@@ -228,6 +231,15 @@ ComponentWithComputed({
       } else {
         this.sendBluetoothAd(paramsArr)
       }
+      emitter.emit('remoterControl', {mac: this.data.devAddr})
+      if (!key) return
+      wx.reportEvent("remoter_control", {
+        "rm_control_function": key,
+        "rm_control_type": this.data.isBLEConnected ? "connect" : "ad",
+        "rm_device_model": this.data.devModel,
+        "rm_device_type": this.data.devType,
+        "rm_device_mac": this.data.devAddr
+      })
     },
     receiveBluetoothData(data: string) {
       const status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
@@ -360,7 +372,7 @@ ComponentWithComputed({
           })
         }, 300)
       }
-      this.sendBluetoothCMD([CMD['CLOTHES_UP']])
+      this.sendBluetoothCMD([CMD['CLOTHES_UP']], 'CLOTHES_UP')
     },
     onGearBottomClick() {
       const config = this.data.gearBtnConfig
@@ -381,7 +393,7 @@ ComponentWithComputed({
           })
         }, 300)
       }
-      this.sendBluetoothCMD([CMD['CLOTHES_DOWN']])
+      this.sendBluetoothCMD([CMD['CLOTHES_DOWN']], 'CLOTHES_DOWN')
     },
     onGearMiddleClick() {
       const config = this.data.gearBtnConfig
@@ -402,7 +414,7 @@ ComponentWithComputed({
           })
         }, 300)
       }
-      this.sendBluetoothCMD([CMD['CLOTHES_PAUSE']])
+      this.sendBluetoothCMD([CMD['CLOTHES_PAUSE']], 'CLOTHES_PAUSE')
     },
     onBtnListClick(e: any) {
       const index = e.currentTarget.dataset.index
@@ -434,7 +446,7 @@ ComponentWithComputed({
           isShowPopup: true
         })
       } else if (key === 'ONEKEY') {
-        this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY']])
+        this.sendBluetoothCMD([CMD['CLOTHES_ONE_KEY']], 'CLOTHES_ONE_KEY')
       } else if (key === 'DELAY') {
         this.setData({
           isShowTimePicker: true,
@@ -447,7 +459,7 @@ ComponentWithComputed({
         dataBus.emit('DEVSTATUS', this.data.devStatus)
       }, 500);
       wx.navigateTo({
-        url: `/package-remoter/setting/index?addr=${this.data.devAddr}&deviceType=${this.data.devType}`,
+        url: `/package-remoter/setting/index?addr=${this.data.devAddr}&deviceType=${this.data.devType}&deviceModel=${this.data.devModel}`,
       })
     },
     onBottomClick(e: any) {
@@ -470,7 +482,7 @@ ComponentWithComputed({
         }, 300)
       }
       if (list[index].key == 'LIGHT') {
-        this.sendBluetoothCMD([CMD['CLOTHES_LIGHT']])
+        this.sendBluetoothCMD([CMD['CLOTHES_LIGHT']], 'CLOTHES_LIGHT')
       }
     },
     closePopup() {
@@ -484,7 +496,7 @@ ComponentWithComputed({
       this.setData({
         curBrightnessPercent: value
       })
-      this.sendBluetoothCMD([CMD['CLOTHES_BRIGHT'], this.data.curBrightnessPercent])
+      this.sendBluetoothCMD([CMD['CLOTHES_BRIGHT'], this.data.curBrightnessPercent], 'CLOTHES_BRIGHT')
     },
     onTimePickChange(e: any) {
       const indexs = e.detail.value
@@ -505,8 +517,26 @@ ComponentWithComputed({
         hideLoading()
         this.closePopup()
         const minute = this.data.minuteArr[this.data.curTimePickerIndex[0]]
-        this.sendBluetoothCMD([CMD['CLOTHES_DELAY_LIGHT_TIME'], minute])
+        this.sendBluetoothCMD([CMD['CLOTHES_DELAY_LIGHT_TIME'], minute], 'CLOTHES_DELAY_LIGHT_TIME')
       }, 1200);
+    },
+    getAccessCount() {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const that = this
+      wx.batchGetStorage({
+        keyList: ['REMOTERTOTALACCESS', 'REMOTERDAYACCESS', 'REMOTERMONTHACCESS'],
+        success (res: any) {
+          const list = res.dataList
+          if (list.length < 3) return
+          wx.reportEvent("remoter_live", {
+            "rm_month_access": parseInt(list[2]),
+            "rm_day_access": parseInt(list[1]),
+            "rm_total_access": parseInt(list[0]),
+            "rm_live_type": "access",
+            "rm_device_type": that.data.devType,
+          })
+        }
+      })
     },
   },
 })
