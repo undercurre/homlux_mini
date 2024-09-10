@@ -35,7 +35,7 @@ ComponentWithComputed({
     },
     isLayoutReady: false,
     isDraging: false,
-    delayTimer: null as null | NodeJS.Timeout
+    delayTimer: null as any
   },
   methods: {
     goBack() {

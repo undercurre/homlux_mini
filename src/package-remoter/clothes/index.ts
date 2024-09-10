@@ -28,6 +28,7 @@ ComponentWithComputed({
     devType: '',
     devModel: '',
     devAddr: '',
+    devFunDes: '',
     gearBtnConfig: {
       isEnable: true,
       isTopOn: false,
@@ -59,30 +60,30 @@ ComponentWithComputed({
         iconOn: '/package-remoter/assets/newUI/delayOn.png',
         iconOff: '/package-remoter/assets/newUI/delayOff.png',
       },
-      // {
-      //   key: 'DIS',
-      //   name: '消毒',
-      //   isOn: false,
-      //   isEnable: true,
-      //   iconOn: '/package-remoter/assets/newUI/disOn.png',
-      //   iconOff: '/package-remoter/assets/newUI/disOff.png',
-      // },
-      // {
-      //   key: 'WIND',
-      //   name: '风干',
-      //   isOn: false,
-      //   isEnable: true,
-      //   iconOn: '/package-remoter/assets/newUI/windDryOn.png',
-      //   iconOff: '/package-remoter/assets/newUI/windDryOff.png',
-      // },
-      // {
-      //   key: 'HEAT',
-      //   name: '烘干',
-      //   isOn: false,
-      //   isEnable: true,
-      //   iconOn: '/package-remoter/assets/newUI/heatDryOn.png',
-      //   iconOff: '/package-remoter/assets/newUI/heatDryOff.png',
-      // }
+      {
+        key: 'DIS',
+        name: '消毒',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/disOn.png',
+        iconOff: '/package-remoter/assets/newUI/disOff.png',
+      },
+      {
+        key: 'WIND',
+        name: '风干',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/windDryOn.png',
+        iconOff: '/package-remoter/assets/newUI/windDryOff.png',
+      },
+      {
+        key: 'HEAT',
+        name: '烘干',
+        isOn: false,
+        isEnable: true,
+        iconOn: '/package-remoter/assets/newUI/heatDryOn.png',
+        iconOff: '/package-remoter/assets/newUI/heatDryOff.png',
+      }
     ],
     bottomList: [
       {
@@ -132,19 +133,22 @@ ComponentWithComputed({
     goBack() {
       wx.navigateBack()
     },
-    async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
+    async onLoad(query: { deviceType: string; deviceModel: string; addr: string, functionDes: string }) {
       console.log('lmn>>>query=', JSON.stringify(query))
-      const { addr, deviceType, deviceModel } = query
+      const { addr, deviceType, deviceModel, functionDes } = query
       remoterStore.setAddr(addr)
       console.log('lmn>>>curRemoter=', JSON.stringify(remoterStore.curRemoter))
+      const isV2 = functionDes !== undefined && functionDes.length > 0
       this.setData({
         devType: deviceType,
         devModel: deviceModel,
         devAddr: addr,
-        isNeedConnectBLE: remoterStore.curRemoter.version >= 2,
-        isNeedUpdate: remoterStore.curRemoter.version >= 2,
+        isNeedConnectBLE: remoterStore.curRemoter.version >= 2 || isV2,
+        isNeedUpdate: remoterStore.curRemoter.version >= 2 || isV2,
         devStatus: remoterStore.curRemoter.deviceAttr || {},
+        devFunDes: functionDes || ''
       })
+      this.configBtns()
       this.updateView()
 
       dataBus.on('DEVSEND', (cmd) => {
@@ -160,6 +164,63 @@ ComponentWithComputed({
       if (this.data.isNeedConnectBLE) this.start()
 
       this.getAccessCount()
+    },
+    configBtns() {
+      const support = this.getFunSupport()
+      console.log('lmn>>>support=', JSON.stringify(support))
+      const btns = this.data.btnList
+      const showBtns = []
+      for (let i = 0; i < btns.length; i++) {
+        if (btns[i].key === 'ONEKEY') {
+          if (support.oneKey) showBtns.push(btns[i])
+        } else if (btns[i].key === 'BRI') {
+          if (support.bright) showBtns.push(btns[i])
+        } else if (btns[i].key === 'DELAY') {
+          if (support.delay) showBtns.push(btns[i])
+        } else if (btns[i].key === 'DIS') {
+          if (support.disinfect) showBtns.push(btns[i])
+        } else if (btns[i].key === 'WIND') {
+          if (support.wind) showBtns.push(btns[i])
+        } else if (btns[i].key === 'HEAT') {
+          if (support.heat) showBtns.push(btns[i])
+        } else {
+          showBtns.push(btns[i])
+        }
+      }
+      this.setData({
+        btnList: showBtns,
+      })
+    },
+    getFunSupport() {
+      if (this.data.devFunDes.length > 0) {
+        const funArr = []
+        const funStr = this.data.devFunDes
+        for (let i = 0; i < funStr.length; i += 2) {
+          funArr.push(parseInt(funStr.slice(i, i + 2), 16))
+        }
+        let byte0 = {}
+        if (funArr.length > 0) {
+          byte0 = {
+            oneKey: true,
+            bright: true,
+            delay: true,
+            disinfect: !!(funArr[0] & 0x01),
+            wind: !!(funArr[0] & 0x02),
+            heat: !!(funArr[0] & 0x02),
+            voice: !!(funArr[0] & 0x04),
+          }
+        }
+        return {...byte0}
+      }
+      return {
+        oneKey: true,
+        bright: true,
+        delay: true,
+        disinfect: false,
+        wind: false,
+        heat: false,
+        voice: false
+      }
     },
     onUnload() {
       dataBus.all.clear()
@@ -185,12 +246,14 @@ ComponentWithComputed({
         this.data._bleServer = await createBleServer()
       }
       const addr = this.data.isFactoryMode ? FACTORY_ADDR : remoterStore.curAddr
-      const payload = remoterProtocol.generalCmdString(paramsArr)
+      const isV2 = this.data.devFunDes.length > 0
+      const payload = remoterProtocol.generalCmdString(paramsArr, isV2)
       bleAdvertising(this.data._bleServer, {
         addr,
         payload,
         isFactory: this.data.isFactoryMode,
         debug: false,
+        isV2
       })
     },
     async startConnectBLE() {
@@ -226,7 +289,8 @@ ComponentWithComputed({
       // [3, 4, 5]
       if (!paramsArr || paramsArr.length == 0) return
       if (this.data.isBLEConnected) {
-        const payload = remoterProtocol.generalCmdString(paramsArr)
+        const isV2 = this.data.devFunDes.length > 0
+        const payload = remoterProtocol.generalCmdString(paramsArr, isV2, true)
         this.data._bleService?.sendCmd(payload)
       } else {
         this.sendBluetoothAd(paramsArr)
@@ -242,11 +306,18 @@ ComponentWithComputed({
       })
     },
     receiveBluetoothData(data: string) {
-      const status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
-      console.log('lmn>>>receiveBluetoothData::status=', JSON.stringify(status))
-      this.setData({
-        devStatus: status
-      })
+      let status = {}
+      if (this.data.devFunDes.length > 0) {
+        status = remoterProtocol.parsePayloadV2(data.slice(this.data.devFunDes.length), this.data.devType)
+      } else {
+        status = remoterProtocol.parsePayload(data.slice(2), this.data.devType, this.data.devModel)
+      }
+      const str = JSON.stringify(status)
+      if (str === '{}') {
+        console.warn('lmn>>>收到错误命令')
+        return
+      }
+      console.log('lmn>>>receiveBluetoothData::status=', str)
       this.updateView()
       dataBus.emit('DEVSTATUS', status)
     },
@@ -318,6 +389,31 @@ ComponentWithComputed({
           timeIndex = [Math.floor(minute / 5)]
         }
       }
+      if (status.CLOTHES_WIND_DRY !== undefined) {
+        for (let i = 0; i < btns.length; i++) {
+          if (btns[i].key === 'WIND') {
+            btns[i].isOn = status.CLOTHES_WIND_DRY
+            break
+          }
+        }
+      }
+      if (status.CLOTHES_HEAT_DRY !== undefined) {
+        for (let i = 0; i < btns.length; i++) {
+          if (btns[i].key === 'HEAT') {
+            btns[i].isOn = status.CLOTHES_HEAT_DRY
+            break
+          }
+        }
+      }
+      if (status.CLOTHES_DIS !== undefined) {
+        for (let i = 0; i < btns.length; i++) {
+          if (btns[i].key === 'DIS') {
+            btns[i].isOn = status.CLOTHES_DIS
+            break
+          }
+        }
+      }
+
       if (status.CLOTHES_BRIGHT !== undefined) {
         percent = status.CLOTHES_BRIGHT < 20 ? 20 : status.CLOTHES_BRIGHT > 100 ? 100 : status.CLOTHES_BRIGHT
       }
@@ -423,8 +519,9 @@ ComponentWithComputed({
       if (!list[index].isEnable) {
         return
       }
-      if (key === 'ONEKEY') {
-        if (this.data.curOneKeyHeight === 0) {
+      const lastIsOn = list[index].isOn
+      if (key === 'ONEKEY' || key === 'DIS' || key === 'WIND' || key === 'HEAT') {
+        if (key === 'ONEKEY' && this.data.curOneKeyHeight === 0) {
           Toast('请先设置一键晾衣高度');
           return
         }
@@ -452,6 +549,14 @@ ComponentWithComputed({
           isShowTimePicker: true,
           pickerIndexTemp: this.data.curTimePickerIndex
         })
+      } else if (key === 'DIS') {
+        this.sendBluetoothCMD([CMD['CLOTHES_DIS']], 'CLOTHES_DIS')
+      } else if (key === 'WIND') {
+        const val = lastIsOn ? 0 : 1
+        this.sendBluetoothCMD([CMD['CLOTHES_DRY_MODE'], val], 'CLOTHES_DRY_MODE')
+      } else if (key === 'HEAT') {
+        const val = lastIsOn ? 0 : 2
+        this.sendBluetoothCMD([CMD['CLOTHES_DRY_MODE'], val], 'CLOTHES_DRY_MODE')
       }
     },
     goToDevManage() {
@@ -459,7 +564,7 @@ ComponentWithComputed({
         dataBus.emit('DEVSTATUS', this.data.devStatus)
       }, 500);
       wx.navigateTo({
-        url: `/package-remoter/setting/index?addr=${this.data.devAddr}&deviceType=${this.data.devType}&deviceModel=${this.data.devModel}`,
+        url: `/package-remoter/setting/index?addr=${this.data.devAddr}&deviceType=${this.data.devType}&deviceModel=${this.data.devModel}&&functionDes=${this.data.devFunDes}`,
       })
     },
     onBottomClick(e: any) {

@@ -26,21 +26,26 @@ ComponentWithComputed({
     deviceType: '',
     deviceModel: '',
     deviceAddr: '',
+    devFunDes: '',
     heightArr,
     isShowPicker: false,
     curPickerIndex: [0],
     pickerIndexTemp: [0],
     curShowHeight: '--',
-    customOption: [{ key: 'SLOWUP', name: '轻抬上升', isOn: false }],
+    customOption: [
+      { key: 'SLOWUP', name: '轻抬上升', isOn: false },
+      { key: 'VOICE', name: '离线语音', isOn: false }
+    ],
     curOneKeySettingStep: 0, // 0-开始设置，1-上升复位中，2-下降待完成中
     totalAccess: 0,
     curSwitchFun: '',
     statusTemp: null as any
   },
   methods: {
-    async onLoad(query: { deviceType: string; deviceModel: string; addr: string }) {
-      const { deviceType, deviceModel, addr } = query
-      this.setData({ deviceType, deviceModel, deviceAddr: addr })
+    async onLoad(query: { deviceType: string; deviceModel: string; addr: string, functionDes: string }) {
+      const { deviceType, deviceModel, addr, functionDes } = query
+      this.setData({ deviceType, deviceModel, deviceAddr: addr, devFunDes: functionDes || '' })
+      this.configOption()
 
       dataBus.on('DEVSTATUS', (e) => {
         this.updateView(e)
@@ -49,6 +54,31 @@ ComponentWithComputed({
         })
       })
       this.getAccessCount()
+    },
+    configOption() {
+      if (this.data.deviceType === '17') {
+        const funArr = []
+        const funStr = this.data.devFunDes
+        for (let i = 0; i < funStr.length; i += 2) {
+          funArr.push(parseInt(funStr.slice(i, i + 2), 16))
+        }
+        let isSpportVoice = false
+        if (funArr.length > 0) {
+          isSpportVoice = !!(funArr[0] & 0x04)
+        }
+        const option = this.data.customOption
+        const showOption = []
+        for (let i = 0; i < option.length; i++) {
+          if (option[i].key === 'VOICE') {
+            if (isSpportVoice) showOption.push(option[i])
+          } else {
+            showOption.push(option[i])
+          }
+        }
+        this.setData({
+          customOption: showOption
+        })
+      }
     },
     handleDeviceNameEditPopup() {
       this.setData({
@@ -139,6 +169,14 @@ ComponentWithComputed({
         for (let i = 0; i < option.length; i++) {
           if (option[i].key === 'SLOWUP') {
             option[i].isOn = status.CLOTHES_SLOW_UP
+            break
+          }
+        }
+      }
+      if (status.CLOTHES_OFFLINE_VOICE !== undefined) {
+        for (let i = 0; i < option.length; i++) {
+          if (option[i].key === 'VOICE') {
+            option[i].isOn = status.CLOTHES_OFFLINE_VOICE
             break
           }
         }

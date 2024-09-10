@@ -1629,16 +1629,16 @@ export const deviceConfigV2: Record<string, Remoter.ConfigItem> = {
       },
     ],
   },
-  // '17': {
-  //   deviceName: '晾衣机',
-  //   devicePic: '/assets/img/remoter/clothes.png',
-  //   actions: [
-  //     {
-  //       key: 'CLOTHES_LIGHT',
-  //       name: '照明',
-  //     },
-  //   ],
-  // }
+  '17': {
+    deviceName: '晾衣机',
+    devicePic: '/assets/img/remoter/clothes.png',
+    actions: [
+      {
+        key: 'CLOTHES_LIGHT',
+        name: '照明',
+      },
+    ],
+  },
   'a1': {
     deviceName: '换气扇',
     devicePic: '/assets/img/remoter/ventFan.png',

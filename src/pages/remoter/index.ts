@@ -299,6 +299,8 @@ ComponentWithComputed({
             page = 'cool-bath'
           } else if (deviceType === 'a1') {
             page = 'vent-fan'
+          } else if (deviceType === '17') {
+            page = 'clothes'
           }
           if (!page) return
           wx.navigateTo({
@@ -509,7 +511,7 @@ ComponentWithComputed({
               if (isIOS) cusRSSI = -63
               else cusRSSI = -60
             } else if (deviceModel === '06') {
-              cusRSSI = -60
+              cusRSSI = -63
             }
           } else if (deviceType === '26') {
             if (deviceModel === '0f' || deviceModel === '6f') {
