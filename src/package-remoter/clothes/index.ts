@@ -274,7 +274,6 @@ ComponentWithComputed({
           this.setData({
             isBLEConnected: true,
           })
-          this.updateViewEn()
         } else {
           this.setData({
             isBLEConnected: false,
@@ -318,6 +317,9 @@ ComponentWithComputed({
         return
       }
       console.log('lmn>>>receiveBluetoothData::status=', str)
+      this.setData({
+        devStatus: status,
+      })
       this.updateView()
       dataBus.emit('DEVSTATUS', status)
     },
@@ -326,7 +328,6 @@ ComponentWithComputed({
       this.setData({
         isBLEConnected: isConnected,
       })
-      this.updateViewEn()
     },
     updateView() {
       if (!this.data.isNeedUpdate) return
@@ -432,22 +433,6 @@ ComponentWithComputed({
         curTimePickerIndex: timeIndex,
         curBrightnessPercent: percent
       })
-      this.updateViewEn()
-    },
-    updateViewEn() {
-      // if (!this.data.isNeedUpdate) return
-      // const bottom = this.data.bottomList
-      // const btns = this.data.btnList
-      // const gear = this.data.gearBtnConfig
-      // const isDisable = !bottom[0].isOn && this.data.isBLEConnected
-      // gear.isEnable = !isDisable
-      // for (let i = 0; i < btns.length; i++) {
-      //   btns[i].isEnable = !isDisable
-      // }
-      // this.setData({
-      //   gearBtnConfig: gear,
-      //   btnList: btns,
-      // })
     },
     onGearTopClick() {
       const config = this.data.gearBtnConfig

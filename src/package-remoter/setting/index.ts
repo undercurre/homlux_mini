@@ -55,6 +55,9 @@ ComponentWithComputed({
       })
       this.getAccessCount()
     },
+    onUnload() {
+      dataBus.off('DEVSTATUS')
+    },
     configOption() {
       if (this.data.deviceType === '17') {
         const funArr = []

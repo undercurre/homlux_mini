@@ -50,6 +50,9 @@ ComponentWithComputed({
       })
       this.getAccessCount()
     },
+    onUnload() {
+      dataBus.off('DEVSTATUS')
+    },
     updateView(status: any) {
       if (this.data.isDraging) return
       console.log('lmn>>>dev status=', JSON.stringify(status))
