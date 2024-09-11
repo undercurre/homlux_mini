@@ -62,11 +62,11 @@
           bind:click="toPage"
         />
         <mz-cell
-          wx:if="{{isManager}}"
           icon="/assets/img/mine/lab.png"
           title="实验室功能"
           is-link
           data-url="{{urls.lab}}"
+          data-auth="no"
           bind:click="toPage"
         />
         <mz-cell
