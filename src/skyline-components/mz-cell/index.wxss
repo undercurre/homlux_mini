@@ -14,6 +14,7 @@
 .cell-content {
   padding-bottom: 32rpx;
   display: flex;
+  width: 100%;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
@@ -27,6 +28,7 @@
 
 .cell-left {
   display: flex;
+  flex: 1;
   flex-direction: column;
 }
 

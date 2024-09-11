@@ -12,6 +12,7 @@
       is-link
       label="适用单机版门锁"
       custom-class="cell-wrapper"
+      label-class="label-wrapper"
       data-url="/package-lab/pages/doorlock-psw/index"
       border="{{false}}"
     >
