@@ -1,6 +1,6 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
-import { ossDomain } from '../../../config/index'
+import { ossDomain, ShareImgUrl } from '../../../config/index'
 import { getNewTempPwd } from '../../../apis/index'
 import Toast from '../../../skyline-components/mz-toast/toast'
 
@@ -44,6 +44,8 @@ ComponentWithComputed({
       this.setData({
         status: 'generated',
         tmpPwd,
+        adminPwd: '',
+        randomCode: '',
       })
     },
     handleCopyPwd() {
@@ -51,12 +53,18 @@ ComponentWithComputed({
         data: `【门锁临时密码】${this.data.tmpPwd}`,
       })
     },
-    resetStatus() {
-      this.setData({
-        adminPwd: '',
-        randomCode: '',
-        status: 'init',
-      })
+    onShareAppMessage() {
+      return {
+        title: `【门锁临时密码】${this.data.tmpPwd}`,
+        imageUrl: ShareImgUrl,
+        path: '/pages/index/index',
+      }
     },
+    // DESERTED 取消重置按钮
+    // resetStatus() {
+    //   this.setData({
+    //     status: 'init',
+    //   })
+    // },
   },
 })
