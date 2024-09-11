@@ -10,14 +10,19 @@
       <van-cell
         icon="/package-auth/assets/img/voiceControl.png"
         title="语音控制"
+        label="授权后可通过智能语音（小爱、小度）控制"
         center
         is-link
         data-url="{{urls.voiceControl}}"
         bind:click="toPage"
       />
+    </van-cell-group>
+
+    <van-cell-group inset>
       <van-cell
         icon="/package-auth/assets/img/thirdParty.png"
         title="第三方平台"
+        label="将其他平台（美居）的设备同步至美的照明"
         center
         is-link
         data-url="{{urls.thirdParty}}"
@@ -29,6 +34,7 @@
       <van-cell
         icon="/package-auth/assets/img/platform.png"
         title="授权设备至其它平台"
+        label="将您的设备授权至其他平台（米家）进行控制"
         center
         is-link
         data-url="{{urls.platform}}"
