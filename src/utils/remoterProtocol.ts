@@ -297,8 +297,8 @@ const _parsePayloadV2 = (payload: string, deviceType: string) => {
   if (deviceType === '17') {
     return {
       isV2: true,
-      CLOTHES_HEAT_DRY: !!(rxU16[0] & BIT_0),
-      CLOTHES_WIND_DRY: !!(rxU16[0] & BIT_1),
+      CLOTHES_WIND_DRY: !!(rxU16[0] & BIT_0),
+      CLOTHES_HEAT_DRY: !!(rxU16[0] & BIT_1),
       CLOTHES_IS_SETTING_HEIGHT: !!(rxU16[0] & BIT_2),
       CLOTHES_ACTION: (rxU16[0] & 0x18) >> 3,
       CLOTHES_LIGHT: !!(rxU16[1] & BIT_0),
