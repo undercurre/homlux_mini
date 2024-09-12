@@ -6,7 +6,27 @@
 
   <view class="px-64rpx pt-30rpx flex flex-col">
     <text class="text-56rpx text-hex-27282A leading-none">已授权米家APP</text>
-    <text class="text-hex-555659 text-28 mt-24rpx">选择授权同步到米家APP的网关及子设备</text>
+    <text class="text-hex-555659 text-28 mt-24rpx">选择授权同步到米家APP的家庭</text>
+  </view>
+
+  <van-cell-group inset>
+    <van-cell
+      title="米家的家庭"
+      title-class="py-16rpx pl-16rpx"
+      center
+      bind:click="onCheckHome"
+      border="{{false}}"
+    >
+      <image
+        slot="right-icon"
+        src="/assets/img/base/arrow-down.png"
+        class="w-32 h-32"
+      ></image>
+    </van-cell>
+  </van-cell-group>
+
+  <view class="px-64rpx pt-30rpx">
+    <text class="text-hex-555659 text-28 mt-24rpx">选择授权同步到米家APP的网关</text>
   </view>
 
   <view
@@ -20,23 +40,33 @@
       style="height: {{listHeight}}px;"
     >
       <van-cell-group
-        wx:for="{{homeList}}"
-        wx:key="mideaHouseId"
+        wx:for="{{gatewayList}}"
+        wx:key="index"
         inset
       >
         <van-cell
-          title="{{item.mideaHouseName}}"
+          title="{{item.name}}"
           title-class="py-16rpx pl-16rpx"
+          label="{{item.auth ? '已授权' : '未授权'}}"
+          label-class="{{item.auth ? 'auth-label' : 'no-auth-label'}}"
           center
-          bind:click="onCheckHome"
+          bind:click="onCheckGateway"
           border="{{false}}"
           data-index="{{index}}"
         >
+          <view
+            slot="icon"
+            class="w-96rpx h-96rpx ml-32rpx mr-16rpx flex items-center justify-center bg-hex-eef2f7 rounded-full"
+          >
+            <image
+              class="w-72rpx h-72rpx"
+              src="/package-auth/assets/img/gateway.png"
+            />
+          </view>
           <image
-            wx:if="{{checkIndex === index}}"
             slot="right-icon"
-            src="/assets/img/base/checked.png"
-            class="w-48 h-48"
+            src="/assets/img/base/{{item.checked ? 'check' : 'uncheck'}}.png"
+            class="w-48rpx h-48rpx"
           ></image>
         </van-cell>
       </van-cell-group>
@@ -47,11 +77,17 @@
 </view>
 
 <view
-  class="fixed bottom-0 flex flex-row pt-30rpx w-750rpx px-32rpx box-border"
-  style="height: calc(146rpx + env(safe-area-inset-bottom))"
+  class="absolute bottom-0 flex-col-center pt-30rpx w-750rpx px-32rpx box-border"
+  style="height: calc(250rpx + env(safe-area-inset-bottom))"
 >
+  <view
+    class="text-center pb-32rpx"
+    bindtap="debind"
+  >
+    <text class="text-32rpx text-hex-555659">取消授权</text>
+  </view>
   <van-button
-    class="mx-24rpx w-full"
+    class="w-full"
     size="large"
     type="primary"
     block

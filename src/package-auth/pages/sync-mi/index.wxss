@@ -1,3 +1,11 @@
 .list-bottom-placeholder {
   height: calc(env(safe-area-inset-bottom) + 32rpx);
 }
+
+.auth-label {
+  color: #57d435;
+}
+
+.no-auth-label {
+  color: #ff3849;
+}

@@ -3,15 +3,17 @@ import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { delay, Logger } from '../../../utils/index'
 import { getToken } from '../../../apis/index'
 
-type HomeCard = Meiju.MeijuHome
-
 ComponentWithComputed({
   behaviors: [pageBehaviors],
   /**
    * 页面的初始数据
    */
   data: {
-    homeList: [] as HomeCard[],
+    gatewayList: [
+      { name: '网关1', checked: true, auth: true },
+      { name: '网关2', checked: true, auth: false },
+      { name: '网关3', checked: false, auth: false },
+    ],
     listHeight: 0,
     loading: false,
     checkIndex: 0, // 选择的家庭index
