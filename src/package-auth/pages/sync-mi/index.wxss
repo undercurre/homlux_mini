@@ -3,9 +3,9 @@
 }
 
 .auth-label {
-  color: #57d435;
+  color: #57d435 !important;
 }
 
 .no-auth-label {
-  color: #ff3849;
+  color: #ff3849 !important;
 }

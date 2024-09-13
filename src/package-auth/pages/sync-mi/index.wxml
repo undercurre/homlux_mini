@@ -45,7 +45,7 @@
         inset
       >
         <van-cell
-          title="{{item.name}}"
+          title="{{item.deviceName}}"
           title-class="py-16rpx pl-16rpx"
           label="{{item.auth ? '已授权' : '未授权'}}"
           label-class="{{item.auth ? 'auth-label' : 'no-auth-label'}}"
