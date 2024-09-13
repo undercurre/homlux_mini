@@ -11,7 +11,8 @@ ComponentWithComputed({
     urls: {
       voiceControl: '/package-mine/voice-control/index',
       thirdParty: '/package-auth/pages/third-party/index',
-      platform: '/package-auth/pages/platform/index',
+      // platform: '/package-auth/pages/platform/index',
+      platform: '/package-auth/pages/sync-mi/index',
     },
   },
 

@@ -17,7 +17,6 @@ ComponentWithComputed({
     randomCode: '',
     adminPwd: '',
     tmpPwd: '',
-    tips: '1、随机码生成流程：门锁输入*#后，生成4位随机码；\n2、临时密码10分钟有效，从随机码生成后开始计算；\n3、生成新密码后，原临时密码失效；\n4、支持门锁型号：XXXXX。',
     actionTips: '临时密码10分钟有效，从随机码生成后开始计算',
     generatedImage: `${ossDomain}/homlux/guide/temp-psw.png`,
   },

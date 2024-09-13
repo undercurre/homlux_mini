@@ -5,7 +5,7 @@
 
 <view class="flex flex-col w-100vw h-100vh">
   <nav-bar
-    title="门锁临时密码下发"
+    title="门锁临时密码"
     leftArrow
     show-go-home
     bind:leftTap="goBack"
@@ -14,10 +14,10 @@
   <view class="flex-1 flex-col-center">
     <view
       wx:if="{{status === 'init'}}"
-      class="flex-1 flex-col-center"
+      class="flex-1 flex flex-col items-center"
     >
       <image
-        class="w-140rpx h-400rpx mt-48rpx"
+        class="w-664rpx h-372rpx mt-48rpx"
         src="/package-lab/assets/img/img-lock.png"
       ></image>
 
@@ -30,7 +30,7 @@
           model:value="{{ randomCode }}"
           placeholder="请输入门锁4位随机码"
           custom-style="padding: 32rpx 40rpx;border-radius: 24rpx;"
-          clearable="{{true}}"
+          clearable
           maxlength="{{4}}"
           border="{{false}}"
         >
@@ -46,15 +46,12 @@
           model:value="{{ adminPwd }}"
           placeholder="请输入门锁管理员密码"
           custom-style="padding: 32rpx 40rpx;border-radius: 24rpx;"
-          clearable="{{true}}"
+          clearable
+          maxlength="{{20}}"
           border="{{false}}"
           password
         >
         </mz-field>
-      </view>
-
-      <view class="w-600rpx pt-30rpx">
-        <text class="block text-28rpx text-hex-555659 leading-48rpx text-justify">{{tips}}</text>
       </view>
     </view>
 
