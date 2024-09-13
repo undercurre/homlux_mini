@@ -33,7 +33,9 @@ ComponentWithComputed({
     pickerIndexTemp: [0],
     curShowHeight: '--',
     customOption: [
-      { key: 'SLOWUP', name: '轻抬上升', isOn: false },
+      { key: 'NOBODY_OFF', name: '无人灭灯', isOn: false },
+      { key: 'NOBODY_UP', name: '无人升顶', isOn: false },
+      { key: 'SLOW_UP', name: '轻抬上升', isOn: false },
       { key: 'VOICE', name: '离线语音', isOn: false }
     ],
     curOneKeySettingStep: 0, // 0-开始设置，1-上升复位中，2-下降待完成中
@@ -66,14 +68,18 @@ ComponentWithComputed({
           funArr.push(parseInt(funStr.slice(i, i + 2), 16))
         }
         let isSpportVoice = false
+        let isSupportDis = false
         if (funArr.length > 0) {
           isSpportVoice = !!(funArr[0] & 0x04)
+          isSupportDis = !!(funArr[0] & 0x01)
         }
         const option = this.data.customOption
         const showOption = []
         for (let i = 0; i < option.length; i++) {
           if (option[i].key === 'VOICE') {
             if (isSpportVoice) showOption.push(option[i])
+          } else if (option[i].key === 'NOBODY_OFF' || option[i].key === 'NOBODY_UP') {
+            if (isSupportDis) showOption.push(option[i])
           } else {
             showOption.push(option[i])
           }
@@ -170,7 +176,7 @@ ComponentWithComputed({
       const option = this.data.customOption
       if (status.CLOTHES_SLOW_UP !== undefined) {
         for (let i = 0; i < option.length; i++) {
-          if (option[i].key === 'SLOWUP') {
+          if (option[i].key === 'SLOW_UP') {
             option[i].isOn = status.CLOTHES_SLOW_UP
             break
           }
@@ -180,6 +186,22 @@ ComponentWithComputed({
         for (let i = 0; i < option.length; i++) {
           if (option[i].key === 'VOICE') {
             option[i].isOn = status.CLOTHES_OFFLINE_VOICE
+            break
+          }
+        }
+      }
+      if (status.CLOTHES_NOBODY_LIGHT_OFF !== undefined) {
+        for (let i = 0; i < option.length; i++) {
+          if (option[i].key === 'NOBODY_OFF') {
+            option[i].isOn = status.CLOTHES_NOBODY_LIGHT_OFF
+            break
+          }
+        }
+      }
+      if (status.CLOTHES_NOBODY_UP !== undefined) {
+        for (let i = 0; i < option.length; i++) {
+          if (option[i].key === 'NOBODY_UP') {
+            option[i].isOn = status.CLOTHES_NOBODY_UP
             break
           }
         }
@@ -263,8 +285,14 @@ ComponentWithComputed({
         customOption: option,
       })
       const key = e.currentTarget.dataset.key
-      if (key === 'SLOWUP') {
+      if (key === 'SLOW_UP') {
         this.sendBluetoothCMD([CMD['CLOTHES_SLOW_UP']])
+      } else if (key === 'VOICE') {
+        this.sendBluetoothCMD([CMD['CLOTHES_OFFLINE_VOICE']])
+      } else if (key === 'NOBODY_OFF') {
+        this.sendBluetoothCMD([CMD['CLOTHES_NOBODY_LIGHT_OFF']])
+      } else if (key === 'NOBODY_UP') {
+        this.sendBluetoothCMD([CMD['CLOTHES_NOBODY_UP']])
       }
     },
     onSwitchFunClick() {
