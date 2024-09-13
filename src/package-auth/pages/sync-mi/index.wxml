@@ -1,4 +1,4 @@
-<view class="page-container flex flex-col">
+<view class="page-container flex flex-col h-full">
   <nav-bar
     leftArrow="{{true}}"
     bind:leftTap="goBack"
@@ -9,8 +9,8 @@
     <text class="text-hex-555659 text-28 mt-24rpx">选择授权同步到米家APP的家庭</text>
   </view>
 
-  <van-cell-group inset>
-    <van-cell
+  <mz-cell-group inset>
+    <mz-cell
       title="米家的家庭"
       title-class="py-16rpx pl-16rpx"
       center
@@ -22,29 +22,27 @@
         src="/assets/img/base/arrow-down.png"
         class="w-32 h-32"
       ></image>
-    </van-cell>
-  </van-cell-group>
+    </mz-cell>
+  </mz-cell-group>
 
   <view class="px-64rpx pt-30rpx">
     <text class="text-hex-555659 text-28 mt-24rpx">选择授权同步到米家APP的网关</text>
   </view>
 
-  <view
-    id="content"
+  <scroll-view
+    type="list"
+    enhanced
+    scroll-y
+    show-scrollbar="{{false}}"
     class="flex-1"
   >
-    <scroll-view
-      enhanced
-      scroll-y
-      show-scrollbar="{{false}}"
-      style="height: {{listHeight}}px;"
-    >
-      <van-cell-group
+    <view>
+      <mz-cell-group
         wx:for="{{gatewayList}}"
         wx:key="index"
         inset
       >
-        <van-cell
+        <mz-cell
           title="{{item.deviceName}}"
           title-class="py-16rpx pl-16rpx"
           label="{{item.auth ? '已授权' : '未授权'}}"
@@ -68,10 +66,10 @@
             src="/assets/img/base/{{item.checked ? 'check' : 'uncheck'}}.png"
             class="w-48rpx h-48rpx"
           ></image>
-        </van-cell>
-      </van-cell-group>
-    </scroll-view>
-  </view>
+        </mz-cell>
+      </mz-cell-group>
+    </view>
+  </scroll-view>
 
   <view class="list-bottom-placeholder"> </view>
 </view>
@@ -86,7 +84,7 @@
   >
     <text class="text-32rpx text-hex-555659">取消授权</text>
   </view>
-  <van-button
+  <mz-button
     class="w-full"
     size="large"
     type="primary"
@@ -94,10 +92,6 @@
     bind:click="toConfirm"
     loading="{{loading}}"
     disabled="{{!homeList.length}}"
-    >开始同步</van-button
+    >开始同步</mz-button
   >
 </view>
-
-<van-toast id="van-toast" />
-
-<van-dialog id="van-dialog" />
