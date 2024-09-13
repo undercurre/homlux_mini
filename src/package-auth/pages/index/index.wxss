@@ -1,0 +1,3 @@
+.cell-wrapper {
+  height: 160rpx;
+}
