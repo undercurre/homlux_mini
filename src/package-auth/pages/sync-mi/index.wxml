@@ -95,3 +95,17 @@
     >开始同步</mz-button
   >
 </view>
+
+<mz-pop-menu
+  is-show="{{miHomeMenu.isShow}}"
+  class="z-120"
+  x="{{miHomeMenu.x}}"
+  y="{{miHomeMenu.y}}"
+  arrowX="{{miHomeMenu.arrowX}}"
+  height="{{miHomeMenu.height}}"
+  width="{{miHomeMenu.width}}"
+  menu-list="{{miHomeList}}"
+  transform-origin="left top"
+  bind:menuTap="handleMenuTap"
+  bind:overlayClick="handleMenuClose"
+></mz-pop-menu>
