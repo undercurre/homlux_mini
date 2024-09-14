@@ -30,25 +30,38 @@
         custom-class="cus-cell"></van-cell>
     </van-cell-group>
 
-    <van-cell-group inset wx:if="{{deviceType === '17'}}">
-      <van-cell
-        wx:for="{{customOption}}"
+    <van-cell-group inset custom-class="cus-cell-group" wx:if="{{deviceType === '17'}}">
+      <view wx:for="{{customOption}}"
         wx:key="index"
-        title="{{item.name}}"
-        border="{{true}}"
-        custom-class="cus-cell">
-          <van-switch 
-            slot="right-icon" 
-            custom-class="cell-switch" 
-            checked="{{item.isOn}}" 
-            bind:change="onCustomSwitchClick" 
-            data-index="{{index}}" data-key="{{item.key}}"/>
-      </van-cell>
+        style="opacity: {{item.isEnable ? 1 : 0.4}};">
+        <van-cell
+          label="{{item.des}}"
+          border="{{true}}"
+          custom-class="cus-cell"
+          catch:click="onCustomCellClick"
+          data-index="{{index}}"
+          data-key="{{item.key}}">
+          <view slot="title" style="display: flex; flex-direction: row;">
+            <view>{{item.name}}</view>
+            <image wx:if="{{item.hasPop}}"
+              style="width: 24rpx; height: 24rpx; margin-top: 14rpx; margin-left: 20rpx;"
+              src="/package-remoter/assets/newUI/circleArrow.png">
+            </image>
+          </view>
+          <view slot="right-icon" catch:tap="none">
+            <van-switch
+              custom-class="cell-switch"
+              checked="{{item.isOn}}"
+              bind:change="onCustomSwitchClick"
+              data-index="{{index}}" data-key="{{item.key}}"/>
+          </view>
+        </van-cell>
+      </view>
     </van-cell-group>
 
     <van-cell-group inset wx:if="{{deviceType === '13' && deviceModel === '07'}}">
       <van-cell is-link
-        title="墙壁开关切换"
+        title="墙壁开关"
         value="{{curSwitchFun}}"
         border="{{false}}"
         bind:click="onSwitchFunClick"
@@ -64,7 +77,7 @@
   <van-button size="large" type="warning" custom-class="delete-btn" bind:click="handleDeviceDelete">删除设备</van-button>
   <view class="h-96rpx"></view>
 
-  <mx-popup round show="{{isShowPicker}}" position="bottom" bind:close="closePopup">
+  <mx-popup round show="{{isShowHeightSet}}" position="bottom" bind:close="closePopup">
     <image style="width: 750rpx; height: 320rpx; display: flex; position: absolute; left: 0; top: 0;" src="/package-remoter/assets/newUI/oneKeyBg.png"></image>
     <view class="pup-block" style="height: 660rpx;">
       <text class="text-36rpx font-semibold" style="margin-top: 42rpx; margin-bottom: 42rpx;">一键晾衣高度</text>
@@ -81,28 +94,49 @@
       <text class="text-28rpx" style="margin-top: 48rpx; color: #a2a2a2; width: 640rpx; text-align: center;" wx:if="{{curOneKeySettingStep === 1}}">晾衣机正在复位中，请稍后…</text>
       <text class="text-28rpx" style="margin-top: 48rpx; color: #a2a2a2; width: 640rpx; text-align: center;" wx:if="{{curOneKeySettingStep === 2}}">选择合适下降高度，点击“完成设置”</text>
 
-      <!-- <text class="unit-h text-28rpx font-normal" style="left: 420rpx;">cm</text>
-      <view class="pick-block flex-center">
-        <picker-view indicator-style="height: 56rpx;"
-          style="width: 500rpx; height: 360rpx;"
-          value="{{ curPickerIndex }}"
-          bindchange="onPickChange"
-          bindpickend='onPickEnd'>
-          <picker-view-column>
-            <view wx:for="{{ heightArr }}"
-              wx:key="key"
-              class="picker-cloumn-text"
-              style="font-size: 40rpx;">{{item}}</view>
-          </picker-view-column>
-        </picker-view>
-      </view> -->
-
       <mx-button
         custom-style="width: 686rpx; margin-top: 40rpx"
         color="linear-gradient(90deg, #468CFB 0%, #6BA3FC 100%)"
         type="default"
         disabled="{{curOneKeySettingStep === 1}}"
         bind:click="onOneKeyStepClick">{{curOneKeySettingStep === 0 ? '开始设置' : '完成设置'}}</mx-button>
+    </view>
+  </mx-popup>
+
+  <mx-popup round show="{{isShowTimePicker}}" position="bottom" bind:close="closePopup">
+    <view class="pup-block" style="height: 700rpx;">
+      <text class="text-36rpx font-semibold" style="margin-top: 42rpx; margin-bottom: 42rpx;">定时设置</text>
+      <view class="popup-close" bind:tap="closePopup">
+        <image style="height: 48rpx; width: 48rpx;" src="/package-remoter/assets/newUI/close.png"></image>
+      </view>
+
+      <text class="unit-h text-28rpx font-normal" style="left: 284rpx;">分钟</text>
+      <text class="unit-h text-28rpx font-normal" style="left: 540rpx;">秒</text>
+      <view class="pick-block flex-center">
+        <picker-view indicator-style="height: 56rpx;"
+          style="width: 500rpx; height: 360rpx;"
+          value="{{ curPickerIndex }}"
+          bindchange="onTimePickChange"
+          bindpickend='onTimePickEnd'>
+          <picker-view-column>
+            <view wx:for="{{ noBodyMinuteArr }}"
+              wx:key="key"
+              class="picker-cloumn-text"
+              style="font-size: 40rpx; line-height: 64rpx;">{{item}}</view>
+          </picker-view-column>
+          <picker-view-column>
+            <view wx:for="{{ noBodySecondArr }}"
+              wx:key="key"
+              class="picker-cloumn-text"
+              style="font-size: 40rpx; line-height: 64rpx;">{{item}}</view>
+          </picker-view-column>
+        </picker-view>
+      </view>
+
+      <mx-button 
+        custom-style="width: 686rpx; margin-top: 40rpx"
+        color="linear-gradient(90deg, #468CFB 0%, #6BA3FC 100%)"
+        type="default" bind:click="onPickTimeConfirm">确定</mx-button>
     </view>
   </mx-popup>
 </view>
