@@ -24,7 +24,7 @@ ComponentWithComputed({
 
   computed: {
     infoReady(data) {
-      return data.adminPwd && data.randomCode
+      return data.adminPwd && data.randomCode?.length === 4
     },
   },
 
