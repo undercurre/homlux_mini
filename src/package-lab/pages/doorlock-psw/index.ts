@@ -19,6 +19,7 @@ ComponentWithComputed({
     tmpPwd: '',
     actionTips: '临时密码10分钟有效，从随机码生成后开始计算',
     generatedImage: `${ossDomain}/homlux/guide/temp-psw.png`,
+    isShowPassword: false,
   },
 
   computed: {
@@ -58,6 +59,11 @@ ComponentWithComputed({
         imageUrl: ShareImgUrl,
         path: '/pages/index/index',
       }
+    },
+    toggleShowPassword() {
+      this.setData({
+        isShowPassword: !this.data.isShowPassword,
+      })
     },
     // DESERTED 取消重置按钮
     // resetStatus() {

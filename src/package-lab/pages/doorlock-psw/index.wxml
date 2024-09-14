@@ -49,8 +49,14 @@
           clearable
           maxlength="{{20}}"
           border="{{false}}"
-          password
+          password="{{!isShowPassword}}"
+          bind:click-icon="toggleShowPassword"
         >
+          <image
+            slot="right-icon"
+            class="w-48rpx h-48rpx"
+            src="/assets/img/base/{{!isShowPassword ? 'eye-close' : 'eye-open'}}.png"
+          />
         </mz-field>
       </view>
     </view>
