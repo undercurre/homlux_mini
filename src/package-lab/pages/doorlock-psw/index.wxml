@@ -32,6 +32,7 @@
           custom-style="padding: 32rpx 40rpx;border-radius: 24rpx;"
           clearable
           maxlength="{{4}}"
+          type="number"
           border="{{false}}"
         >
         </mz-field>
@@ -48,13 +49,14 @@
           custom-style="padding: 32rpx 40rpx;border-radius: 24rpx;"
           clearable
           maxlength="{{20}}"
+          type="number"
           border="{{false}}"
           password="{{!isShowPassword}}"
           bind:click-icon="toggleShowPassword"
         >
           <image
             slot="right-icon"
-            class="w-48rpx h-48rpx"
+            class="w-48rpx h-48rpx mr-24rpx"
             src="/assets/img/base/{{!isShowPassword ? 'eye-close' : 'eye-open'}}.png"
           />
         </mz-field>
