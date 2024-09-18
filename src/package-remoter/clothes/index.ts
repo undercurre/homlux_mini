@@ -394,6 +394,13 @@ ComponentWithComputed({
         for (let i = 0; i < btns.length; i++) {
           if (btns[i].key === 'WIND') {
             btns[i].isOn = status.CLOTHES_WIND_DRY
+            if (status.CLOTHES_WIND_TIME > 0) {
+              const hour = Math.floor(status.CLOTHES_WIND_TIME / 60)
+              const min = status.CLOTHES_WIND_TIME % 60
+              btns[i].name = `剩余${hour >= 10 ? '' : '0'}${hour}:${min >= 10 ? '' : '0'}${min}`
+            } else {
+              btns[i].name = '风干'
+            }
             break
           }
         }
@@ -402,6 +409,13 @@ ComponentWithComputed({
         for (let i = 0; i < btns.length; i++) {
           if (btns[i].key === 'HEAT') {
             btns[i].isOn = status.CLOTHES_HEAT_DRY
+            if (status.CLOTHES_HEAT_TIME > 0) {
+              const hour = Math.floor(status.CLOTHES_HEAT_TIME / 60)
+              const min = status.CLOTHES_HEAT_TIME % 60
+              btns[i].name = `剩余${hour >= 10 ? '' : '0'}${hour}:${min >= 10 ? '' : '0'}${min}`
+            } else {
+              btns[i].name = '烘干'
+            }
             break
           }
         }
@@ -410,6 +424,13 @@ ComponentWithComputed({
         for (let i = 0; i < btns.length; i++) {
           if (btns[i].key === 'DIS') {
             btns[i].isOn = status.CLOTHES_DIS
+            if (status.CLOTHES_DIS_TIME > 0) {
+              const hour = Math.floor(status.CLOTHES_DIS_TIME / 60)
+              const min = status.CLOTHES_DIS_TIME % 60
+              btns[i].name = `剩余${hour >= 10 ? '' : '0'}${hour}:${min >= 10 ? '' : '0'}${min}`
+            } else {
+              btns[i].name = '消毒'
+            }
             break
           }
         }

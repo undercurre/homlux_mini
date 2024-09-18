@@ -5,7 +5,7 @@
     bind:leftTap="goBack"
   >
     <view class="title-block flex-center">
-      <text class="text-36rpx font-medium">墙壁开关切换</text>
+      <text class="text-36rpx font-medium">墙壁开关</text>
     </view>
   </nav-bar>
 

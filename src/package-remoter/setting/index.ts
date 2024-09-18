@@ -8,11 +8,7 @@ import { remoterStore, remoterBinding } from '../../store/index'
 import dataBus from '../utils/dataBus'
 import { CMD } from '../../config/remoter'
 import { ShareImgUrl } from '../../config/index'
-
-const heightArr = []
-for (let i = 10; i <= 120; i += 10) {
-  heightArr.push(i)
-}
+import { hideLoading, showLoading } from '../../utils/system'
 
 ComponentWithComputed({
   behaviors: [BehaviorWithStore({ storeBindings: [remoterBinding] }), pageBehaviors],
@@ -23,31 +19,34 @@ ComponentWithComputed({
     showEditNamePopup: false,
     isShowSetting: false,
     fastSwitchName: '照明开关',
-    deviceType: '',
+    deviceType: '17',
     deviceModel: '',
     deviceAddr: '',
     devFunDes: '',
-    heightArr,
-    isShowPicker: false,
-    curPickerIndex: [0],
-    pickerIndexTemp: [0],
+    isShowHeightSet: false,
     curShowHeight: '--',
     customOption: [
-      { key: 'NOBODY_OFF', name: '无人灭灯', isOn: false },
-      { key: 'NOBODY_UP', name: '无人升顶', isOn: false },
-      { key: 'SLOW_UP', name: '轻抬上升', isOn: false },
-      { key: 'VOICE', name: '离线语音', isOn: false }
+      { key: 'NOBODY_OFF', name: '无人灭灯', isOn: false, hasPop: true, isEnable: true, des: '仅在消毒功能开启时可使用', timeSec: 0, from: 0 },
+      { key: 'NOBODY_UP', name: '无人升顶', isOn: false, hasPop: true, isEnable: true, des: '仅在消毒功能开启时可使用', timeSec: 0, from: 0 },
+      { key: 'SLOW_UP', name: '轻抬上升', isOn: false, hasPop: false, isEnable: true, des: '', timeSec: 0, from: 0 },
+      { key: 'VOICE', name: '离线语音', isOn: false, hasPop: false, isEnable: true, des: '', timeSec: 0, from: 0 }
     ],
     curOneKeySettingStep: 0, // 0-开始设置，1-上升复位中，2-下降待完成中
     totalAccess: 0,
     curSwitchFun: '',
-    statusTemp: null as any
+    statusTemp: null as any,
+    noBodyMinuteArr: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    noBodySecondArr: [0, 30],
+    curPickerIndex: [0],
+    pickerIndexTemp: [0],
+    isShowTimePicker: false,
+    curPickOptionIndex: 0
   },
   methods: {
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string, functionDes: string }) {
       const { deviceType, deviceModel, addr, functionDes } = query
       this.setData({ deviceType, deviceModel, deviceAddr: addr, devFunDes: functionDes || '' })
-      this.configOption()
+      // this.configOption()
 
       dataBus.on('DEVSTATUS', (e) => {
         this.updateView(e)
@@ -194,6 +193,7 @@ ComponentWithComputed({
         for (let i = 0; i < option.length; i++) {
           if (option[i].key === 'NOBODY_OFF') {
             option[i].isOn = status.CLOTHES_NOBODY_LIGHT_OFF
+            option[i].timeSec = status.CLOTHES_NOBODY_LIGHT_TIME || 0
             break
           }
         }
@@ -202,6 +202,7 @@ ComponentWithComputed({
         for (let i = 0; i < option.length; i++) {
           if (option[i].key === 'NOBODY_UP') {
             option[i].isOn = status.CLOTHES_NOBODY_UP
+            option[i].timeSec = status.CLOTHES_NOBODY_UP_TIME || 0
             break
           }
         }
@@ -236,12 +237,13 @@ ComponentWithComputed({
     },
     closePopup() {
       this.setData({
-        isShowPicker: false,
+        isShowHeightSet: false,
+        isShowTimePicker: false
       })
     },
     onClothesHeightClick() {
       this.setData({
-        isShowPicker: true,
+        isShowHeightSet: true,
       })
     },
     onPickChange(e: any) {
@@ -265,36 +267,131 @@ ComponentWithComputed({
         this.closePopup()
       }
     },
-    // onPickTimeConfirm() {
-    //   showLoading('加载中')
-    //   setTimeout(() => {
-    //     hideLoading()
-    //     this.closePopup()
-    //     const height = this.data.heightArr[this.data.curPickerIndex[0]]
-    //     this.setData({
-    //       curShowHeight: `${height}cm`
-    //     })
-    //     this.sendBluetoothCMD([CMD['CLOTHES_SET_HEIGHT'], height]);
-    //   }, 1000);
-    // },
+    onTimePickChange(e: any) {
+      const indexs = e.detail.value
+      if (indexs[0] === 0) {
+        this.setData({
+          pickerIndexTemp: indexs,
+          noBodySecondArr: [30]
+        })
+      } else if (indexs[0] === 10) {
+        this.setData({
+          pickerIndexTemp: indexs,
+          noBodySecondArr: [0]
+        })
+      } else {
+        this.setData({
+          pickerIndexTemp: indexs,
+          noBodySecondArr: [0, 30]
+        })
+      }
+    },
+    onTimePickEnd() {
+      setTimeout(() => {
+        this.setData({
+          curPickerIndex: this.data.pickerIndexTemp,
+        })
+      }, 100)
+    },
+    onPickTimeConfirm() {
+      showLoading('加载中')
+      setTimeout(() => {
+        hideLoading()
+        this.closePopup()
+        const minute = this.data.noBodyMinuteArr[this.data.curPickerIndex[0]]
+        let second = this.data.noBodySecondArr[this.data.curPickerIndex[1]]
+        if (minute === 0) second = 30
+        else if (minute === 10) second = 0
+        const secVal = minute * 60 + second
+        const HVal = Math.floor(secVal / 256)
+        const LVal = secVal % 256
+        const option = this.data.customOption
+        const index = this.data.curPickOptionIndex
+        if (option[index].from === 1) {
+          option[index].isOn = true
+          this.setData({
+            customOption: option
+          })
+        }
+        const isOnVal = option[index].isOn ? 1 : 0
+        this.sendBluetoothCMD([CMD['CLOTHES_NOBODY_LIGHT_OFF'], isOnVal, HVal, LVal])
+      }, 1000);
+    },
     onCustomSwitchClick(e: any) {
       const index = e.currentTarget.dataset.index
       const option = this.data.customOption
-      option[index].isOn = !option[index].isOn
-      this.setData({
-        customOption: option,
-      })
+      if (!option[index].isEnable) return
       const key = e.currentTarget.dataset.key
       if (key === 'SLOW_UP') {
+        option[index].isOn = !option[index].isOn
+        this.setData({
+          customOption: option,
+        })
         this.sendBluetoothCMD([CMD['CLOTHES_SLOW_UP']])
       } else if (key === 'VOICE') {
+        option[index].isOn = !option[index].isOn
+        this.setData({
+          customOption: option,
+        })
         this.sendBluetoothCMD([CMD['CLOTHES_OFFLINE_VOICE']])
       } else if (key === 'NOBODY_OFF') {
-        this.sendBluetoothCMD([CMD['CLOTHES_NOBODY_LIGHT_OFF']])
+        if (option[index].isOn) {
+          option[index].isOn = false
+          this.setData({
+            customOption: option,
+          })
+          this.sendBluetoothCMD([CMD['CLOTHES_NOBODY_LIGHT_OFF'], 0, 0, 30])
+        } else {
+          const pickIndex = [0, 0]
+          pickIndex[0] = Math.floor(option[index].timeSec / 60)
+          pickIndex[1] = Math.floor(option[index].timeSec % 60 / 30)
+          option[index].from = 1
+          this.setData({
+            curPickerIndex: pickIndex,
+            isShowTimePicker: true,
+            curPickOptionIndex: index,
+            customOption: option
+          })
+        }
       } else if (key === 'NOBODY_UP') {
-        this.sendBluetoothCMD([CMD['CLOTHES_NOBODY_UP']])
+        if (option[index].isOn) {
+          option[index].isOn = false
+          this.setData({
+            customOption: option,
+          })
+          this.sendBluetoothCMD([CMD['CLOTHES_NOBODY_UP'], 0, 0, 30])
+        } else {
+          const pickIndex = [0, 0]
+          pickIndex[0] = Math.floor(option[index].timeSec / 60)
+          pickIndex[1] = Math.floor(option[index].timeSec % 60 / 30)
+          option[index].from = 1
+          this.setData({
+            curPickerIndex: pickIndex,
+            isShowTimePicker: true,
+            curPickOptionIndex: index,
+            customOption: option
+          })
+        }
       }
     },
+    onCustomCellClick(e: any) {
+      const index = e.currentTarget.dataset.index
+      const option = this.data.customOption
+      if (!option[index].isEnable || !option[index].hasPop) return
+      const key = e.currentTarget.dataset.key
+      if (key === 'NOBODY_OFF' || key === 'NOBODY_UP') {
+        const pickIndex = [0, 0]
+        pickIndex[0] = Math.floor(option[index].timeSec / 60)
+        pickIndex[1] = Math.floor(option[index].timeSec % 60 / 30)
+        option[index].from = 0
+        this.setData({
+          curPickerIndex: pickIndex,
+          isShowTimePicker: true,
+          curPickOptionIndex: index
+        })
+      }
+    },
+    none() {},
     onSwitchFunClick() {
       setTimeout(() => {
         dataBus.emit('DEVSTATUS', this.data.statusTemp)
