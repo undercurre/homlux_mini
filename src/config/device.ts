@@ -51,6 +51,8 @@ export const PRO_TYPE = {
   centralAirConditioning: '0xCC', // 中弘网关空调，中央空调
 } as const
 
+export type I_PRO_TYPE_VALUE = (typeof PRO_TYPE)[keyof typeof PRO_TYPE] // PRO_TYPE的 value 值类型
+
 // productId -> 设备modelName，暂时为传感器专用
 export const SENSOR_MODEL_NAME = {
   'midea.ir.201': 'irDetector',

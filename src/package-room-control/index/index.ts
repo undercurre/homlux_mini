@@ -40,6 +40,7 @@ import {
   FAN_PID,
   NO_SYNC_DEVICE_STATUS_IN_ROOM,
   homluxOssUrl,
+  I_PRO_TYPE_VALUE,
 } from '../../config/index'
 import homOs from 'js-homos'
 
@@ -1200,7 +1201,7 @@ ComponentWithStore({
         const OldPosition = device.mzgdPropertyDTOList[modelName].curtain_position
         const NewPosition = Number(OldPosition) > 0 ? '0' : '100'
         const res = await sendDevice({
-          proType: device.proType,
+          proType: device.proType as I_PRO_TYPE_VALUE,
           deviceType: device.deviceType,
           deviceId: device.deviceId,
           property: { curtain_position: NewPosition },
@@ -1221,7 +1222,7 @@ ComponentWithStore({
       this.updateQueue(device)
 
       const res = await sendDevice({
-        proType: device.proType,
+        proType: device.proType as I_PRO_TYPE_VALUE,
         deviceType: device.deviceType,
         deviceId: device.deviceId,
         modelName,
