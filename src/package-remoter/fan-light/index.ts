@@ -208,7 +208,7 @@ ComponentWithComputed({
         this.setData({
           btnList: temp,
         })
-      } else if (this.data.devModel == '06') {
+      } else if (this.data.devModel == '06' || this.data.devModel == '07') {
         const btns = this.data.btnList
         const temp = []
         for (let i = 0; i < btns.length; i++) {
