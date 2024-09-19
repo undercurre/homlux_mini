@@ -91,7 +91,7 @@
     block
     bind:click="toConfirm"
     loading="{{loading}}"
-    disabled="{{!homeList.length}}"
+    disabled="{{!checkedIds.length}}"
     >开始同步</mz-button
   >
 </view>
@@ -109,3 +109,6 @@
   bind:menuTap="handleMenuTap"
   bind:overlayClick="handleMenuClose"
 ></mz-pop-menu>
+
+<mz-toast id="mz-toast" />
+<mz-dialog id="mz-dialog" />

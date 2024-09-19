@@ -1,9 +1,11 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import pageBehaviors from '../../../behaviors/pageBehaviors'
 import { delay, Logger, storage } from '../../../utils/index'
-import { getToken } from '../../../apis/index'
-import { deviceStore } from '../../../store/index'
+import { getToken, miSync } from '../../../apis/index'
+import { deviceStore, homeStore } from '../../../store/index'
 import { SCREEN_PID } from '../../../config/index'
+import Toast from '../../../skyline-components/mz-toast/toast'
+import Dialog from '../../../skyline-components/mz-dialog/dialog'
 
 ComponentWithComputed({
   behaviors: [pageBehaviors],
@@ -11,7 +13,7 @@ ComponentWithComputed({
    * 页面的初始数据
    */
   data: {
-    gatewayList: [] as Device.DeviceItem[],
+    gatewayList: [] as (Device.DeviceItem & { auth: boolean; checked: boolean })[],
     listHeight: 0,
     loading: false,
     checkIndex: 0, // 选择的家庭index
@@ -41,7 +43,11 @@ ComponentWithComputed({
     ],
   },
 
-  computed: {},
+  computed: {
+    checkedIds(data) {
+      return data.gatewayList.filter((d) => d.checked).map((d) => d.deviceId) ?? []
+    },
+  },
 
   methods: {
     async onLoad(query: { code: string }) {
@@ -57,8 +63,8 @@ ComponentWithComputed({
           ?.filter((device) => device.deviceType === 1 && !SCREEN_PID.includes(device.productId))
           .map((device) => ({
             ...device,
-            checked: true,
-            auth: true,
+            checked: false,
+            auth: false,
           })),
       })
 
@@ -91,7 +97,32 @@ ComponentWithComputed({
         'miHomeMenu.isShow': false,
       })
     },
+    onCheckGateway(e: WechatMiniprogram.CustomEvent) {
+      const { index } = e.currentTarget.dataset
+      const { checked } = this.data.gatewayList[index]
+      this.setData({
+        [`gatewayList[${index}].checked`]: !checked,
+      })
+    },
 
-    async toConfirm() {},
+    async toConfirm() {
+      const res = await miSync({
+        bindKey: 'xxxbindKey',
+        miHouseId: 'xxxmiHouseId',
+        houseId: homeStore.currentHomeId,
+        uid: 'xxxuid',
+        deviceId: this.data.checkedIds,
+      })
+      if (!res.success) {
+        Dialog.confirm({
+          context: this,
+          title: '设备同步数据失败，请检查网络及网关设备是否正常？',
+          confirmButtonText: '稍后重试',
+          showCancelButton: false,
+        }).catch(() => 'cancel')
+      }
+
+      Toast('同步成功')
+    },
   },
 })

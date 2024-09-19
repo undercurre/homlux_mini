@@ -8,6 +8,8 @@
     "mz-button": "/skyline-components/mz-button/index",
     "mz-cell-group": "/skyline-components/mz-cell-group/index",
     "mz-cell": "/skyline-components/mz-cell/index",
-    "mz-pop-menu": "/skyline-components/mz-pop-menu/index"
+    "mz-pop-menu": "/skyline-components/mz-pop-menu/index",
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-dialog": "/skyline-components/mz-dialog/index"
   }
 }

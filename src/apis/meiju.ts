@@ -236,3 +236,21 @@ export async function queryDeviceSpecifiedInfo(params: {
     data: params,
   })
 }
+
+/**
+ * 同步设备到米家
+ */
+export async function miSync(data: {
+  bindKey: string
+  deviceId: string[] // 美居网关/设备id
+  houseId: string
+  miHouseId: string
+  uid: string
+}) {
+  return await mzaioRequest.post({
+    log: true,
+    loading: false,
+    url: '/v1/thirdparty/mi/devices/subscribe',
+    data,
+  })
+}
