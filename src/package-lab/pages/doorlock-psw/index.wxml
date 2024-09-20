@@ -48,7 +48,7 @@
           placeholder="请输入门锁管理员密码"
           custom-style="padding: 32rpx 40rpx;border-radius: 24rpx;"
           clearable
-          maxlength="{{20}}"
+          maxlength="{{12}}"
           type="number"
           border="{{false}}"
           password="{{!isShowPassword}}"
