@@ -26,10 +26,10 @@ ComponentWithComputed({
     infoReady(data) {
       return data.adminPwd && data.randomCode?.length === 4
     },
-  },
-
-  pageLifetimes: {
-    async show() {},
+    tmpPwdView(data) {
+      if (!data.tmpPwd?.length) return ''
+      return `${data.tmpPwd.slice(0, 4)} ${data.tmpPwd.slice(4)}`
+    },
   },
 
   methods: {

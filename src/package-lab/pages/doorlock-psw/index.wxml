@@ -72,12 +72,12 @@
         class="w-686rpx h-760rpx absolute right-0 bottom-0"
         src="{{generatedImage}}"
       />
-      <text class="text-40 font-semibold mt-44rpx">美的单机版门锁</text>
+      <text class="text-40 font-semibold mt-44rpx">美的门锁</text>
       <text class="text-28 text-hex-a2a2a2 mt-48rpx">临时密码卡</text>
       <text
         class="text-hex-267aff font-medium mt-120rpx text-psw"
         style="font-size: 112rpx"
-        >{{tmpPwd}}</text
+        >{{tmpPwdView}}</text
       >
       <view class="mt-60rpx w-560rpx">
         <text class="text-26 text-hex-1e2c46">{{actionTips}}</text>
