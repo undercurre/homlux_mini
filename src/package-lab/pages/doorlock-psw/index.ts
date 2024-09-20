@@ -24,7 +24,7 @@ ComponentWithComputed({
 
   computed: {
     infoReady(data) {
-      return data.adminPwd && data.randomCode?.length === 4
+      return data.adminPwd?.length >= 6 && data.randomCode?.length === 4
     },
     tmpPwdView(data) {
       if (!data.tmpPwd?.length) return ''

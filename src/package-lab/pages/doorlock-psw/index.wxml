@@ -30,7 +30,6 @@
           model:value="{{ randomCode }}"
           placeholder="请输入门锁4位随机码"
           custom-style="padding: 32rpx 40rpx;border-radius: 24rpx;"
-          clearable
           maxlength="{{4}}"
           type="number"
           border="{{false}}"
@@ -47,7 +46,6 @@
           model:value="{{ adminPwd }}"
           placeholder="请输入门锁管理员密码"
           custom-style="padding: 32rpx 40rpx;border-radius: 24rpx;"
-          clearable
           maxlength="{{12}}"
           type="number"
           border="{{false}}"
@@ -56,7 +54,7 @@
         >
           <image
             slot="right-icon"
-            class="w-48rpx h-48rpx mr-24rpx"
+            class="w-48rpx h-48rpx"
             src="/assets/img/base/{{!isShowPassword ? 'eye-close' : 'eye-open'}}.png"
           />
         </mz-field>
