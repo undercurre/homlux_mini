@@ -42,7 +42,7 @@ ComponentWithComputed({
     canShowNotFound: false, // 已搜索过至少一次但未找到
     foundList: [] as Remoter.DeviceItem[], // 搜索到的设备
     _bleServer: null as WechatMiniprogram.BLEPeripheralServer | null,
-    _time_id_end: 0, // 定时终止搜索设备
+    _time_id_end: 0 as any, // 定时终止搜索设备
     _lastPowerKey: '', // 记录上一次点击‘照明’时的指令键，用于反转处理
     _timer: 0, // 记录上次指令时间
     _holdBleScan: false, // onHide时保持蓝牙扫描的标志
