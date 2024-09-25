@@ -48,7 +48,6 @@ ComponentWithComputed({
       dataBus.on('DEVSTATUS', (e) => {
         this.updateView(e)
       })
-      this.getAccessCount()
     },
     onUnload() {
       dataBus.off('DEVSTATUS')
@@ -95,19 +94,6 @@ ComponentWithComputed({
         mainOptionIndex: 1
       })
       this.sendBluetoothCMD([CMD['WALL_SWITCH'], 1])
-    },
-    getAccessCount() {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
-      const that = this
-      wx.batchGetStorage({
-        keyList: ['REMOTERTOTALACCESS'],
-        success (res: any) {
-          const list = res.dataList
-          that.setData({
-            totalAccess: list[0] ? parseInt(list[0]) : 0
-          })
-        }
-      })
     },
     init() {
       // eslint-disable-next-line @typescript-eslint/no-this-alias

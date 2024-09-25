@@ -19,7 +19,7 @@ ComponentWithComputed({
     showEditNamePopup: false,
     isShowSetting: false,
     fastSwitchName: '照明开关',
-    deviceType: '17',
+    deviceType: '',
     deviceModel: '',
     deviceAddr: '',
     devFunDes: '',
@@ -46,7 +46,7 @@ ComponentWithComputed({
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string, functionDes: string }) {
       const { deviceType, deviceModel, addr, functionDes } = query
       this.setData({ deviceType, deviceModel, deviceAddr: addr, devFunDes: functionDes || '' })
-      // this.configOption()
+      this.configOption()
 
       dataBus.on('DEVSTATUS', (e) => {
         this.updateView(e)
