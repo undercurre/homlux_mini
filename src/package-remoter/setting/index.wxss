@@ -60,3 +60,8 @@
   height: 360rpx;
   flex-direction: row;
 }
+.title-block {
+  width: 370rpx;
+  height: 88rpx;
+  flex-direction: row;
+}

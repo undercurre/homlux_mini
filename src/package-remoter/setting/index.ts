@@ -40,7 +40,8 @@ ComponentWithComputed({
     curPickerIndex: [0],
     pickerIndexTemp: [0],
     isShowTimePicker: false,
-    curPickOptionIndex: 0
+    curPickOptionIndex: 0,
+    clickCnt: 0
   },
   methods: {
     async onLoad(query: { deviceType: string; deviceModel: string; addr: string, functionDes: string }) {
@@ -442,6 +443,19 @@ ComponentWithComputed({
           })
         }
       })
+    },
+    onNavClick() {
+      const cnt = this.data.clickCnt
+      if (cnt >= 3) {
+        this.sendBluetoothCMD([CMD['FACTORY']])
+        this.setData({
+          clickCnt: 0
+        })
+      } else {
+        this.setData({
+          clickCnt: cnt + 1
+        })
+      }
     },
   },
   lifetimes: {

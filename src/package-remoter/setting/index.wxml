@@ -2,7 +2,15 @@
 
 <view class="h-100vh flex flex-col items-center">
   <!-- 标题 -->
-  <nav-bar title="设备管理" left-arrow bind:leftTap="goBack"></nav-bar>
+  <nav-bar
+    background="#EFF2F7"
+    leftArrow="{{true}}"
+    bind:leftTap="goBack"
+  >
+    <view class="title-block flex-center" bind:tap="onNavClick">
+      <text class="text-36rpx font-medium">设备管理</text>
+    </view>
+  </nav-bar>
 
   <!-- 上半部分 -->
   <view class="mt-24rpx w-750rpx flex-1">
