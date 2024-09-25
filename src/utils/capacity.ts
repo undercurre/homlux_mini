@@ -91,9 +91,6 @@ export const consultSystemBlePermission = async () => {
  */
 let _listenLocationTimeId = 0 // 监听系统位置信息是否打开的计时器， 0为不存在监听
 export const consultSystemLocation = async () => {
-  if (_listenLocationTimeId) {
-    return
-  }
   const systemInfo = await wx.getSystemInfo()
 
   if (systemInfo.locationEnabled && systemInfo.locationAuthorized) {
@@ -112,11 +109,15 @@ export const consultSystemLocation = async () => {
     })
     .catch(() => Logger.error('未查看指引'))
 
+  if (_listenLocationTimeId) {
+    return
+  }
+
   // 轮询设备
   _listenLocationTimeId = setInterval(async () => {
     const systemInfo = await wx.getSystemInfo()
 
-    if (systemInfo.locationEnabled) {
+    if (systemInfo.locationEnabled && systemInfo.locationAuthorized) {
       clearInterval(_listenLocationTimeId)
       _listenLocationTimeId = 0
       initBleCapacity()
