@@ -16,7 +16,7 @@
   <van-cell-group inset style="width: 750rpx;">
     <van-cell
       title="色温"
-      label="8秒内快速开关，可切换中性光、暖光、冷光"
+      label="8秒内快速开关，可切换中性光、冷光、暖光"
       border="{{true}}"
       custom-class="cus-cell">
       <van-checkbox
