@@ -393,7 +393,9 @@ ComponentWithComputed({
 
       // 若用户主动搜索，则设置搜索中标志
       if (isUserControlled) {
-        await initBleCapacity()
+        const stauts = await initBleCapacity()
+
+        if (!stauts) return
 
         this.setData({
           isSeeking: true,
