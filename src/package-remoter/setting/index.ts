@@ -388,7 +388,8 @@ ComponentWithComputed({
         this.setData({
           curPickerIndex: pickIndex,
           isShowTimePicker: true,
-          curPickOptionIndex: index
+          curPickOptionIndex: index,
+          customOption: option
         })
       }
     },
