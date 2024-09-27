@@ -1,6 +1,7 @@
 {
   "component": true,
   "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
     "van-cell-group": "@vant/weapp/cell-group/index",
     "van-cell": "@vant/weapp/cell/index",
     "van-switch": "@vant/weapp/switch/index"
