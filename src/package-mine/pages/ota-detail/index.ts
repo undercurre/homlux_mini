@@ -98,17 +98,17 @@ ComponentWithComputed({
         return
       }
       if (res.success) {
-        let otaUpdateList = [] as Ota.OtaUpdate[]
+        // let otaUpdateList = [] as Ota.OtaUpdate[]
 
-        otaUpdateList = res.result.otaUpdateList.filter((item) => item.otaType === this.data.otaType)
+        // otaUpdateList = res.result.otaUpdateList.filter((item) => item.otaType === this.data.otaType)
 
-        const otaProductList = res.result.otaProductList.filter((item) => item.otaType === this.data.otaType)
+        // const otaProductList = res.result.otaProductList.filter((item) => item.otaType === this.data.otaType)
         // .map((item) => ({ ...item, versionDesc: item.versionDesc.replace(/ /gi, '\n') }))
 
         this.setData({
           jobStatus: res.result.jobStatus,
-          otaProductList,
-          otaUpdateList,
+          otaProductList: res.result.otaProductList,
+          otaUpdateList: res.result.otaUpdateList,
         })
       }
     },
