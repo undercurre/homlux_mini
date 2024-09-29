@@ -75,7 +75,7 @@ ComponentWithComputed({
       console.log('pageParams', pageParams)
 
       this.setData({
-        pageTitle: pageParams.title,
+        pageTitle: pageParams.title || '固件升级',
         otaType: parseInt(pageParams.otaType, 10),
         fromDevice: !!pageParams.fromDevice,
       })
