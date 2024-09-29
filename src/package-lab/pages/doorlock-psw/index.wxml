@@ -33,6 +33,7 @@
           maxlength="{{4}}"
           type="number"
           border="{{false}}"
+          adjust-position="{{false}}"
         >
         </mz-field>
       </view>
@@ -51,6 +52,7 @@
           border="{{false}}"
           password="{{!isShowPassword}}"
           bind:click-icon="toggleShowPassword"
+          adjust-position="{{false}}"
         >
           <image
             slot="right-icon"
