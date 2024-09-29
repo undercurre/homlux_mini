@@ -11,11 +11,11 @@
   ></nav-bar>
 
   <!-- 子设备ota页面 -->
-  <block wx:if="{{otaType === 2}}">
+  <block wx:if="{{1 || otaType === 2}}">
     <view class="rounded-32rpx bg-white m-24rpx p-32rpx flex flex-row">
       <view class="flex flex-col items-start pr-44rpx">
         <text class="text-34rpx text-black-2a">自动升级</text>
-        <text class="text-28rpx text-black-tips font-normal text-justify mt-24rpx">每天凌晨1:00期间自动升级所有zigbee子设备固件。升级完成时，设备将短暂重启</text>
+        <text class="text-28rpx text-black-tips font-normal text-justify mt-24rpx">每天凌晨1:00期间自动升级所有zigbee设备固件。升级完成时，设备将短暂重启</text>
       </view>
       <view>
         <van-switch
