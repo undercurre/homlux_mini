@@ -1,28 +1,23 @@
 import { ComponentWithComputed } from 'miniprogram-computed'
 import {
-  // ACTIONSHEET_MAP,
   CMD,
-  // COLORTEMP_RANGE,
   FACTORY_ADDR,
-  // FREQUENCY_TIME
 } from '../../config/remoter'
 import {
   initBleCapacity,
-  // storage,
-  // isDevMode,
 } from '../../utils/index'
 import remoterProtocol from '../../utils/remoterProtocol'
 import {
   createBleServer,
   bleAdvertising,
-  // bleAdvertisingEnd,
-  // stopAdvertising,
   BleService,
 } from '../../utils/remoterUtils'
 import { hideLoading, showLoading } from '../../utils/system'
 import { BehaviorWithStore } from 'mobx-miniprogram-bindings'
 import { remoterStore, remoterBinding } from '../../store/index'
 import Toast from '@vant/weapp/toast/toast'
+import { emitter } from '../../utils/index'
+import dataBus from '../utils/dataBus'
 
 const hourArr = []
 for (let i = 0; i <= 6; i++) {
@@ -137,6 +132,7 @@ ComponentWithComputed({
       })
       console.log('lmn>>>rece AD status=', JSON.stringify(temp))
       this.updateView()
+      dataBus.emit('DEVSTATUS', temp)
     },
   },
   computed: {
@@ -184,6 +180,10 @@ ComponentWithComputed({
       this.configBtns()
       this.updateView()
 
+      dataBus.on('DEVSEND', (cmd) => {
+        this.sendBluetoothCMD(cmd as number[])
+      })
+
       const bleInited = await initBleCapacity()
       if (!bleInited) {
         return
@@ -191,6 +191,8 @@ ComponentWithComputed({
       // 建立BLE外围设备服务端
       this.data._bleServer = await createBleServer()
       if (this.data.isNeedConnectBLE) this.start()
+
+      this.getAccessCount()
     },
     configBtns() {
       if (this.data.devModel == '03') {
@@ -206,7 +208,7 @@ ComponentWithComputed({
         this.setData({
           btnList: temp,
         })
-      } else if (this.data.devModel == '06') {
+      } else if (this.data.devModel == '06' || this.data.devModel == '07') {
         const btns = this.data.btnList
         const temp = []
         for (let i = 0; i < btns.length; i++) {
@@ -222,6 +224,7 @@ ComponentWithComputed({
       }
     },
     onUnload() {
+      dataBus.all.clear()
       clearTimeout(this.data.conTimer)
       if (this.data.isBLEConnected) {
         this.data._bleService?.close()
@@ -281,7 +284,7 @@ ComponentWithComputed({
         }
       }
     },
-    sendBluetoothCMD(paramsArr?: number[]) {
+    sendBluetoothCMD(paramsArr?: number[], key?: string) {
       // [3, 4, 5]
       if (!paramsArr || paramsArr.length == 0) return
       if (this.data.isBLEConnected) {
@@ -290,6 +293,15 @@ ComponentWithComputed({
       } else {
         this.sendBluetoothAd(paramsArr)
       }
+      emitter.emit('remoterControl', {mac: this.data.devAddr})
+      if (!key) return
+      wx.reportEvent("remoter_control", {
+        "rm_control_function": key,
+        "rm_control_type": this.data.isBLEConnected ? "connect" : "ad",
+        "rm_device_model": this.data.devModel,
+        "rm_device_type": this.data.devType,
+        "rm_device_mac": this.data.devAddr
+      })
     },
     receiveBluetoothData(data: string) {
       const srcModel = data.slice(0, 2)
@@ -304,6 +316,7 @@ ComponentWithComputed({
         devStatus: status,
       })
       this.updateView()
+      dataBus.emit('DEVSTATUS', status)
     },
     bluetoothConnectChange(isConnected: boolean) {
       console.log('lmn>>>bluetoothConnectChange::isConnected=', isConnected)
@@ -423,7 +436,7 @@ ComponentWithComputed({
       const key = `FAN_SPEED_${value}`
       const para = [CMD[key]]
       if (para != undefined && para != null) {
-        this.sendBluetoothCMD(para)
+        this.sendBluetoothCMD(para, key)
       }
     },
     onBtnListClick(e: any) {
@@ -455,11 +468,11 @@ ComponentWithComputed({
         }
       }
       if (key === 'NATURN') {
-        this.sendBluetoothCMD([CMD['FAN_NATURE']])
+        this.sendBluetoothCMD([CMD['FAN_NATURE']], 'FAN_NATURE')
       } else if (key === 'DIR') {
-        this.sendBluetoothCMD([CMD['FAN_NEGATIVE']])
+        this.sendBluetoothCMD([CMD['FAN_NEGATIVE']], 'FAN_NEGATIVE')
       } else if (key === 'DISPLAY') {
-        this.sendBluetoothCMD([CMD['CLOSE_DISPLAY']])
+        this.sendBluetoothCMD([CMD['CLOSE_DISPLAY']], 'CLOSE_DISPLAY')
       } else if (key === 'BRI' || key === 'COL') {
         this.setData({
           isShowPopup: true,
@@ -474,8 +487,11 @@ ComponentWithComputed({
       }
     },
     goToDevManage() {
+      setTimeout(() => {
+        dataBus.emit('DEVSTATUS', this.data.devStatus)
+      }, 500);
       wx.navigateTo({
-        url: `/package-remoter/setting/index?addr=${remoterStore.curAddr}`,
+        url: `/package-remoter/setting/index?addr=${this.data.devAddr}&deviceType=${this.data.devType}&deviceModel=${this.data.devModel}`,
       })
     },
     onBottomClick(e: any) {
@@ -495,9 +511,9 @@ ComponentWithComputed({
         }, 300)
       }
       if (list[index].key == 'POWER') {
-        this.sendBluetoothCMD([CMD['FAN_SWITCH']])
+        this.sendBluetoothCMD([CMD['FAN_SWITCH']], 'FAN_SWITCH')
       } else if (list[index].key == 'LIGHT') {
-        this.sendBluetoothCMD([CMD['LIGHT_LAMP']])
+        this.sendBluetoothCMD([CMD['LIGHT_LAMP']], 'LIGHT_LAMP')
       }
     },
     closePopup() {
@@ -511,14 +527,14 @@ ComponentWithComputed({
       this.setData({
         curBrightnessPercent: value,
       })
-      this.sendBluetoothCMD([CMD['LIGHT_BRIGHT'], this.percent2Rang(this.data.curBrightnessPercent)])
+      this.sendBluetoothCMD([CMD['LIGHT_BRIGHT'], this.percent2Rang(this.data.curBrightnessPercent)], 'LIGHT_BRIGHT')
     },
     onColorSliderEnd(e: any) {
       const value = e.detail
       this.setData({
         curColorTempPercent: value,
       })
-      this.sendBluetoothCMD([CMD['LIGHT_COLOR_TEMP'], this.percent2Rang(this.data.curColorTempPercent)])
+      this.sendBluetoothCMD([CMD['LIGHT_COLOR_TEMP'], this.percent2Rang(this.data.curColorTempPercent)], 'LIGHT_COLOR_TEMP')
     },
     onPickTimeConfirm() {
       showLoading('加载中')
@@ -527,11 +543,11 @@ ComponentWithComputed({
         this.closePopup()
         const hour = this.data.hourArr[this.data.curTimePickerIndex[0]]
         if (hour == 0) {
-          this.sendBluetoothCMD([CMD['FAN_DELAY_OFF_CANCEL']])
+          this.sendBluetoothCMD([CMD['FAN_DELAY_OFF_CANCEL']], 'FAN_DELAY_OFF_CANCEL')
         } else {
           const key = `FAN_DELAY_OFF_${hour}`
           const para = CMD[key]
-          if (para != undefined && para != null) this.sendBluetoothCMD([CMD[key]])
+          if (para != undefined && para != null) this.sendBluetoothCMD([CMD[key]], key)
         }
       }, 1200);
     },
@@ -555,6 +571,24 @@ ComponentWithComputed({
     rang2Percent(rang: number) {
       const value = rang > 255 ? 255 : rang < 0 ? 0 : rang
       return Math.round((value / 255) * 100)
+    },
+    getAccessCount() {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const that = this
+      wx.batchGetStorage({
+        keyList: ['REMOTERTOTALACCESS', 'REMOTERDAYACCESS', 'REMOTERMONTHACCESS'],
+        success (res: any) {
+          const list = res.dataList
+          if (list.length < 3) return
+          wx.reportEvent("remoter_live", {
+            "rm_month_access": parseInt(list[2]),
+            "rm_day_access": parseInt(list[1]),
+            "rm_total_access": parseInt(list[0]),
+            "rm_live_type": "access",
+            "rm_device_type": that.data.devType,
+          })
+        }
+      })
     },
   },
 })

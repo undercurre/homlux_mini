@@ -47,10 +47,11 @@
           bind:click="toPage"
         />
         <mz-cell
-          icon="/assets/img/mine/voiceControl.png"
-          title="语音控制"
+          wx:if="{{isManager}}"
+          icon="/assets/img/mine/deviceReplace.png"
+          title="设备替换"
           is-link
-          data-url="{{urls.voiceControl}}"
+          data-url="{{urls.deviceReplace}}"
           bind:click="toPage"
         />
         <mz-cell
@@ -61,11 +62,11 @@
           bind:click="toPage"
         />
         <mz-cell
-          wx:if="{{isManager}}"
-          icon="/assets/img/mine/deviceReplace.png"
-          title="设备替换"
+          icon="/assets/img/mine/lab.png"
+          title="实验室功能"
           is-link
-          data-url="{{urls.deviceReplace}}"
+          data-url="{{urls.lab}}"
+          data-auth="no"
           bind:click="toPage"
         />
         <mz-cell

@@ -148,6 +148,8 @@ ComponentWithStore({
       })
     },
     allRoomDeviceList(allDevice: Device.DeviceItem[]) {
+      if (!this.data._isVisible) return // 页面挂起，不作更新
+
       this.setData({
         hasDevice: !!allDevice?.length,
         isShowHomeControl:
@@ -172,7 +174,13 @@ ComponentWithStore({
       })
     },
     'roomList,lightSummary.**'(roomList: roomInfo[], lightSummary) {
-      if (!this.data._isVisible) return // 页面不可见，不作更新
+      // console.log(
+      //   '[observer]list update, this.data._isVisible',
+      //   this.data._isVisible,
+      //   'this.data.hasDevice',
+      //   this.data.hasDevice,
+      // )
+      if (!this.data._isVisible || !this.data.hasDevice) return // 页面挂起，或由于没有设备而房间卡片不出现时，不作更新
 
       const roomCardList = roomList.map((room) => ({
         ...room,

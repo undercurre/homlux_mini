@@ -1,0 +1,125 @@
+<view
+  class="absolute left-0 top-0 w-100vw h-100vh bg-hex-eef2f7"
+  style="z-index: -1"
+></view>
+
+<view class="flex flex-col w-100vw h-100vh">
+  <nav-bar
+    title="门锁临时密码"
+    leftArrow
+    show-go-home
+    bind:leftTap="goBack"
+  ></nav-bar>
+
+  <view class="flex-1 flex-col-center">
+    <view
+      wx:if="{{status === 'init'}}"
+      class="flex-1 flex flex-col items-center"
+    >
+      <image
+        class="w-664rpx h-372rpx mt-48rpx"
+        src="/package-lab/assets/img/img-lock.png"
+      ></image>
+
+      <view class="w-686rpx mt-64rpx">
+        <view class="mx-16rpx my-32rpx">
+          <text class="text-28rpx text-hex-555659">随机码</text>
+        </view>
+
+        <mz-field
+          model:value="{{ randomCode }}"
+          placeholder="请输入门锁4位随机码"
+          custom-style="padding: 32rpx 40rpx;border-radius: 24rpx;"
+          maxlength="{{4}}"
+          type="number"
+          border="{{false}}"
+          adjust-position="{{false}}"
+        >
+        </mz-field>
+      </view>
+
+      <view class="w-686rpx mt-16rpx">
+        <view class="mx-16rpx my-32rpx">
+          <text class="text-28rpx text-hex-555659">管理员密码</text>
+        </view>
+
+        <mz-field
+          model:value="{{ adminPwd }}"
+          placeholder="请输入门锁管理员密码"
+          custom-style="padding: 32rpx 40rpx;border-radius: 24rpx;"
+          maxlength="{{12}}"
+          type="number"
+          border="{{false}}"
+          password="{{!isShowPassword}}"
+          bind:click-icon="toggleShowPassword"
+          adjust-position="{{false}}"
+        >
+          <image
+            slot="right-icon"
+            class="w-48rpx h-48rpx"
+            src="/assets/img/base/{{!isShowPassword ? 'eye-close' : 'eye-open'}}.png"
+          />
+        </mz-field>
+      </view>
+    </view>
+
+    <!-- 密码生成后 -->
+    <view
+      wx:elif="{{status === 'generated'}}"
+      class="w-686rpx relative rounded-32rpx bgStyle mt-40rpx flex flex-col items-center flex-1"
+    >
+      <image
+        class="w-686rpx h-760rpx absolute right-0 bottom-0"
+        src="{{generatedImage}}"
+      />
+      <text class="text-40 font-semibold mt-44rpx">美的门锁</text>
+      <text class="text-28 text-hex-a2a2a2 mt-48rpx">临时密码卡</text>
+      <text
+        class="text-hex-267aff font-medium mt-120rpx text-psw"
+        style="font-size: 112rpx"
+        >{{tmpPwdView}}</text
+      >
+      <view class="mt-60rpx w-560rpx">
+        <text class="text-26 text-hex-1e2c46">{{actionTips}}</text>
+      </view>
+
+      <image
+        src="/package-mine/assets/img/logo.png"
+        class="absolute w-64 h-64 right-56rpx bottom-56rpx"
+      />
+    </view>
+
+    <view class="h-24rpx"></view>
+
+    <view class="flex flex-row gap-46rpx justify-center w-686rpx bottom-btn-wrapper">
+      <!-- 底部按钮 -->
+      <block wx:if="{{status === 'init'}}">
+        <mz-button
+          type="primary"
+          class="grow"
+          size="large"
+          disabled="{{!infoReady}}"
+          bind:click="handleConfirm"
+          >确定</mz-button
+        >
+      </block>
+      <block wx:elif="{{status === 'generated'}}">
+        <mz-button
+          class="flex-1 mr-16rpx"
+          size="large"
+          bind:click="handleCopyPwd"
+          >复制密码
+        </mz-button>
+        <mz-button
+          type="primary"
+          class="flex-1 ml-16rpx"
+          size="large"
+          open-type="share"
+          >微信分享
+        </mz-button>
+      </block>
+    </view>
+  </view>
+</view>
+
+<mz-toast id="mz-toast" />

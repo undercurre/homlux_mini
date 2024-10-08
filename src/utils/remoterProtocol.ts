@@ -162,13 +162,17 @@ const _parsePayload = (payload: string, deviceType: string, deviceModel?: string
       res.DELAY_OFF = rxU16[7] // 延时关灯剩余分钟数，0表示延时关灯失效
       res.LIGHT_NIGHT_LAMP = rxU16[8] === 0x06 // 小夜灯状态，0x06代表开启，0x9表示助眠状态
       res.LIGHT_SCENE_SLEEP = rxU16[8] === 0x09
-    } else if (deviceModel === '02' || deviceModel === '03' || deviceModel === '06') {
+    } else if (deviceModel === '02' || deviceModel === '03' || deviceModel === '06' || deviceModel === '07') {
       res.DELAY_OFF = (rxU16[7] << 8) + rxU16[8] // 延时关风扇剩余分钟数
       res.FAN_SWITCH = !!(rxU16[9] & BIT_0) // 风扇开关状态
       res.FAN_NEGATIVE = !!(rxU16[9] & BIT_1) // 风扇是否反转状态
       res.FAN_NATURE = !!(rxU16[9] & BIT_2) // 风扇自然风状态
       res.CLOSE_DISPLAY = !!(rxU16[9] & BIT_4) // 屏显
       res.SPEED = rxU16[10] // 风扇档位
+      if (deviceModel === '07') {
+        res.WALL_SWITCH = !!(rxU16[9] & BIT_5) ? 1 : 0
+        res.WALL_ORDER = rxU16[11]
+      }
     }
     return res
   }
@@ -290,9 +294,33 @@ const _parsePayloadV2 = (payload: string, deviceType: string) => {
       BATH_DELAY_CLOSE: rxU16[9]
     }
   }
-  // if (deviceType === '17') {
-  //   return {}
-  // }
+  if (deviceType === '17') {
+    return {
+      isV2: true,
+      CLOTHES_WIND_DRY: !!(rxU16[0] & BIT_0),
+      CLOTHES_HEAT_DRY: !!(rxU16[0] & BIT_1),
+      CLOTHES_IS_SETTING_HEIGHT: !!(rxU16[0] & BIT_2),
+      CLOTHES_ACTION: (rxU16[0] & 0x18) >> 3,
+      CLOTHES_LIGHT: !!(rxU16[1] & BIT_0),
+      CLOTHES_DIS: !!(rxU16[1] & BIT_1),
+      CLOTHES_ONE_KEY: !!(rxU16[1] & BIT_2),
+      CLOTHES_RADAR_BODY: !!(rxU16[1] & BIT_3),
+      CLOTHES_SLOW_UP: !!(rxU16[1] & BIT_4),
+      CLOTHES_NOBODY_LIGHT_OFF: !!(rxU16[1] & BIT_5),
+      CLOTHES_NOBODY_UP: !!(rxU16[1] & BIT_6),
+      CLOTHES_OFFLINE_VOICE: !!(rxU16[1] & BIT_7),
+      ERROR_CODE: rxU16[2],
+      CLOTHES_BRIGHT: rxU16[3],
+      CLOTHES_DELAY_LIGHT_TIME: rxU16[4],
+      CLOTHES_SET_HEIGHT: rxU16[5],
+      CLOTHES_MOTOR_LOCATION: rxU16[6],
+      CLOTHES_NOBODY_LIGHT_TIME: (rxU16[7] << 8) + rxU16[8],
+      CLOTHES_NOBODY_UP_TIME: (rxU16[9] << 8) + rxU16[10],
+      CLOTHES_DIS_TIME: rxU16[11],
+      CLOTHES_WIND_TIME: rxU16[12],
+      CLOTHES_HEAT_TIME: rxU16[13],
+    }
+  }
   if (deviceType === 'a1') {
     return {
       isV2: true,

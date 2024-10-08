@@ -42,6 +42,7 @@ Component({
       about: '/package-about/pages/about/index',
       deviceCategory: '/package-mine/device-category/index',
       setting: '/package-mine/pages/setting/index',
+      lab: '/package-lab/pages/index/index',
     },
     userInfo: {},
     isLogin: false,
@@ -58,8 +59,8 @@ Component({
   },
   methods: {
     toPage(e: { currentTarget: { dataset: { url: string; auth: string; param: string } } }) {
-      console.log('e.currentTarget.dataset', e.currentTarget)
       const { url, auth, param } = e.currentTarget.dataset
+      console.log('[toPage]', { url, auth, param })
       // 如果用户已经登录，开始请求数据
       if (auth !== 'no' && !storage.get<string>('token')) {
         wx.navigateTo({
@@ -67,7 +68,6 @@ Component({
         })
         return
       }
-
       wx.navigateTo({
         url: strUtil.getUrlWithParams(url, param === undefined ? {} : { param }),
       })

@@ -17,8 +17,12 @@
   justify-content: center;
   align-items: center;
 }
+.cus-cell-group {
+  background-color: #ffffff;
+}
 .cell-switch {
-  margin-top: 20rpx;
+  margin-top: 30rpx;
+  margin-bottom: 10rpx;
 }
 .pup-block {
   width: 750rpx;
@@ -50,4 +54,14 @@
   text-align: center;
   color: #333333;
   font-weight: 500;
+}
+.pick-block{
+  width: 750rpx;
+  height: 360rpx;
+  flex-direction: row;
+}
+.title-block {
+  width: 370rpx;
+  height: 88rpx;
+  flex-direction: row;
 }

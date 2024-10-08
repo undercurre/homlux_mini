@@ -1,0 +1,15 @@
+.text-label {
+  color: #488fff;
+}
+
+.cell-wrapper {
+  height: 192rpx;
+}
+
+.label-wrapper {
+  font-size: 26rpx !important;
+}
+
+.title-wrapper {
+  font-weight: 500 !important;
+}

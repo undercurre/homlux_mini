@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "mz-checkbox": "/components/mz-checkbox/index"
+  }
+}

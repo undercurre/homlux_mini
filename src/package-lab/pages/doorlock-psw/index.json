@@ -1,0 +1,13 @@
+{
+  "styleIsolation": "apply-shared",
+  "component": true,
+  "navigationStyle": "custom",
+  "renderer": "skyline",
+  "componentFramework": "glass-easel",
+  "disableScroll": true,
+  "usingComponents": {
+    "mz-toast": "/skyline-components/mz-toast/index",
+    "mz-button": "/skyline-components/mz-button/index",
+    "mz-field": "/skyline-components/mz-field/index"
+  }
+}

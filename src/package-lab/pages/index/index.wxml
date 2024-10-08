@@ -1,0 +1,26 @@
+<view class="page-container flex flex-col">
+  <nav-bar
+    leftArrow="{{true}}"
+    bind:leftTap="goBack"
+    title="实验室功能"
+  ></nav-bar>
+  <mz-cell-group inset>
+    <mz-cell
+      title="门锁临时密码"
+      center
+      bind:click="toPage"
+      is-link
+      label="适用单机版门锁"
+      custom-class="cell-wrapper"
+      label-class="label-wrapper"
+      data-url="/package-lab/pages/doorlock-psw/index"
+      border="{{false}}"
+    >
+      <image
+        slot="icon"
+        class="w-96rpx h-96rpx mr-32rpx"
+        src="/package-lab/assets/img/icon-lock.png"
+      />
+    </mz-cell>
+  </mz-cell-group>
+</view>

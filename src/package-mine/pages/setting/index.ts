@@ -13,7 +13,7 @@ Component({
       {
         icon: 'upgrade.png',
         title: '固件升级',
-        url: '/package-mine/pages/ota/index',
+        url: '/package-mine/pages/ota-detail/index',
         auth: true,
       },
       {

@@ -1,0 +1,114 @@
+<view class="page-container flex flex-col h-full">
+  <nav-bar
+    leftArrow="{{true}}"
+    bind:leftTap="goBack"
+  ></nav-bar>
+
+  <view class="px-64rpx pt-30rpx flex flex-col">
+    <text class="text-56rpx text-hex-27282A leading-none">已授权米家APP</text>
+    <text class="text-hex-555659 text-28 mt-24rpx">选择授权同步到米家APP的家庭</text>
+  </view>
+
+  <mz-cell-group inset>
+    <mz-cell
+      title="米家的家庭"
+      title-class="py-16rpx pl-16rpx"
+      center
+      bind:click="onCheckHome"
+      border="{{false}}"
+    >
+      <image
+        slot="right-icon"
+        src="/assets/img/base/arrow-down.png"
+        class="w-32 h-32"
+      ></image>
+    </mz-cell>
+  </mz-cell-group>
+
+  <view class="px-64rpx pt-30rpx">
+    <text class="text-hex-555659 text-28 mt-24rpx">选择授权同步到米家APP的网关</text>
+  </view>
+
+  <scroll-view
+    type="list"
+    enhanced
+    scroll-y
+    show-scrollbar="{{false}}"
+    class="flex-1"
+  >
+    <view>
+      <mz-cell-group
+        wx:for="{{gatewayList}}"
+        wx:key="index"
+        inset
+      >
+        <mz-cell
+          title="{{item.deviceName}}"
+          title-class="py-16rpx pl-16rpx"
+          label="{{item.auth ? '已授权' : '未授权'}}"
+          label-class="{{item.auth ? 'auth-label' : 'no-auth-label'}}"
+          center
+          bind:click="onCheckGateway"
+          border="{{false}}"
+          data-index="{{index}}"
+        >
+          <view
+            slot="icon"
+            class="w-96rpx h-96rpx ml-32rpx mr-16rpx flex items-center justify-center bg-hex-eef2f7 rounded-full"
+          >
+            <image
+              class="w-72rpx h-72rpx"
+              src="/package-auth/assets/img/gateway.png"
+            />
+          </view>
+          <image
+            slot="right-icon"
+            src="/assets/img/base/{{item.checked ? 'check' : 'uncheck'}}.png"
+            class="w-48rpx h-48rpx"
+          ></image>
+        </mz-cell>
+      </mz-cell-group>
+    </view>
+  </scroll-view>
+
+  <view class="list-bottom-placeholder"> </view>
+</view>
+
+<view
+  class="absolute bottom-0 flex-col-center pt-30rpx w-750rpx px-32rpx box-border"
+  style="height: calc(250rpx + env(safe-area-inset-bottom))"
+>
+  <view
+    class="text-center pb-32rpx"
+    bindtap="debind"
+  >
+    <text class="text-32rpx text-hex-555659">取消授权</text>
+  </view>
+  <mz-button
+    class="w-full"
+    size="large"
+    type="primary"
+    block
+    bind:click="toConfirm"
+    loading="{{loading}}"
+    disabled="{{!checkedIds.length}}"
+    >开始同步</mz-button
+  >
+</view>
+
+<mz-pop-menu
+  is-show="{{miHomeMenu.isShow}}"
+  class="z-120"
+  x="{{miHomeMenu.x}}"
+  y="{{miHomeMenu.y}}"
+  arrowX="{{miHomeMenu.arrowX}}"
+  height="{{miHomeMenu.height}}"
+  width="{{miHomeMenu.width}}"
+  menu-list="{{miHomeList}}"
+  transform-origin="left top"
+  bind:menuTap="handleMenuTap"
+  bind:overlayClick="handleMenuClose"
+></mz-pop-menu>
+
+<mz-toast id="mz-toast" />
+<mz-dialog id="mz-dialog" />

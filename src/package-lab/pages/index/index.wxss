@@ -1,0 +1,14 @@
+.text-label {
+  color: #488fff;
+}
+
+.cell-wrapper {
+  display: flex;
+  align-items: center;
+  height: 192rpx;
+}
+
+.label-wrapper {
+  margin-top: 16rpx;
+  font-size: 26rpx !important;
+}

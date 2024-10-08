@@ -1,0 +1,91 @@
+.container-pg {
+  width: 750rpx;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: transparent;
+  z-index: 100;
+  background-color: #EFF2F7;
+}
+.title-block {
+  width: 370rpx;
+  height: 88rpx;
+  flex-direction: row;
+}
+.switch-text {
+  font-family: PingFangSC-Regular;
+  font-size: 28rpx;
+  color: #555659;
+  font-weight: 400;
+  margin-left: 50rpx;
+}
+.cus-cell {
+  height: 160rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 32rpx;
+}
+.drag-cell{
+  height: 112rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 32rpx;
+}
+.drag-mask-cell{
+  height: 112rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.fun-block {
+  width: 700rpx;
+  height: 500rpx;
+  background-color: #ffffff;
+  border-radius: 32rpx;
+}
+.tip-title {
+  font-family: PingFangSC-Medium;
+  font-size: 26rpx;
+  color: #555659;
+  font-weight: 500;
+  margin-left: 48rpx;
+}
+.tip-content {
+  width: 654rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 26rpx;
+  color: #A2A2A2;
+  font-weight: 400;
+  margin-left: 48rpx;
+  margin-top: 12rpx;
+}
+.drag-block {
+  width: 700rpx;
+  height: 336rpx;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.line {
+  width: 640rpx;
+  height: 1px;
+  background-color: #EEF2F7;
+  margin-left: 28rpx;
+}
+.tap-block {
+  width: 110rpx;
+  height: 336rpx;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.mask-block {
+  width: 700rpx;
+  position: absolute;
+  box-shadow: 0 0 20rpx rgba(0,0,0, 0.3);
+}

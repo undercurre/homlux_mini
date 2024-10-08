@@ -1,0 +1,8 @@
+.bgStyle {
+  border: 2rpx solid #fff;
+  background-image: linear-gradient(180deg, #d1e3fd 0%, #f5f9fe 42%, #ffffff 100%);
+}
+
+.bottom-btn-wrapper {
+  margin-bottom: calc(env(safe-area-inset-bottom) + 24rpx);
+}

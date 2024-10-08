@@ -121,6 +121,20 @@ export const deviceConfig: Record<string, Record<string, Remoter.ConfigItem>> = 
         },
       ],
     },
+    '07': {
+      deviceName: '风扇灯',
+      devicePic: '/assets/img/remoter/fanLight.png',
+      actions: [
+        {
+          key: 'LIGHT_LAMP',
+          name: '照明',
+        },
+        {
+          key: 'FAN_SWITCH',
+          name: '风扇',
+        },
+      ],
+    },
   },
   '26': {
     // Q30系列 // 0001 不支持摆风，可调温
@@ -1615,16 +1629,16 @@ export const deviceConfigV2: Record<string, Remoter.ConfigItem> = {
       },
     ],
   },
-  // '17': {
-  //   deviceName: '晾衣机',
-  //   devicePic: '/assets/img/remoter/clothes.png',
-  //   actions: [
-  //     {
-  //       key: 'CLOTHES_LIGHT',
-  //       name: '照明',
-  //     },
-  //   ],
-  // }
+  '17': {
+    deviceName: '晾衣机',
+    devicePic: '/assets/img/remoter/clothes.png',
+    actions: [
+      {
+        key: 'CLOTHES_LIGHT',
+        name: '照明',
+      },
+    ],
+  },
   'a1': {
     deviceName: '换气扇',
     devicePic: '/assets/img/remoter/ventFan.png',
@@ -1675,6 +1689,9 @@ export const CMD: Record<string, number> = {
 
   FAN_GEAR: 0x52, // 风速档位
   FAN_DELAY_OFF_MIN: 0x53, // 延迟关分钟
+
+  WALL_SWITCH: 0x59,
+  WALL_ORDER: 0x5a,
 
   // 浴霸
   BATH_ALL_OFF: 0x0d, // 全关，待机

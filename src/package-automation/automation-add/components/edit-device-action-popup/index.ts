@@ -559,6 +559,7 @@ ComponentWithComputed({
     async handleTry() {
       const res = await sendDevice({
         deviceId: this.data.deviceActionInfo.deviceId,
+        gatewayId: this.data.deviceActionInfo.gatewayId,
         deviceType: this.data.deviceActionInfo.deviceType,
         proType: this.data.deviceActionInfo.proType,
         property: this.data.deviceActionInfo.sceneProperty,

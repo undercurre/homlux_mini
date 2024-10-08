@@ -127,6 +127,7 @@ ComponentWithComputed({
       this.setData({
         logList: res.result.list,
         todayStr: dayjs().format('YYYY年M月D日'), // 在跨天待机的场景中，保证日志标题为当天
+        weekday: WEEKDAY_ARRAY[Number(dayjs().format('d'))],
         isLoaded: true,
       })
     },

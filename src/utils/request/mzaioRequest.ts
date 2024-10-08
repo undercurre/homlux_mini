@@ -73,7 +73,7 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
     options.timeout = 10000
   }
 
-  // const start = Date.now()
+  const start = Date.now()
 
   return baseRequest<T>({
     ...options,
@@ -85,28 +85,30 @@ const mzaioRequest: mzaioRequest = function <T extends AnyResType>(options: Base
         Logger.error('接口已响应，但返回异常', options, result.data)
       }
 
-      // const cost_time = Date.now() - start
+      const cost_time = Date.now() - start
 
-      // wx.reportEvent('wxdata_perf_monitor', {
-      //   wxdata_perf_monitor_id: options.url,
-      //   wxdata_perf_monitor_level: 0,
-      //   wxdata_perf_error_code: (result.data as IAnyObject).code,
-      //   wxdata_perf_cost_time: cost_time,
-      //   wxdata_perf_error_msg: (result.data as IAnyObject).msg || '',
-      // })
+      // 接口日志监控上报
+      wx.reportEvent('wxdata_perf_monitor', {
+        wxdata_perf_monitor_id: options.url,
+        wxdata_perf_monitor_level: 0,
+        wxdata_perf_error_code: (result.data as IAnyObject).code,
+        wxdata_perf_cost_time: cost_time,
+        wxdata_perf_error_msg: (result.data as IAnyObject).msg || '',
+      })
 
       return result.data
     },
     generalFailHandler: (error) => {
-      // const cost_time = Date.now() - start
+      const cost_time = Date.now() - start
 
-      // wx.reportEvent('wxdata_perf_monitor', {
-      //   wxdata_perf_monitor_id: options.url,
-      //   wxdata_perf_monitor_level: 0,
-      //   wxdata_perf_error_code: -1,
-      //   wxdata_perf_cost_time: cost_time,
-      //   wxdata_perf_error_msg: error.errMsg || '',
-      // })
+      // 接口日志监控上报
+      wx.reportEvent('wxdata_perf_monitor', {
+        wxdata_perf_monitor_id: options.url,
+        wxdata_perf_monitor_level: 0,
+        wxdata_perf_error_code: -1,
+        wxdata_perf_cost_time: cost_time,
+        wxdata_perf_error_msg: error.errMsg || '',
+      })
 
       return {
         code: -1,

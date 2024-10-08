@@ -5,6 +5,7 @@ export * from './light'
 export * from './img'
 export * from './dic'
 export * from './wechat'
+export * from './mi'
 export * from './doc'
 
 let env: ENV_TYPE = 'dev'

@@ -302,11 +302,12 @@ ComponentWithComputed({
 
       this.triggerEvent('close')
     },
-    handleBatchMove() {
-      const actionFn = async () => {
-        // 可能存在未重新开始移动，目标已被移动成功的情况
-        if (!this.data.moveWaitlist.length && !this.data.moveFailCount) {
-          this.triggerEvent('updateList')
+    async moveLoop() {
+      // 可能存在未重新开始移动，目标已被移动成功的情况
+      if (!this.data.moveWaitlist.length) {
+        this.triggerEvent('updateList')
+
+        if (!this.data.moveFailCount) {
           Dialog.close() // 关闭【前端超时】提示窗口
           emitter.off('group_device_result_status') // 取消监听
 
@@ -314,86 +315,106 @@ ComponentWithComputed({
             message: '已成功移动',
             zIndex: 9999,
           })
-          return
         }
-        this.data.moveFailCount = 0 // 清空失败计数
-        const map = {} as Record<string, Device.DeviceInfoUpdateVo>
-        this.data.moveWaitlist.forEach((uniId: string) => {
-          const deviceId = uniId.split(':')[0]
-          const { deviceType } = deviceStore.deviceMap[deviceId]
-          if (!map[deviceId]) {
-            map[deviceId] = {
-              deviceId,
-              houseId: homeStore.currentHomeId,
-              roomId: this.data.targetRoomId,
-              type: '1',
-              deviceType,
-            }
-          }
-        })
-        const res = await batchUpdate({
-          deviceInfoUpdateVoList: Object.entries(map).map(([_, data]) => data),
-        })
-        if (res.success) {
-          // 可能存在快速收到ws通知，不用等待
-          if (!this.data.moveWaitlist.length) {
-            return
-          }
-
-          // TODO 只有WIFI设备时，不需要超时检测逻辑
-          // 超时后检查云端上报，是否已成功移动完毕 15~120s
-          const TIME_OUT = Math.min(Math.max(15000, this.data.moveWaitlist.length * 1000), 120000)
-
-          showLoading('正在移动设备房间，请稍候')
-          timeId = setTimeout(async () => {
+        // 消息通知失败
+        else {
+          if (timeId) {
+            clearTimeout(timeId)
+            timeId = 0
             hideLoading()
-
-            // 部分未成功也要通知刷新页面
-            this.triggerEvent('updateList')
-
-            Dialog.confirm({
-              title: '部分设备未成功移动，是否重试',
-              confirmButtonText: '是',
-              cancelButtonText: '否',
-              context: this,
-            })
-              .then(actionFn) // ! 有条件递归执行
-              .catch((e) => console.log(e))
-          }, TIME_OUT)
-        } else {
-          this.triggerEvent('updateList')
-
+          }
           Toast({
             message: '移动失败',
             zIndex: 9999,
           })
         }
+
+        return
       }
+
+      this.data.moveFailCount = 0 // 清空失败计数
+      const map = {} as Record<string, Device.DeviceInfoUpdateVo>
+      this.data.moveWaitlist.forEach((uniId: string) => {
+        const deviceId = uniId.split(':')[0]
+        const { deviceType } = deviceStore.deviceMap[deviceId]
+        if (!map[deviceId]) {
+          map[deviceId] = {
+            deviceId,
+            houseId: homeStore.currentHomeId,
+            roomId: this.data.targetRoomId,
+            type: '1',
+            deviceType,
+          }
+        }
+      })
+      const res = await batchUpdate({
+        deviceInfoUpdateVoList: Object.entries(map).map(([_, data]) => data),
+      })
+      if (res.success) {
+        // 可能存在快速收到ws通知，不用等待
+        if (!this.data.moveWaitlist.length) {
+          return
+        }
+
+        // TODO 只有WIFI设备时，不需要超时检测逻辑
+        // 超时后检查云端上报，是否已成功移动完毕 15~120s
+        const TIME_OUT = Math.min(Math.max(15000, this.data.moveWaitlist.length * 1000), 120000)
+
+        showLoading('正在移动设备房间，请稍候')
+        timeId = setTimeout(async () => {
+          hideLoading()
+
+          // 部分未成功也要通知刷新页面
+          this.triggerEvent('updateList')
+
+          // 前端超时导致失败
+          Dialog.confirm({
+            title: '部分设备未成功移动，是否重试',
+            confirmButtonText: '是',
+            cancelButtonText: '否',
+            context: this,
+          })
+            .then(this.moveLoop) // ! 有条件递归执行
+            .catch((e) => console.log(e))
+        }, TIME_OUT)
+      }
+      // 接口直接返回失败
+      else {
+        this.triggerEvent('updateList')
+
+        Toast({
+          message: '移动失败',
+          zIndex: 9999,
+        })
+      }
+    },
+    handleBatchMove() {
+      // 如果被移动对象存在面板，需要提示
       const hasSwitch = this.data.moveWaitlist.some((uniId: string) => {
         const deviceId = uniId.split(':')[0]
         const { proType } = deviceStore.deviceMap[deviceId]
         return proType === PRO_TYPE.switch
       })
-      if (hasSwitch && !this.data.moveFailCount) {
+      if (hasSwitch) {
         Dialog.confirm({
           title: '按键所在的面板将被移动至新房间，是否继续？',
           confirmButtonText: '是',
           cancelButtonText: '否',
           context: this,
         })
-          .then(actionFn)
+          .then(this.moveLoop)
           .catch((e) => console.log(e))
       }
-      // 如果不包含面板设备，或者是失败重试列表为空，刚不必询问直接执行
-      else {
-        actionFn()
-      }
+
+      // 递归执行移动
+      this.moveLoop()
     },
     async handleMoveFinish() {
       hideLoading()
 
       if (timeId) {
         clearTimeout(timeId)
+        timeId = 0
       }
       this.triggerEvent('updateList')
       Toast({

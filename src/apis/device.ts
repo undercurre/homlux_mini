@@ -1,5 +1,5 @@
 import { delay, mzaioRequest, showLoading, hideLoading, Logger, IApiRequestOption } from '../utils/index'
-import { PRO_TYPE } from '../config/index'
+import { PRO_TYPE, I_PRO_TYPE_VALUE } from '../config/index'
 import homOs from 'js-homos'
 import { deviceStore } from '../store/index'
 
@@ -203,7 +203,7 @@ export async function controlDevice(
  */
 export async function sendDevice(
   data: {
-    proType: string
+    proType: I_PRO_TYPE_VALUE
     deviceType: number
     deviceId: string
     gatewayId?: string
@@ -222,17 +222,27 @@ export async function sendDevice(
     property.time = 500
   }
 
+  const methodMap = {
+    // zigbee设备物模型属性
+    [PRO_TYPE.light]: 'lightControlNew',
+    [PRO_TYPE.gateway]: 'panelSingleControlNew',
+    [PRO_TYPE.switch]: 'panelSingleControlNew',
+    [PRO_TYPE.centralAirConditioning]: 'airControl',
+    [PRO_TYPE.floorHeating]: 'airControl',
+    [PRO_TYPE.freshAir]: 'airControl',
+    [PRO_TYPE.sensor]: '',
+
+    // wifi设备物模型属性
+    [PRO_TYPE.curtain]: 'wifiCurtainControl',
+    [PRO_TYPE.bathHeat]: 'wifiBathHeatControl',
+    [PRO_TYPE.clothesDryingRack]: 'wifiClothesDryingRackControl',
+    [PRO_TYPE.airConditioner]: 'wifiAirControl',
+    [PRO_TYPE.doorLock]: '',
+  }
+
   switch (data.deviceType) {
     case 2: {
-      const method =
-        {
-          [PRO_TYPE.light]: 'lightControlNew',
-          [PRO_TYPE.gateway]: 'panelSingleControlNew',
-          [PRO_TYPE.switch]: 'panelSingleControlNew',
-          [PRO_TYPE.centralAirConditioning]: 'airControl',
-          [PRO_TYPE.floorHeating]: 'airControl',
-          [PRO_TYPE.freshAir]: 'airControl',
-        }[data.proType] ?? ''
+      const method = methodMap[data.proType] ?? ''
 
       params = {
         topic: '/subdevice/control',
@@ -264,14 +274,9 @@ export async function sendDevice(
       }
       // 其他非门锁WIFI设备
       else {
-        const method =
-          {
-            [PRO_TYPE.light]: 'wifiLampControl',
-            [PRO_TYPE.curtain]: 'wifiCurtainControl',
-            [PRO_TYPE.bathHeat]: 'wifiBathHeatControl',
-            [PRO_TYPE.clothesDryingRack]: 'wifiClothesDryingRackControl',
-            [PRO_TYPE.airConditioner]: 'wifiAirControl',
-          }[data.proType] ?? ''
+        methodMap[PRO_TYPE.light] = 'wifiLampControl' // wifi灯与zigbee灯共用品类码，物模型属性不同，需要重新赋值
+
+        const method = methodMap[data.proType] ?? ''
 
         params = {
           deviceId: data.deviceId,
@@ -1051,5 +1056,20 @@ export async function deviceTransmit(handleType: string, data: IAnyObject, optio
       handleType,
       data,
     },
+  })
+}
+
+/**
+ * 单机版门锁生成临时密码
+ */
+export async function getNewTempPwd(data: { random: string; adminPwd: string }, options?: { loading?: boolean }) {
+  return await mzaioRequest.post<{
+    tmpPwd: string
+    createTime: string
+  }>({
+    log: true,
+    loading: options?.loading ?? false,
+    url: '/v1/device/qyLock/getTempPwd',
+    data,
   })
 }
